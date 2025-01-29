@@ -46,15 +46,15 @@ sensor:
       - multiply: 0.1
       - offset: ${inverter_voltage_offset}
       - heartbeat: 10s
-    on_raw_value:
-      then:
-        - lambda: !lambda |-
-            if (!id(grid_active).state) {
-              id(pzem_grid_voltage).publish_state(0.0);
-              id(pzem_grid_current).publish_state(${pzem_current_offset} * -1);
-              id(pzem_grid_power).publish_state(0.0);
-              id(pzem_grid_power_factor).publish_state(0.0);
-            }
+#    on_raw_value:
+#      then:
+#        - lambda: !lambda |-
+#            if (!id(grid_active).state) {
+#              id(pzem_grid_voltage).publish_state(0.0);
+#              id(pzem_grid_current).publish_state(${pzem_current_offset} * -1);
+#              id(pzem_grid_power).publish_state(0.0);
+#              id(pzem_grid_power_factor).publish_state(0.0);
+#            }
             
 
   - platform: modbus_controller

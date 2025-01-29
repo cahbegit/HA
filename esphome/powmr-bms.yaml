@@ -1,4 +1,5 @@
 substitutions:
+  name: "jk-bms"
   device_name: "powmr-inverter"
   node_name: "PowMr Inverter"
   node_id: powmr_inverter
@@ -22,7 +23,7 @@ packages:
   main: !include powmr-bms/main.yaml
   # You can replace next 2 lines with your common configs for all devices
   common_system: !include powmr-bms/common_system.yaml
-  common_sensors: !include powmr-bms/common_sensors.yaml
+#  common_sensors: !include powmr-bms/common_sensors.yaml
 
 logger:
   level: WARN
