@@ -6,13 +6,13 @@ substitutions:
   inverter_tx_pin: GPIO16
   inverter_rx_pin: GPIO17
   inverter_voltage_offset: "0"
-  #pzem_tx_pin: GPIO1
-  #pzem_rx_pin: GPIO3
-  #pzem_voltage_offset: "1"
-  #pzem_current_offset: "0.04"
   update_interval: 30s # Minimum 10s recommended to avoid duplicate command errors
   select_skip_updates: "2"
-  #pzem_update_interval: 6s # Needs to be 1/5 of update interval because of smoothing filter on pzem readings
+  jk_bms_name: "jk-bms"
+  jk_bms_description: "JK-BMS ble"
+  external_components_source: github://syssi/esphome-jk-bms@main
+  jk_bms_mac_address: "C8:47:80:1F:73:7B"  # Замени на MAC-адрес твоего JK-BMS
+  jk_bms_protocol_version: "JK02_32S"
 
 esp32:
   board: nodemcu-32s
