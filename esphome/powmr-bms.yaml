@@ -19,10 +19,10 @@ esp32:
     type: esp-idf
 
 packages:
-  main: !include powmr-inverter/main.yaml
+  main: !include powmr-bms/main.yaml
   # You can replace next 2 lines with your common configs for all devices
-  common_system: !include includes/common_system.yaml
-  common_sensors: !include includes/common_sensors.yaml
+  common_system: !include powmr-bms/common_system.yaml
+  common_sensors: !include powmr-bms/common_sensors.yaml
 
 logger:
   level: WARN
