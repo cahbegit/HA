@@ -1,0 +1,171 @@
+esphome:
+  name: testmotion
+  friendly_name: TestMotion
+  includes:
+    - ld2410_uart.h
+  on_boot:
+    priority: 600
+    # ...
+    then:
+      - lambda: |-
+          auto uart_component = static_cast<LD2410 *>(ld2410);
+          uart_component->setNumbers(maxMovingDistanceRange, maxStillDistanceRange, noneDuration);
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+  baud_rate: 0
+  logs:
+    sensor: INFO # DEBUG level with uart_target_output = overload!
+    binary_sensor: INFO
+    text_sensor: INFO
+
+api:
+  encryption:
+    key: "e4y409TGTTOX2k4PtSC/5cEWXMwxdw3Lz2uH5vUea2M="
+ota:
+  - platform: esphome
+    password: "65cac7ee447f7f538a15d93e1ce80843"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+captive_portal:
+
+web_server:   #ВЕБСЕРВЕР ЗРУЧНО ДЛЯ ПОЧАТКОВИХ НАЛАШТУВАНЬ. ПОТІМ МОЖНА ПРИБРАТИ
+  port: 80  
+
+uart:
+  id: uart_bus
+  tx_pin: GPIO16
+  rx_pin: GPIO17
+  baud_rate: 256000 # Change this according to your setting
+  parity: NONE
+  stop_bits: 1
+      
+custom_component:
+  - lambda: |-
+      return {new LD2410(id(uart_bus))};
+    components:
+      - id: ld2410
+      
+binary_sensor:
+  - platform: custom
+    lambda: |-
+      auto uart_component = static_cast<LD2410 *>(ld2410);
+      return {uart_component->hasTarget,uart_component->hasMovingTarget,uart_component->hasStillTarget,uart_component->lastCommandSuccess};
+    binary_sensors:
+      - name: "Has Target"
+      - name: "Has Moving Target"
+      - name: "Has Still Target"
+      - name: "Last Command Success"
+  
+sensor:
+  - platform: custom
+    lambda: |-
+      auto uart_component = static_cast<LD2410 *>(ld2410);
+      return {uart_component->movingTargetDistance,uart_component->movingTargetEnergy,uart_component->stillTargetDistance,uart_component->stillTargetEnergy,uart_component->detectDistance};
+    sensors:
+      - name: "Moving Target Distance"
+        unit_of_measurement: "cm"
+        accuracy_decimals: 0
+      - name: "Moving Target Energy"
+        unit_of_measurement: "%"
+        accuracy_decimals: 0
+      - name: "Still Target Distance"
+        unit_of_measurement: "cm"
+        accuracy_decimals: 0
+      - name: "Still Target Energy"
+        unit_of_measurement: "%"
+        accuracy_decimals: 0
+      - name: "Detect Distance"
+        unit_of_measurement: "cm"
+        accuracy_decimals: 0
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
+
+number:        
+  - platform: template
+    name: "Max Moving Distance Range"
+    id: maxMovingDistanceRange
+    min_value: 1
+    max_value: 8
+    step: 1
+    update_interval: never
+    optimistic: true
+    set_action:
+      - lambda: |-
+          auto uart_component = static_cast<LD2410 *>(ld2410);
+          uart_component->setMaxDistancesAndNoneDuration(x,id(maxStillDistanceRange).state,id(noneDuration).state);
+  - platform: template
+    name: "Max Still Distance Range"
+    id: maxStillDistanceRange
+    min_value: 1
+    max_value: 8
+    step: 1
+    update_interval: never
+    optimistic: true
+    set_action:
+      - lambda: |-
+          auto uart_component = static_cast<LD2410 *>(ld2410);
+          uart_component->setMaxDistancesAndNoneDuration(id(maxMovingDistanceRange).state,x,id(noneDuration).state);
+  - platform: template
+    name: "None Duration"
+    id: noneDuration
+    min_value: 0
+    max_value: 32767
+    step: 1
+    mode: box
+    update_interval: never
+    optimistic: true
+    set_action:
+      - lambda: |-
+          auto uart_component = static_cast<LD2410 *>(ld2410);
+          uart_component->setMaxDistancesAndNoneDuration(id(maxMovingDistanceRange).state,id(maxStillDistanceRange).state,x);
+      
+
+button:
+  - platform: template
+    name: "Reboot LD2410"
+    on_press:
+      lambda: 'static_cast<LD2410 *>(ld2410)->reboot();'
+  - platform: template
+    name: "Turn on config mode"
+    on_press:
+      - lambda: 'static_cast<LD2410 *>(ld2410)->setConfigMode(true);'
+  - platform: template
+    name: "Turn off config mode"
+    on_press:
+      - lambda: 'static_cast<LD2410 *>(ld2410)->setConfigMode(false);'
+  - platform: template
+    name: "Get config"
+    on_press:
+      - lambda: 'static_cast<LD2410 *>(ld2410)->queryParameters();'
+  - platform: template
+    name: "Set baud rate to 256000"
+    on_press:
+      - lambda: 'static_cast<LD2410 *>(ld2410)->setBaudrate(7);'
+  - platform: template
+    name: "Set baud rate to 115200"
+    on_press:
+      - lambda: 'static_cast<LD2410 *>(ld2410)->setBaudrate(5);'
+  - platform: template
+    name: "Set baud rate to 9600"
+    on_press:
+      - lambda: 'static_cast<LD2410 *>(ld2410)->setBaudrate(1);'

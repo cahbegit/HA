@@ -1,0 +1,50 @@
+esphome:
+  name: wi-fi-test-c3
+  friendly_name: Wi-Fi test c3
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "8MNvQhZ4x1B+XrWE2E85Jel3DxQCJFQldvqe25r/SL8="
+
+ota:
+  - platform: esphome
+    password: "abf29650c70c3cc4f9ee4311ec87b9e4"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Wi-Fi-Test-C3 Fallback Hotspot"
+    password: "PDCtEspO0IAV"
+
+captive_portal:
+
+web_server:   #ВЕБСЕРВЕР ЗРУЧНО ДЛЯ ПОЧАТКОВИХ НАЛАШТУВАНЬ. ПОТІМ МОЖНА ПРИБРАТИ
+  port: 80
+
+sensor:
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""

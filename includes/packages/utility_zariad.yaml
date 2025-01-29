@@ -1,0 +1,140 @@
+utility_kotel_zariad:
+
+  homeassistant:
+    customize:
+      sensor.kotel_zariad_power_2:
+        friendly_name: Котёл заряд мощность
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:fire
+      sensor.kotel_zariad_energy:
+        friendly_name: Котёл заряд энергия
+        icon: mdi:chart-line
+
+      sensor.kotel_zariad_clear:
+        friendly_name: Котёл заряд всего
+        icon: mdi:fire
+        unit_of_measurement: кВт/ч
+      sensor.kotel_zariad_day:
+        friendly_name: Котёл заряд день
+        icon: mdi:white-balance-sunny
+        unit_of_measurement: кВт/ч
+      sensor.kotel_zariad_night:
+        friendly_name: Котёл заряд ночь
+        icon: mdi:moon-waning-crescent
+        unit_of_measurement: кВт/ч
+
+      sensor.kotel_zariad_clear_cost:
+        friendly_name: Котёл заряд всего
+        icon: mdi:cash-multiple
+        unit_of_measurement: грн
+      sensor.kotel_zariad_day_cost:
+        friendly_name: Котёл заряд день
+        icon: mdi:cash-clock
+        unit_of_measurement: грн
+      sensor.kotel_zariad_night_cost:
+        friendly_name: Котёл заряд ночь
+        icon: mdi:cash-fast
+        unit_of_measurement: грн
+
+  utility_meter:
+    kotel_zariad:
+      source: sensor.kotel_zariad_energy
+      cycle: monthly
+      offset:
+        days: 0
+        hours: 12
+        minutes: 0
+      tariffs:
+        - night
+        - day
+
+  sensor:
+    - platform: integration
+      name: 'kotel_zariad_energy'
+      source: sensor.kotel_zariad_power_2
+      unit_prefix: k
+      method: left
+      round: 2
+
+  input_text:
+    kotel_zariad_day:
+      name: Котёл заряд день
+    kotel_zariad_night:
+      name: Котёл заряд ночь
+
+  input_button:
+    kotel_zariad_day:
+      name: Котёл заряд день
+      icon: mdi:white-balance-sunny
+    kotel_zariad_night:
+      name: Котёл заряд ночь
+      icon: mdi:moon-waning-crescent
+
+  template:
+    - sensor:
+        - name: kotel_zariad_clear
+          state: >
+            {{(
+              states('sensor.kotel_zariad_day')|float(0) +
+              states('sensor.kotel_zariad_night')|float(0)
+            )|round(2)}}
+        - name: kotel_zariad_clear_cost
+          state: >
+            {{(
+              states('sensor.kotel_zariad_day_cost')|float(0) +
+              states('sensor.kotel_zariad_night_cost')|float(0)
+            )|round(2)}}
+        - name: kotel_zariad_day_cost
+          state: >
+            {% if states('sensor.meter_total_energy_clear')|float <= states('input_text.consumption_limit')|float %}
+            {{ states('sensor.kotel_zariad_day')|float * states('input_text.in_limit')|float }}
+            {% else %}
+            {{ states('sensor.kotel_zariad_day')|float * states('input_text.off_limit')|float }}
+            {% endif %}
+        - name: kotel_zariad_night_cost
+          state: >
+            {% if states('sensor.meter_total_energy_clear')|float <= states('input_text.consumption_limit')|float %}
+            {{ states('sensor.kotel_zariad_night')|float * states('input_text.in_limit')|float * states('input_text.night_coefficient')|float }}
+            {% else %}
+            {{ states('sensor.kotel_zariad_night')|float * states('input_text.off_limit')|float * states('input_text.night_coefficient')|float }}
+            {% endif %}
+
+  automation:
+    - alias: kotel_zariad_calibrate
+      id: kotel_zariad_calibrate
+      description: Калибровка потребления зарядки котла
+      initial_state: true
+      trigger:
+        ## Дневное потребление
+        - platform: state
+          entity_id: input_button.kotel_zariad_day
+          id: kotel_zariad_day
+        ## Ночное потребление
+        - platform: state
+          entity_id: input_button.kotel_zariad_night
+          id: kotel_zariad_night
+      action:
+        - choose:
+          - conditions:
+              - condition: trigger
+                id: kotel_zariad_day
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{states('input_text.kotel_zariad_day')|float}}
+                target:
+                  entity_id:
+                    - sensor.kotel_zariad_day
+          - conditions:
+              - condition: trigger
+                id: kotel_zariad_night
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{states('input_text.kotel_zariad_night')|float}}
+                target:
+                  entity_id:
+                    - sensor.kotel_zariad_night

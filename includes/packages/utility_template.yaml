@@ -1,0 +1,23 @@
+utility_template:
+    template:
+      - binary_sensor:
+          - name: "Саша дома"
+            state: >
+              {{ is_state('device_tracker.poco_x5_pro_5g', 'home') or
+                 is_state('device_tracker.poco_x5_pro_5g_2', 'home') or
+                 is_state('device_tracker.poco_x5_pro_5g_3', 'home') }}
+          - name: "Лена дома"
+            state: >
+              {{ is_state('device_tracker.xiaomi_11_lite_5g_ne', 'home') or
+                 is_state('device_tracker.xiaomi_11_lite_5g_ne_2', 'home') or
+                 is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') }}
+      - sensor:
+        - name: "sensor.Kotel_Power_Delta"
+          state: >
+            {{ (
+              states('sensor.kotel_power_2')|float(0) - 
+              states('sensor.kotel_zariad_power_2')|float(0)
+            )|round(2) }}
+          unit_of_measurement: "W"  # Указываем единицу измерения
+          device_class: power       # Класс устройства - мощность
+          state_class: measurement  # Тип данных - измерения

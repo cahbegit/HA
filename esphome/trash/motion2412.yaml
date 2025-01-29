@@ -1,0 +1,85 @@
+esphome:
+  name: motion2412
+  friendly_name: Motion2412
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "OwWNVP6UahENasmmHEJaZdNVM2IB61vd/nFcA2X6nSQ="
+
+ota:
+  - platform: esphome
+    password: "41b0dd9849d536603b0d7d76324a925b"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Motion2412 Fallback Hotspot"
+    password: "w8pWqfihd5Li"
+
+captive_portal:
+
+web_server:   # Веб-сервер удобно использовать для начальной настройки
+  port: 80  
+
+uart:
+  id: uart_1
+  tx_pin: GPIO21  # TX соединяем с RX датчика
+  rx_pin: GPIO20  # RX соединяем с TX датчика
+  baud_rate: 115200  # LD2412 использует скорость 115200
+  parity: NONE
+
+# Подключение внешнего компонента LD2412
+external_components:
+  - source:
+      type: git
+      url: https://github.com/Rihan9/LD2412
+      ref: main
+    components: [LD2412]
+
+# Настройка LD2412
+LD2412:
+  id: ld2412
+  throttle: 3s
+
+# Бинарные сенсоры для обнаружения целей
+binary_sensor:
+  - platform: LD2412
+    has_target:
+      name: "Presence Detected"
+    has_moving_target:
+      name: "Moving Target Detected"
+    has_still_target:
+      name: "Still Target Detected"
+
+# Датчики для расстояний и энергии
+sensor:
+  - platform: LD2412
+    moving_distance:
+      name: "Moving Target Distance"
+      unit_of_measurement: "cm"
+      accuracy_decimals: 0
+    still_distance:
+      name: "Still Target Distance"
+      unit_of_measurement: "cm"
+      accuracy_decimals: 0
+    moving_energy:
+      name: "Moving Target Energy"
+      unit_of_measurement: "%"
+      accuracy_decimals: 0
+    still_energy:
+      name: "Still Target Energy"
+      unit_of_measurement: "%"
+      accuracy_decimals: 0
+

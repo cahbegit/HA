@@ -1,0 +1,206 @@
+    switch.1_ty_12z_switch_1:
+      friendly_name: "Калидор"
+    switch.1_ty_12z_switch_6:
+      friendly_name: "Спальня центр"
+    switch.1_ty_12z_switch_4:
+      friendly_name: "Зал центр"
+    switch.2_ty_12z_switch_1:
+      friendly_name: "Складовка"
+    switch.1_ty_12z_switch_5:
+      friendly_name: "Зал 2"
+    switch.2_ty_12z_switch_8:
+      friendly_name: "Зал балкон"
+    switch.1_ty_12z_switch_2:
+      friendly_name: "Вытяжка гардероб"
+    switch.1_ty_12z_switch_3:
+      friendly_name: "Вытяжка ванна"
+    switch.2_ty_12z_switch_7:
+      friendly_name: "Кухня балкон"
+    switch.2_ty_12z_switch_5:
+      friendly_name: "Кухня"
+    switch.2_ty_12z_switch_2:
+      friendly_name: "Ванна 1"
+    switch.2_ty_12z_switch_3:
+      friendly_name: "Ванна 2"
+    switch.2_ty_12z_switch_6:
+      friendly_name: "Фартук"  
+    switch.2_ty_12z_switch_4:
+      friendly_name: "Душ"
+    switch.1_ty_12z_switch_7:
+      friendly_name: "Спальня бра лево"
+    switch.1_ty_12z_switch_8:
+      friendly_name: "Спальня бра право"
+    binary_sensor.jk_bms_jk_bms_balancing:
+      friendly_name: "Балансировка"
+    binary_sensor.jk_bms_jk_bms_charging:
+      friendly_name: "Зарядка"
+    binary_sensor.jk_bms_jk_bms_discharging:
+      friendly_name: "Разрядка"
+    binary_sensor.jk_bms_jk_bms_heating:
+      friendly_name: "Обогрев"
+    binary_sensor.jk_bms_jk_bms_online_status:
+      friendly_name: "Статус в сети"
+    button.jk_bms_jk_bms_retrieve_settings:
+      friendly_name: "Получить настройки"
+    button.jk_bms_jk_bms_retrieve_device_info:
+      friendly_name: "Получить информацию об устройстве"
+    number.jk_bms_jk_bms_balance_trigger_voltage:
+      friendly_name: "Напряжение триггера баланса"
+    number.jk_bms_jk_bms_cell_count:
+      friendly_name: "Количество ячеек"
+    number.jk_bms_jk_bms_total_battery_capacity:
+      friendly_name: "Общая ёмкость батареи"
+    number.jk_bms_jk_bms_cell_voltage_overvoltage_protection:
+      friendly_name: "Защита от перенапряжения"
+    number.jk_bms_jk_bms_cell_voltage_overvoltage_recovery:
+      friendly_name: "Восстановление после перенапряжения"
+    number.jk_bms_jk_bms_cell_voltage_undervoltage_protection:
+      friendly_name: "Защита от пониженного напряжения"
+    number.jk_bms_jk_bms_cell_voltage_undervoltage_recovery:
+      friendly_name: "Восстановление после пониженного напряжения"
+    number.jk_bms_jk_bms_balance_starting_voltage:
+      friendly_name: "Напряжение начала баланса"
+    number.jk_bms_jk_bms_voltage_calibration:
+      friendly_name: "Калибровка напряжения"
+    number.jk_bms_jk_bms_current_calibration:
+      friendly_name: "Калибровка тока"
+    number.jk_bms_jk_bms_power_off_voltage:
+      friendly_name: "Напряжение отключения питания"
+    number.jk_bms_jk_bms_max_balance_current:
+      friendly_name: "Максимальный ток баланса"
+    number.jk_bms_jk_bms_max_charge_current:
+      friendly_name: "Максимальный ток заряда"
+    number.jk_bms_jk_bms_max_discharge_current:
+      friendly_name: "Максимальный ток разряда"
+    number.jk_bms_jk_bms_smart_sleep_voltage:
+      friendly_name: "Напряжение умного сна"
+    number.jk_bms_jk_bms_cell_soc100_voltage:
+      friendly_name: "Напряжение SOC100"
+    number.jk_bms_jk_bms_cell_soc0_voltage:
+      friendly_name: "Напряжение SOC0"
+    number.jk_bms_jk_bms_cell_request_charge_voltage:
+      friendly_name: "Запрос на зарядку"
+    number.jk_bms_jk_bms_cell_request_float_voltage:
+      friendly_name: "Запрос на плавающее напряжение"
+    number.jk_bms_jk_bms_charge_overcurrent_protection_delay:
+      friendly_name: "Задержка защиты от превышения тока заряда"
+    number.jk_bms_jk_bms_charge_overcurrent_protection_recovery_time:
+      friendly_name: "Время восстановления после защиты от превышения тока заряда"
+    number.jk_bms_jk_bms_discharge_overcurrent_protection_delay:
+      friendly_name: "Задержка защиты от превышения тока разряда"
+    number.jk_bms_jk_bms_discharge_overcurrent_protection_recovery_time:
+      friendly_name: "Время восстановления после защиты от превышения тока разряда"
+    number.jk_bms_jk_bms_short_circuit_protection_delay:
+      friendly_name: "Задержка защиты от короткого замыкания"
+    number.jk_bms_jk_bms_short_circuit_protection_recovery_time:
+      friendly_name: "Время восстановления после защиты от короткого замыкания"
+    number.jk_bms_jk_bms_charge_overtemperature_protection:
+      friendly_name: "Защита от перегрева при заряде"
+    number.jk_bms_jk_bms_charge_overtemperature_protection_recovery:
+      friendly_name: "Восстановление после защиты от перегрева при заряде"
+    number.jk_bms_jk_bms_discharge_overtemperature_protection:
+      friendly_name: "Защита от перегрева при разряде"
+    number.jk_bms_jk_bms_discharge_overtemperature_protection_recovery:
+      friendly_name: "Восстановление после защиты от перегрева при разряде"
+    number.jk_bms_jk_bms_charge_undertemperature_protection:
+      friendly_name: "Защита от низкой температуры при заряде"
+    number.jk_bms_jk_bms_charge_undertemperature_protection_recovery:
+      friendly_name: "Восстановление после защиты от низкой температуры при заряде"
+    number.jk_bms_jk_bms_power_tube_overtemperature_protection:
+      friendly_name: "Защита от перегрева силового модуля"
+    number.jk_bms_jk_bms_power_tube_overtemperature_protection_recovery:
+      friendly_name: "Восстановление после защиты от перегрева силового модуля"
+    sensor.jk_bms_jk_bms_min_cell_voltage:
+      friendly_name: "Минимальное напряжение ячейки"
+    sensor.jk_bms_jk_bms_max_cell_voltage:
+      friendly_name: "Максимальное напряжение ячейки"
+    sensor.jk_bms_jk_bms_min_voltage_cell:
+      friendly_name: "Ячейка с минимальным напряжением"
+    sensor.jk_bms_jk_bms_max_voltage_cell:
+      friendly_name: "Ячейка с максимальным напряжением"
+    sensor.jk_bms_jk_bms_delta_cell_voltage:
+      friendly_name: "Разница напряжений ячеек"
+    sensor.jk_bms_jk_bms_average_cell_voltage:
+      friendly_name: "Среднее напряжение ячейки"
+    sensor.jk_bms_jk_bms_cell_voltage_1:
+      friendly_name: "Напряжение ячейки 1"
+    sensor.jk_bms_jk_bms_cell_voltage_2:
+      friendly_name: "Напряжение ячейки 2"
+    sensor.jk_bms_jk_bms_cell_voltage_3:
+      friendly_name: "Напряжение ячейки 3"
+    sensor.jk_bms_jk_bms_cell_voltage_4:
+      friendly_name: "Напряжение ячейки 4"
+    sensor.jk_bms_jk_bms_cell_resistance_1:
+      friendly_name: "Сопротивление ячейки 1"
+    sensor.jk_bms_jk_bms_cell_resistance_2:
+      friendly_name: "Сопротивление ячейки 2"
+    sensor.jk_bms_jk_bms_cell_resistance_3:
+      friendly_name: "Сопротивление ячейки 3"
+    sensor.jk_bms_jk_bms_cell_resistance_4:
+      friendly_name: "Сопротивление ячейки 4"
+    sensor.jk_bms_jk_bms_total_voltage:
+      friendly_name: "Общее напряжение"
+    sensor.jk_bms_jk_bms_current:
+      friendly_name: "Текущий ток"
+    sensor.jk_bms_jk_bms_heating_current:
+      friendly_name: "Ток обогрева"
+    sensor.jk_bms_jk_bms_power:
+      friendly_name: "Мощность"
+    sensor.jk_bms_jk_bms_charging_power:
+      friendly_name: "Мощность зарядки"
+    sensor.jk_bms_jk_bms_discharging_power:
+      friendly_name: "Мощность разряда"
+    sensor.jk_bms_jk_bms_temperature_sensor_1:
+      friendly_name: "Датчик температуры 1"
+    sensor.jk_bms_jk_bms_temperature_sensor_2:
+      friendly_name: "Датчик температуры 2"
+    sensor.jk_bms_jk_bms_power_tube_temperature:
+      friendly_name: "Температура силового модуля"
+    sensor.jk_bms_jk_bms_balancing:
+      friendly_name: "Балансировка"
+    sensor.jk_bms_jk_bms_state_of_charge:
+      friendly_name: "Уровень заряда"
+    sensor.jk_bms_jk_bms_capacity_remaining:
+      friendly_name: "Оставшаяся ёмкость"
+    sensor.jk_bms_jk_bms_total_battery_capacity_setting:
+      friendly_name: "Настройка общей ёмкости батареи"
+    sensor.jk_bms_jk_bms_charging_cycles:
+      friendly_name: "Циклы зарядки"
+    sensor.jk_bms_jk_bms_total_charging_cycle_capacity:
+      friendly_name: "Общая ёмкость циклов зарядки"
+    sensor.jk_bms_jk_bms_total_runtime:
+      friendly_name: "Общее время работы"
+    sensor.jk_bms_jk_bms_balancing_current:
+      friendly_name: "Ток балансировки"
+    sensor.jk_bms_jk_bms_errors_bitmask:
+      friendly_name: "Маска ошибок"
+    sensor.jk_bms_jk_bms_emergency_time_countdown:
+      friendly_name: "Обратный отсчёт времени аварии"
+    switch.jk_bms_jk_bms_charging:
+      friendly_name: "Зарядка"
+    switch.jk_bms_jk_bms_discharging:
+      friendly_name: "Разрядка"
+    switch.jk_bms_jk_bms_balancer:
+      friendly_name: "Балансировщик"
+    switch.jk_bms_jk_bms_emergency:
+      friendly_name: "Аварийный режим"
+    switch.jk_bms_jk_bms_heating:
+      friendly_name: "Обогрев"
+    switch.jk_bms_jk_bms_disable_temperature_sensors:
+      friendly_name: "Отключить температурные датчики"
+    switch.jk_bms_jk_bms_display_always_on:
+      friendly_name: "Дисплей всегда включен"
+    switch.jk_bms_jk_bms_smart_sleep:
+      friendly_name: "Умный сон"
+    switch.jk_bms_jk_bms_disable_pcl_module:
+      friendly_name: "Отключить PCL модуль"
+    switch.jk_bms_jk_bms_timed_stored_data:
+      friendly_name: "Данные с временным хранением"
+    switch.jk_bms_jk_bms_charging_float_mode:
+      friendly_name: "Плавающий режим зарядки"
+    switch.ble_client_enable_bluetooth_connection:
+      friendly_name: "Включить Bluetooth соединение"
+    sensor.jk_bms_jk_bms_errors:
+      friendly_name: "Ошибки"
+    sensor.jk_bms_jk_bms_total_runtime_formatted:
+      friendly_name: "Форматированное общее время работы"

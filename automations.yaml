@@ -1,0 +1,121 @@
+- id: '1729770602017'
+  alias: Душ
+  description: Авто выключение света в душе
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.2_ty_12z_switch_4
+    from: 'off'
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - switch.2_ty_12z_switch_4
+    from: 'off'
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  conditions:
+  - condition: state
+    entity_id: switch.2_ty_12z_switch_4
+    state: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.2_ty_12z_switch_4
+  mode: single
+- id: '1729770951551'
+  alias: Вытяжка душ
+  description: Авто выключение вытяжки в душе
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.1_ty_12z_switch_3
+    from: 'off'
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  - trigger: state
+    entity_id:
+    - switch.2_ty_12z_switch_4
+    from: 'off'
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  conditions:
+  - condition: state
+    entity_id: switch.2_ty_12z_switch_4
+    state: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.1_ty_12z_switch_3
+  mode: single
+- id: '1737387903512'
+  alias: Калидор
+  description: ''
+  triggers:
+  - type: motion
+    device_id: 860c11ab066da855ae1fb2edc9475b09
+    entity_id: cb7673430ee2dce2f65a579abf13e3bb
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: and
+    conditions:
+    - condition: time
+      before: '23:00:00'
+      after: 09:00:00
+    - condition: template
+      value_template: '{{ now() > (state_attr(''sun.sun'', ''next_setting'') | as_datetime
+        | as_local - timedelta(hours=1)) }}
+
+        '
+  - condition: device
+    type: is_off
+    device_id: 873a00d3bbd8fa574ee737d21efa2f19
+    entity_id: a84cb9bdac660866bfebf197017b268d
+    domain: switch
+  - condition: device
+    type: is_off
+    device_id: 873a00d3bbd8fa574ee737d21efa2f19
+    entity_id: 56e653fd9c820a0b9fa70c317581a0be
+    domain: switch
+  - condition: device
+    type: is_off
+    device_id: 873a00d3bbd8fa574ee737d21efa2f19
+    entity_id: 33ee7cc3ac1ded76fac68f1955de3778
+    domain: switch
+  - condition: device
+    type: is_off
+    device_id: 4b7714e3f237f2e24adee6c08e84c7a6
+    entity_id: 7e455e38618820bf522d8de174efc490
+    domain: switch
+  - condition: device
+    type: is_off
+    device_id: 4b7714e3f237f2e24adee6c08e84c7a6
+    entity_id: 91dd3daa6da748733ccb3fb26cab39d1
+    domain: switch
+  actions:
+  - type: turn_on
+    device_id: 873a00d3bbd8fa574ee737d21efa2f19
+    entity_id: 26005799a4cbaf2395ba6787528c9073
+    domain: switch
+  mode: single

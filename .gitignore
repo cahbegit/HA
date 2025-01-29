@@ -1,0 +1,12 @@
+*.log
+home-assistant_v2.db
+home-assistant_v2.db-shm
+home-assistant_v2.db-wal
+.storage/
+image/
+tts/
+custom_components/
+www/
+themes/
+home-assistant.log.1
+home-assistant.log.fault
