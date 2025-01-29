@@ -8,8 +8,9 @@ wifi:
 # captive_portal:
 
 ota:
-  id: "${node_id}_ota"
+- platform: esphome
   password: !secret ota_password2
+  id: "${node_id}_ota"
 
 api:
   reboot_timeout: 10min

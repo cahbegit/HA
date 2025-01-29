@@ -1,15 +1,15 @@
 substitutions:
-  name: "jk-bms"
-  device_name: "powmr-inverter"
-  node_name: "PowMr Inverter"
-  node_id: powmr_inverter
+  name: "jk_bms"
+  device_name: "powmr_bms"
+  node_name: "powmr_bms"
+  node_id: powmr_bms
   inverter_tx_pin: GPIO16
   inverter_rx_pin: GPIO17
   inverter_voltage_offset: "0"
   update_interval: 30s # Minimum 10s recommended to avoid duplicate command errors
   select_skip_updates: "2"
-  jk_bms_name: "jk-bms"
-  jk_bms_description: "JK-BMS ble"
+  jk_bms_name: "jk_bms"
+  jk_bms_description: "JK_BMS ble"
   external_components_source: github://syssi/esphome-jk-bms@main
   jk_bms_mac_address: "C8:47:80:1F:73:7B"  # Замени на MAC-адрес твоего JK-BMS
   jk_bms_protocol_version: "JK02_32S"
@@ -23,7 +23,7 @@ packages:
   main: !include powmr-bms/main.yaml
   # You can replace next 2 lines with your common configs for all devices
   common_system: !include powmr-bms/common_system.yaml
-#  common_sensors: !include powmr-bms/common_sensors.yaml
+  common_sensors: !include powmr-bms/common_sensors.yaml
 
 logger:
   level: WARN

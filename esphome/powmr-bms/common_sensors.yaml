@@ -9,7 +9,6 @@ sensor:
     id: wifi_rssi
     entity_category: "diagnostic"
     update_interval: 60s
-sensor:
   - platform: internal_temperature
     name: "Controller Temperature"
     update_interval: 10s
