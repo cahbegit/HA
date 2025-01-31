@@ -1,11 +1,13 @@
 esphome:
   name: wi-fi-test-c3
   friendly_name: Wi-Fi test c3
+  platformio_options:
+    board_build.flash_mode: dio
 
 esp32:
   board: esp32-c3-devkitm-1
   framework:
-    type: arduino
+    type: esp-idf
 
 # Enable logging
 logger:

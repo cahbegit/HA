@@ -1,7 +1,3 @@
-external_components:
-  - source: ${external_components_source}
-    refresh: 0s
-
 esp32_ble_tracker:
   on_ble_advertise:
     then:

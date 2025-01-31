@@ -1,50 +1,48 @@
-substitutions:
-  name: jk-bms
-  device_description: "JK-BMS ble"
-  external_components_source: github://syssi/esphome-jk-bms@main
-  mac_address: C8:47:80:1F:73:7B
-  protocol_version: JK02_32S
+external_components:
+  - source: github://syssi/esphome-jk-bms@main
+    refresh: always
 
-esphome:
-  name: ${name}
-  friendly_name: ${device_description}
+substitutions:
+  name: "jkbms"
+  device_name: "powmrbms"
+  node_name: "powmrbms"
+  node_id: powmrbms
+  inverter_tx_pin: GPIO20
+  inverter_rx_pin: GPIO21
+  inverter_voltage_offset: "0"
+  update_interval: 30s # Minimum 10s recommended to avoid duplicate command errors
+  select_skip_updates: "2"
+  jk_bms_name: "jkbms"
+  jk_bms_description: "JKBMSble"
+  jk_bms_mac_address: "C8:47:80:1F:73:7B"  # Замени на MAC-адрес твоего JK-BMS
+  jk_bms_protocol_version: "JK02_32S"
 
 esp32:
   board: esp32-c3-devkitm-1
   framework:
     type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP32_WIFI_SW_COEXIST_ENABLE: y  # Включение коэкзистенции
 
-external_components:
-  - source: ${external_components_source}
-    refresh: 0s
+packages:
+  main: !include powmrbms/main.yaml
+  # You can replace next 2 lines with your common configs for all devices
+  common_system: !include powmrbms/common_system.yaml
+  common_sensors: !include powmrbms/common_sensors.yaml
 
-# Enable logging
 logger:
+  level: WARN
+  logs:
+    component: ERROR # Fix for issue #4717 "Component xxxxxx took a long time for an operation"
 
-# Enable Home Assistant API
-api:
-  encryption:
-    key: "G4SltXFE3eCs+XZ1vQgTkb0b8Au/zBvAJxgsRO5Hm28="
+time:
+  - platform: homeassistant
+    id: hass_time
 
-ota:
-  - platform: esphome
-    password: "2d269fccec836737e0814616e03db82d"
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "Jk-Bms Fallback Hotspot"
-    password: "yYnaXEo3PNzs"
-
-captive_portal:
-
-web_server:   #ВЕБСЕРВЕР ЗРУЧНО ДЛЯ ПОЧАТКОВИХ НАЛАШТУВАНЬ. ПОТІМ МОЖНА ПРИБРАТИ
+web_server:
   port: 80
+#  ota: false
 
-  
 esp32_ble_tracker:
   on_ble_advertise:
     then:
@@ -60,12 +58,12 @@ esp32_ble_tracker:
           }
 
 ble_client:
-  - mac_address: ${mac_address}
+  - mac_address: ${jk_bms_mac_address}
     id: client0
 
 jk_bms_ble:
   - ble_client_id: client0
-    protocol_version: ${protocol_version}
+    protocol_version: ${jk_bms_protocol_version}
     throttle: 5s
     id: bms0
 

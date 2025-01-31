@@ -41,8 +41,8 @@ web_server:   #ВЕБСЕРВЕР ЗРУЧНО ДЛЯ ПОЧАТКОВИХ НА�
 
 uart:
   id: uart_bus
-  tx_pin: GPIO16
-  rx_pin: GPIO17
+  tx_pin: GPIO20
+  rx_pin: GPIO21
   baud_rate: 256000 # Change this according to your setting
   parity: NONE
   stop_bits: 1
@@ -99,6 +99,20 @@ sensor:
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
     device_class: ""
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
 
 number:        
   - platform: template
@@ -139,7 +153,6 @@ number:
           auto uart_component = static_cast<LD2410 *>(ld2410);
           uart_component->setMaxDistancesAndNoneDuration(id(maxMovingDistanceRange).state,id(maxStillDistanceRange).state,x);
       
-
 button:
   - platform: template
     name: "Reboot LD2410"
