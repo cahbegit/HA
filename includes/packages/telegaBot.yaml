@@ -1,18 +1,16 @@
-automation:
-  # Автоматизация для команды /start
-  - id: telegram-control-panel-start
-    alias: "Telegram Control Panel Command"
-    initial_state: on
-    trigger:
-      platform: event
-      event_type: telegram_command
-      event_data:
-        command: "/start"
-    action:
-      - service: telegram_bot.send_message
-        data_template:
-          target: "{{ trigger.event.data.user_id }}"
-          message: >
+- id: telegram-control-pannel-start
+  alias: 'Telegram Control Pannel Command'
+  initial_state: on
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data:
+      command: '/start'
+  action:
+  - service: telegram_bot.send_message
+    data_template:
+        target: '{{ trigger.event.data.user_id }}'
+        message: >
             {{ [
             "Пріветікі",
             "До зірок",
@@ -24,27 +22,27 @@ automation:
             "Паєхалі",
             "хелло аміго",
             "Буенос ночес!"
-            ] | random }}
-          data:
-            inline_keyboard:
-              - '{{"\U0001F4A1"}} Lights:/lights, {{"\u2753"}} Status:/sstatus, {{"\u26D4"}} Security:/security'
-              - '{{"\U0001F6E0"}} System:/system, {{"\U0001F501"}} Ping:/ping, {{"\U0001F4CC"}} User location:/location '
-              - '{{"\U0001F324"}} Weather:/weather, {{"\U0001F4B5"}} Shopping:/shoppinglist'
-
-  # Автоматизация для обратного вызова /weather
-  - alias: "IK - Telegram - status weather"
+            ] | random }}       
+        data:
+        inline_keyboard:
+          - '{{"\U0001F4A1"}} Lights:/lights, {{"\u2753"}} Status:/sstatus, {{"\u26D4"}} Security:/security'
+          - '{{"\U0001F6E0"}} System:/system, {{"\U0001F501"}} Ping:/ping, {{"\U0001F4CC"}} User location:/location '
+          - '{{"\U0001F324"}} Weather:/weather, {{"\U0001F4B5"}} Shoping :/shopinglist'
+  - id: telegram-status-weather
+    alias: 'IK - Telegram - status weather'
+    initial_state: on
     trigger:
       platform: event
       event_type: telegram_callback
       event_data:
-        data: "/weather"
+        data: '/weather'
     action:
       - service: telegram_bot.edit_message
         data_template:
-          message_id: "last"
-          chat_id: "{{ trigger.event.data.user_id }}"
+          message_id: 'last'
+          chat_id: '{{ trigger.event.data.user_id }}'
           title: '{{"\U0001F324"}} *Weather*'
-          message: |
+          message: | 
             {{"\U0001F3E0"}} Клімат, звіт за {{ states('sensor.time_date') }}
             {{"\U0001F321"}} Температура - {{ states('sensor.openweathermap_temperature') }} C
             {{"\U0001F32B"}} Вологість - {{ states('sensor.openweathermap_humidity') }} %
@@ -52,6 +50,6 @@ automation:
             {{"\U00002600"}} Погода - {{ states('sensor.openweathermap_weather') }}
             {{"\U00002B50"}} Прогноз на сьогодні - {{ states('sensor.openweathermap_forecast_temperature') }} C
             {{"\U0001F327"}} Прогноз дощу - {{ states('sensor.openweathermap_rain') }}
-            {{"\U0001F328"}} Прогноз снігу - {{ states('sensor.openweathermap_snow') }}
+            {{"\U0001F328"}} Прогноз снігу - {{ states('sensor.openweathermap_snow') }}  
           inline_keyboard:
-            - '{{ "\u21a9\ufe0f" }} Панель керування:/to_cp'
+            - '{{ "\u21a9\ufe0f" }} Панель керування:/to_cp'          
