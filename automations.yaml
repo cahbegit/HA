@@ -254,6 +254,5 @@
             Нет включённых лампочек.
           {% endif %}
         inline_keyboard:
-          - [ 
-              { "Назад": "Панель управления", "callback_data": "/start" }
-            ]
+          - 
+            - { "text": "Назад", "callback_data": "/start" }
