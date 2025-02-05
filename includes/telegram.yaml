@@ -1,0 +1,5 @@
+  - platform: polling
+    api_key: 7670837761:AAHXSTn4n6V-Md1LE6rmToG9d5kzVgG6Ibw #Токен
+    allowed_chat_ids:
+      - 506234553		# telegram ID, що матиме доступ до бота
+      - 2222222222		# telegram ID, що матиме доступ до бота
