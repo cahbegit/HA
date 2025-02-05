@@ -1,6 +1,6 @@
   - name: telegram_cahbe
     platform: telegram
-    chat_id: 11111111		# telegram ID
+    chat_id: 506234553		# telegram ID
   - name: telegram_Len
     platform: telegram
     chat_id: 2222222222		# telegram ID

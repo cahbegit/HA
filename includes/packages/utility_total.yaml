@@ -367,7 +367,7 @@ utility_total:
                   - condition: template
                     value_template: '{{ now().day == 1 }}'        
                 sequence:        
-                  - service: notify.telegram_id_1
+                  - service: notify.telegram_cahbe
                     data:
                       message: | 
                          {{"\U0001F4C5"}} Начался новый месяц - {{ states('sensor.month') }}
@@ -383,7 +383,7 @@ utility_total:
                   - condition: trigger
                     id: forcibly  
                 sequence:        
-                  - service: notify.telegram_id_1
+                  - service: notify.telegram_cahbe
                     data:
                       message: | 
                          {{"\U0001F4C5"}} {{as_timestamp(now()) | int | timestamp_custom("%H:%M:%S %d.%m.%Y") }}
