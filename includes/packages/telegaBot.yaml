@@ -28,28 +28,28 @@
           - '{{"\U0001F4A1"}} Lights:/lights, {{"\u2753"}} Status:/sstatus, {{"\u26D4"}} Security:/security'
           - '{{"\U0001F6E0"}} System:/system, {{"\U0001F501"}} Ping:/ping, {{"\U0001F4CC"}} User location:/location '
           - '{{"\U0001F324"}} Weather:/weather, {{"\U0001F4B5"}} Shoping :/shopinglist'
-  - id: telegram-status-weather
-    alias: 'IK - Telegram - status weather'
-    initial_state: on
-    trigger:
-      platform: event
-      event_type: telegram_callback
-      event_data:
-        data: '/weather'
-    action:
-      - service: telegram_bot.edit_message
-        data_template:
-          message_id: 'last'
-          chat_id: '{{ trigger.event.data.user_id }}'
-          title: '{{"\U0001F324"}} *Weather*'
-          message: | 
-            {{"\U0001F3E0"}} Клімат, звіт за {{ states('sensor.time_date') }}
-            {{"\U0001F321"}} Температура - {{ states('sensor.openweathermap_temperature') }} C
-            {{"\U0001F32B"}} Вологість - {{ states('sensor.openweathermap_humidity') }} %
-            {{"\U0001F4AA"}} Тиск - {{ (states('sensor.openweathermap_pressure')|float * 0.7500637)|round(2) }} мм рт. ст
-            {{"\U00002600"}} Погода - {{ states('sensor.openweathermap_weather') }}
-            {{"\U00002B50"}} Прогноз на сьогодні - {{ states('sensor.openweathermap_forecast_temperature') }} C
-            {{"\U0001F327"}} Прогноз дощу - {{ states('sensor.openweathermap_rain') }}
-            {{"\U0001F328"}} Прогноз снігу - {{ states('sensor.openweathermap_snow') }}  
-          inline_keyboard:
-            - '{{ "\u21a9\ufe0f" }} Панель керування:/to_cp'          
+- id: telegram-status-weather
+  alias: 'IK - Telegram - status weather'
+  initial_state: on
+  trigger:
+    platform: event
+    event_type: telegram_callback
+    event_data:
+      data: '/weather'
+  action:
+    - service: telegram_bot.edit_message
+      data_template:
+        message_id: 'last'
+        chat_id: '{{ trigger.event.data.user_id }}'
+        title: '{{"\U0001F324"}} *Weather*'
+        message: | 
+          {{"\U0001F3E0"}} Клімат, звіт за {{ states('sensor.time_date') }}
+          {{"\U0001F321"}} Температура - {{ states('sensor.openweathermap_temperature') }} C
+          {{"\U0001F32B"}} Вологість - {{ states('sensor.openweathermap_humidity') }} %
+          {{"\U0001F4AA"}} Тиск - {{ (states('sensor.openweathermap_pressure')|float * 0.7500637)|round(2) }} мм рт. ст
+          {{"\U00002600"}} Погода - {{ states('sensor.openweathermap_weather') }}
+          {{"\U00002B50"}} Прогноз на сьогодні - {{ states('sensor.openweathermap_forecast_temperature') }} C
+          {{"\U0001F327"}} Прогноз дощу - {{ states('sensor.openweathermap_rain') }}
+          {{"\U0001F328"}} Прогноз снігу - {{ states('sensor.openweathermap_snow') }}  
+        inline_keyboard:
+          - '{{ "\u21a9\ufe0f" }} Панель керування:/to_cp'          
