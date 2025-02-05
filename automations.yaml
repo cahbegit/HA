@@ -119,3 +119,39 @@
     entity_id: 26005799a4cbaf2395ba6787528c9073
     domain: switch
   mode: single
+- id: '1738685065988'
+  alias: Ночное проветривание кондиционеров (тихо)
+  description: ''
+  triggers:
+  - at: '23:10:00'
+    trigger: time
+  - at: 02:00:00
+    trigger: time
+  - at: 05:00:00
+    trigger: time
+  actions:
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      preset_mode: sleep
+    action: climate.set_preset_mode
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      fan_mode: low
+    action: climate.set_fan_mode
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      hvac_mode: fan_only
+    action: climate.set_hvac_mode
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      hvac_mode: 'off'
+    action: climate.set_hvac_mode
+  mode: single

@@ -1,184 +1,202 @@
 esphome:
-  name: testmotion
-  friendly_name: TestMotion
-  includes:
-    - ld2410_uart.h
-  on_boot:
-    priority: 600
-    # ...
-    then:
-      - lambda: |-
-          auto uart_component = static_cast<LD2410 *>(ld2410);
-          uart_component->setNumbers(maxMovingDistanceRange, maxStillDistanceRange, noneDuration);
+  name: esp32-c3-devkitc-02v11-ld2410c
+  friendly_name: esp32-c3-devkitc-02v1.1-ld2410c
 
 esp32:
-  board: esp32dev
+  board: esp32-c3-devkitm-1
   framework:
     type: arduino
 
+# Enable logging
 logger:
   baud_rate: 0
-  logs:
-    sensor: INFO # DEBUG level with uart_target_output = overload!
-    binary_sensor: INFO
-    text_sensor: INFO
 
+# Enable Home Assistant API
 api:
   encryption:
-    key: "e4y409TGTTOX2k4PtSC/5cEWXMwxdw3Lz2uH5vUea2M="
+    key: "z7JrvqesDeAZQ6c6+7A2w9TcKC+s9qj/9BWfslqJFnY="
+
 ota:
-  - platform: esphome
-    password: "65cac7ee447f7f538a15d93e1ce80843"
+  password: "01c8b4bf1b29f59dfa18d55baf03bcd8"
 
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-C3-Devkitc-02V11-Ld2410C"
+    password: "aYKcdCOF210T"
+
 captive_portal:
 
-web_server:   #ВЕБСЕРВЕР ЗРУЧНО ДЛЯ ПОЧАТКОВИХ НАЛАШТУВАНЬ. ПОТІМ МОЖНА ПРИБРАТИ
-  port: 80  
-
 uart:
-  id: uart_bus
-  tx_pin: GPIO20
-  rx_pin: GPIO21
-  baud_rate: 256000 # Change this according to your setting
-  parity: NONE
+  id: ld2410_uart
+  tx_pin: GPIO4
+  rx_pin: GPIO5
+  baud_rate: 256000
+  data_bits: 8
   stop_bits: 1
-      
-custom_component:
-  - lambda: |-
-      return {new LD2410(id(uart_bus))};
-    components:
-      - id: ld2410
-      
+  parity: NONE
+
+ld2410:
+  uart_id: ld2410_uart
+
 binary_sensor:
-  - platform: custom
-    lambda: |-
-      auto uart_component = static_cast<LD2410 *>(ld2410);
-      return {uart_component->hasTarget,uart_component->hasMovingTarget,uart_component->hasStillTarget,uart_component->lastCommandSuccess};
-    binary_sensors:
-      - name: "Has Target"
-      - name: "Has Moving Target"
-      - name: "Has Still Target"
-      - name: "Last Command Success"
-  
+  - platform: ld2410
+    has_target:
+      name: Presence
+    has_moving_target:
+      name: Moving Target
+    has_still_target:
+      name: Still Target
+
+switch:
+  - platform: ld2410
+    engineering_mode:
+      name: "engineering mode"
+    bluetooth:
+      name: "control bluetooth"
+
 sensor:
-  - platform: custom
-    lambda: |-
-      auto uart_component = static_cast<LD2410 *>(ld2410);
-      return {uart_component->movingTargetDistance,uart_component->movingTargetEnergy,uart_component->stillTargetDistance,uart_component->stillTargetEnergy,uart_component->detectDistance};
-    sensors:
-      - name: "Moving Target Distance"
-        unit_of_measurement: "cm"
-        accuracy_decimals: 0
-      - name: "Moving Target Energy"
-        unit_of_measurement: "%"
-        accuracy_decimals: 0
-      - name: "Still Target Distance"
-        unit_of_measurement: "cm"
-        accuracy_decimals: 0
-      - name: "Still Target Energy"
-        unit_of_measurement: "%"
-        accuracy_decimals: 0
-      - name: "Detect Distance"
-        unit_of_measurement: "cm"
-        accuracy_decimals: 0
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
-    name: "WiFi Signal dB"
-    id: wifi_signal_db
-    update_interval: 60s
-    entity_category: "diagnostic"
+  - platform: ld2410
+    light:
+      name: light
+    moving_distance:
+      name : Moving Distance
+    still_distance:
+      name: Still Distance
+    moving_energy:
+      name: Move Energy
+    still_energy:
+      name: Still Energy
+    detection_distance:
+      name: Detection Distance
+    g0:
+      move_energy:
+        name: g0 move energy
+      still_energy:
+        name: g0 still energy
+    g1:
+      move_energy:
+        name: g1 move energy
+      still_energy:
+        name: g1 still energy
+    g2:
+      move_energy:
+        name: g2 move energy
+      still_energy:
+        name: g2 still energy
+    g3:
+      move_energy:
+        name: g3 move energy
+      still_energy:
+        name: g3 still energy
+    g4:
+      move_energy:
+        name: g4 move energy
+      still_energy:
+        name: g4 still energy
+    g5:
+      move_energy:
+        name: g5 move energy
+      still_energy:
+        name: g5 still energy
+    g6:
+      move_energy:
+        name: g6 move energy
+      still_energy:
+        name: g6 still energy
+    g7:
+      move_energy:
+        name: g7 move energy
+      still_energy:
+        name: g7 still energy
+    g8:
+      move_energy:
+        name: g8 move energy
+      still_energy:
+        name: g8 still energy
 
-  - platform: copy # Reports the WiFi signal strength in %
-    source_id: wifi_signal_db
-    name: "WiFi Signal Percent"
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
-    entity_category: "diagnostic"
-    device_class: ""
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
-    name: "WiFi Signal dB"
-    id: wifi_signal_db
-    update_interval: 60s
-    entity_category: "diagnostic"
+number:
+  - platform: ld2410
+    timeout:
+      name: timeout
+    light_threshold:
+      name: light threshold
+    max_move_distance_gate:
+      name: max move distance gate
+    max_still_distance_gate:
+      name: max still distance gate
+    g0:
+      move_threshold:
+        name: g0 move threshold
+      still_threshold:
+        name: g0 still threshold
+    g1:
+      move_threshold:
+        name: g1 move threshold
+      still_threshold:
+        name: g1 still threshold
+    g2:
+      move_threshold:
+        name: g2 move threshold
+      still_threshold:
+        name: g2 still threshold
+    g3:
+      move_threshold:
+        name: g3 move threshold
+      still_threshold:
+        name: g3 still threshold
+    g4:
+      move_threshold:
+        name: g4 move threshold
+      still_threshold:
+        name: g4 still threshold
+    g5:
+      move_threshold:
+        name: g5 move threshold
+      still_threshold:
+        name: g5 still threshold
+    g6:
+      move_threshold:
+        name: g6 move threshold
+      still_threshold:
+        name: g6 still threshold
+    g7:
+      move_threshold:
+        name: g7 move threshold
+      still_threshold:
+        name: g7 still threshold
+    g8:
+      move_threshold:
+        name: g8 move threshold
+      still_threshold:
+        name: g8 still threshold
 
-  - platform: copy # Reports the WiFi signal strength in %
-    source_id: wifi_signal_db
-    name: "WiFi Signal Percent"
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
-    entity_category: "diagnostic"
-    device_class: ""
-
-number:        
-  - platform: template
-    name: "Max Moving Distance Range"
-    id: maxMovingDistanceRange
-    min_value: 1
-    max_value: 8
-    step: 1
-    update_interval: never
-    optimistic: true
-    set_action:
-      - lambda: |-
-          auto uart_component = static_cast<LD2410 *>(ld2410);
-          uart_component->setMaxDistancesAndNoneDuration(x,id(maxStillDistanceRange).state,id(noneDuration).state);
-  - platform: template
-    name: "Max Still Distance Range"
-    id: maxStillDistanceRange
-    min_value: 1
-    max_value: 8
-    step: 1
-    update_interval: never
-    optimistic: true
-    set_action:
-      - lambda: |-
-          auto uart_component = static_cast<LD2410 *>(ld2410);
-          uart_component->setMaxDistancesAndNoneDuration(id(maxMovingDistanceRange).state,x,id(noneDuration).state);
-  - platform: template
-    name: "None Duration"
-    id: noneDuration
-    min_value: 0
-    max_value: 32767
-    step: 1
-    mode: box
-    update_interval: never
-    optimistic: true
-    set_action:
-      - lambda: |-
-          auto uart_component = static_cast<LD2410 *>(ld2410);
-          uart_component->setMaxDistancesAndNoneDuration(id(maxMovingDistanceRange).state,id(maxStillDistanceRange).state,x);
-      
 button:
-  - platform: template
-    name: "Reboot LD2410"
-    on_press:
-      lambda: 'static_cast<LD2410 *>(ld2410)->reboot();'
-  - platform: template
-    name: "Turn on config mode"
-    on_press:
-      - lambda: 'static_cast<LD2410 *>(ld2410)->setConfigMode(true);'
-  - platform: template
-    name: "Turn off config mode"
-    on_press:
-      - lambda: 'static_cast<LD2410 *>(ld2410)->setConfigMode(false);'
-  - platform: template
-    name: "Get config"
-    on_press:
-      - lambda: 'static_cast<LD2410 *>(ld2410)->queryParameters();'
-  - platform: template
-    name: "Set baud rate to 256000"
-    on_press:
-      - lambda: 'static_cast<LD2410 *>(ld2410)->setBaudrate(7);'
-  - platform: template
-    name: "Set baud rate to 115200"
-    on_press:
-      - lambda: 'static_cast<LD2410 *>(ld2410)->setBaudrate(5);'
-  - platform: template
-    name: "Set baud rate to 9600"
-    on_press:
-      - lambda: 'static_cast<LD2410 *>(ld2410)->setBaudrate(1);'
+  - platform: ld2410
+    factory_reset:
+      name: "factory reset"
+    restart:
+      name: "restart"
+    query_params:
+      name: query params
+
+text_sensor:
+  - platform: ld2410
+    version:
+      name: "firmware version"
+    mac_address:
+      name: "mac address"
+
+select:
+  - platform: ld2410
+    distance_resolution:
+      name: "distance resolution"
+    baud_rate:
+      name: "baud rate"
+    light_function:
+      name: light function
+    out_pin_level:
+      name: out pin level

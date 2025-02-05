@@ -21,8 +21,6 @@ esp32:
   board: esp32-c3-devkitm-1
   framework:
     type: esp-idf
-    sdkconfig_options:
-      CONFIG_ESP32_WIFI_SW_COEXIST_ENABLE: y  # Включение коэкзистенции
 
 packages:
   main: !include powmrbms/main.yaml
@@ -232,15 +230,6 @@ sensor:
     id: wifi_signal_db
     update_interval: 60s
     entity_category: "diagnostic"
-
-  - platform: copy # Reports the WiFi signal strength in %
-    source_id: wifi_signal_db
-    name: "WiFi Signal Percent"
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
-    entity_category: "diagnostic"
-    device_class: ""
 
 switch:
   - platform: jk_bms_ble
