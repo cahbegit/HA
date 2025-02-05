@@ -85,30 +85,7 @@ utility_worlplace:
                    states('sensor.workplace_day')|float(0) +
                    states('sensor.workplace_night')|float(0)
                   )|round(2)}}
-      
-          - name: workplace_clear_cost
-            state: >
-                {{(
-                   states('sensor.workplace_day_cost')|float(0) +
-                   states('sensor.workplace_night_cost')|float(0)
-                  )|round(2)}}
 
-          - name: workplace_day_cost
-            state: >
-                {% if states('sensor.meter_total_energy_clear')|float <= states('input_text.consumption_limit')|float %}
-                {{ states('sensor.workplace_day')|float * states('input_text.in_limit')|float }}
-                {% else  %}
-                {{ states('sensor.workplace_day')|float * states('input_text.off_limit')|float }}
-                {% endif %}
-                
-          - name: workplace_night_cost
-            state: >
-                {% if states('sensor.meter_total_energy_clear')|float <= states('input_text.consumption_limit')|float %}
-                {{ states('sensor.workplace_night')|float * states('input_text.in_limit')|float * states('input_text.night_coefficient')|float }}
-                {% else  %}
-                {{ states('sensor.workplace_night')|float * states('input_text.off_limit')|float * states('input_text.night_coefficient')|float }}
-                {% endif %}
-        
     automation:
     
       - alias: workplace_calibrate

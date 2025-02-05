@@ -166,7 +166,7 @@ utility_total:
             state: >
                 {{(
                    states('sensor.all_in_pro_energy')|float(0) +
-                   states('sensor.sensor.holodilnik_energy')|float(0) +
+                   states('sensor.holodilnik_energy')|float(0) +
                    states('sensor.svet_pitanie_energy')|float(0)
                   )|round(2)}}
                   
