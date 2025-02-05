@@ -1,4 +1,5 @@
-utility_KS:
+utility_kz:
+  
   homeassistant:
     customize:
       sensor.kondei_zal_power_2:

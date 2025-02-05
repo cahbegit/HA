@@ -1,4 +1,5 @@
-utility_KS:
+utility_ks:
+  
   homeassistant:
     customize:
       sensor.kondei_spalnia_power_2:

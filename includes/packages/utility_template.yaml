@@ -1,4 +1,5 @@
 utility_template:
+  
     template:
       - binary_sensor:
           - name: "Саша дома"
