@@ -1,103 +1,104 @@
-homeassistant:
-  customize:
-    sensor.kondei_spalnia_power_2:
-      friendly_name: Кондиционер спальня мощность
-      unit_of_measurement: Вт
-      device_class: power
-      icon: mdi:air-conditioner
-    sensor.kondei_spalnia_energy:
-      friendly_name: Кондиционер спальня энергия
-      icon: mdi:chart-line
+utility_KS:
+  homeassistant:
+    customize:
+      sensor.kondei_spalnia_power_2:
+        friendly_name: Кондиционер спальня мощность
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:air-conditioner
+      sensor.kondei_spalnia_energy:
+        friendly_name: Кондиционер спальня энергия
+        icon: mdi:chart-line
 
-    sensor.kondei_spalnia_clear:
-      friendly_name: Кондиционер спальня всего
-      icon: mdi:air-conditioner
-      unit_of_measurement: кВт/ч
-    sensor.kondei_spalnia_day:
-      friendly_name: Кондиционер спальня день
+      sensor.kondei_spalnia_clear:
+        friendly_name: Кондиционер спальня всего
+        icon: mdi:air-conditioner
+        unit_of_measurement: кВт/ч
+      sensor.kondei_spalnia_day:
+        friendly_name: Кондиционер спальня день
+        icon: mdi:white-balance-sunny
+        unit_of_measurement: кВт/ч
+      sensor.kondei_spalnia_night:
+        friendly_name: Кондиционер спальня ночь
+        icon: mdi:moon-waning-crescent
+        unit_of_measurement: кВт/ч
+
+  utility_meter:
+    kondei_spalnia:
+      source: sensor.kondei_spalnia_energy
+      cycle: monthly
+      offset:
+        days: 0
+        hours: 12
+        minutes: 0
+      tariffs:
+        - night
+        - day
+
+  sensor:
+    - platform: integration
+      name: 'kondei_spalnia_energy'
+      source: sensor.kondei_spalnia_power_2
+      unit_prefix: k
+      method: left
+      round: 2
+
+  input_text:
+    kondei_spalnia_day:
+      name: Кондиционер спальня день
+    kondei_spalnia_night:
+      name: Кондиционер спальня ночь
+
+  input_button:
+    kondei_spalnia_day:
+      name: Кондиционер спальня день
       icon: mdi:white-balance-sunny
-      unit_of_measurement: кВт/ч
-    sensor.kondei_spalnia_night:
-      friendly_name: Кондиционер спальня ночь
+    kondei_spalnia_night:
+      name: Кондиционер спальня ночь
       icon: mdi:moon-waning-crescent
-      unit_of_measurement: кВт/ч
 
-utility_meter:
-  kondei_spalnia:
-    source: sensor.kondei_spalnia_energy
-    cycle: monthly
-    offset:
-      days: 0
-      hours: 12
-      minutes: 0
-    tariffs:
-      - night
-      - day
+  template:
+    - sensor:
+        - name: kondei_spalnia_clear
+          state: >
+            {{(
+              states('sensor.kondei_spalnia_day')|float(0) +
+              states('sensor.kondei_spalnia_night')|float(0)
+            )|round(2)}}
 
-sensor:
-  - platform: integration
-    name: 'kondei_spalnia_energy'
-    source: sensor.kondei_spalnia_power_2
-    unit_prefix: k
-    method: left
-    round: 2
-
-input_text:
-  kondei_spalnia_day:
-    name: Кондиционер спальня день
-  kondei_spalnia_night:
-    name: Кондиционер спальня ночь
-
-input_button:
-  kondei_spalnia_day:
-    name: Кондиционер спальня день
-    icon: mdi:white-balance-sunny
-  kondei_spalnia_night:
-    name: Кондиционер спальня ночь
-    icon: mdi:moon-waning-crescent
-
-template:
-  - sensor:
-      - name: kondei_spalnia_clear
-        state: >
-          {{(
-            states('sensor.kondei_spalnia_day')|float(0) +
-            states('sensor.kondei_spalnia_night')|float(0)
-          )|round(2)}}
-
-automation:
-  - alias: kondei_spalnia_calibrate
-    id: kondei_spalnia_calibrate
-    description: Калибровка потребления кондиционера в спальне
-    initial_state: true
-    trigger:
-      - platform: state
-        entity_id: input_button.kondei_spalnia_day
-        id: kondei_spalnia_day
-      - platform: state
-        entity_id: input_button.kondei_spalnia_night
-        id: kondei_spalnia_night
-    action:
-      - choose:
-        - conditions:
-            - condition: trigger
-              id: kondei_spalnia_day
-          sequence:
-            - service: utility_meter.calibrate
-              data_template:
-                value: >
-                  {{ states('input_text.kondei_spalnia_day')|float }}
-              target:
-                entity_id:
-                  - sensor.kondei_spalnia_day
-        - conditions:
-            - condition: trigger
-              id: kondei_spalnia_night
-          sequence:
-            - service: utility_meter.calibrate
-              data_template:
-                value: >
-                  {{ states('input_text.kondei_spalnia_night')|float }}
-              target:
-                entity_id:
-                  - sensor.kondei_spalnia_night
+  automation:
+    - alias: kondei_spalnia_calibrate
+      id: kondei_spalnia_calibrate
+      description: Калибровка потребления кондиционера в спальне
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: input_button.kondei_spalnia_day
+          id: kondei_spalnia_day
+        - platform: state
+          entity_id: input_button.kondei_spalnia_night
+          id: kondei_spalnia_night
+      action:
+        - choose:
+          - conditions:
+              - condition: trigger
+                id: kondei_spalnia_day
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{ states('input_text.kondei_spalnia_day')|float }}
+                target:
+                  entity_id:
+                    - sensor.kondei_spalnia_day
+          - conditions:
+              - condition: trigger
+                id: kondei_spalnia_night
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{ states('input_text.kondei_spalnia_night')|float }}
+                target:
+                  entity_id:
+                    - sensor.kondei_spalnia_night

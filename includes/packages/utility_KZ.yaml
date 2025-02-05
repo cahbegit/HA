@@ -1,103 +1,104 @@
-homeassistant:
-  customize:
-    sensor.kondei_zal_power_2:
-      friendly_name: Кондиционер зал мощность
-      unit_of_measurement: Вт
-      device_class: power
-      icon: mdi:air-conditioner
-    sensor.kondei_zal_energy:
-      friendly_name: Кондиционер зал энергия
-      icon: mdi:chart-line
+utility_KS:
+  homeassistant:
+    customize:
+      sensor.kondei_zal_power_2:
+        friendly_name: Кондиционер зал мощность
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:air-conditioner
+      sensor.kondei_zal_energy:
+        friendly_name: Кондиционер зал энергия
+        icon: mdi:chart-line
 
-    sensor.kondei_zal_clear:
-      friendly_name: Кондиционер зал всего
-      icon: mdi:air-conditioner
-      unit_of_measurement: кВт/ч
-    sensor.kondei_zal_day:
-      friendly_name: Кондиционер зал день
+      sensor.kondei_zal_clear:
+        friendly_name: Кондиционер зал всего
+        icon: mdi:air-conditioner
+        unit_of_measurement: кВт/ч
+      sensor.kondei_zal_day:
+        friendly_name: Кондиционер зал день
+        icon: mdi:white-balance-sunny
+        unit_of_measurement: кВт/ч
+      sensor.kondei_zal_night:
+        friendly_name: Кондиционер зал ночь
+        icon: mdi:moon-waning-crescent
+        unit_of_measurement: кВт/ч
+
+  utility_meter:
+    kondei_zal:
+      source: sensor.kondei_zal_energy
+      cycle: monthly
+      offset:
+        days: 0
+        hours: 12
+        minutes: 0
+      tariffs:
+        - night
+        - day
+
+  sensor:
+    - platform: integration
+      name: 'kondei_zal_energy'
+      source: sensor.kondei_zal_power_2
+      unit_prefix: k
+      method: left
+      round: 2
+
+  input_text:
+    kondei_zal_day:
+      name: Кондиционер зал день
+    kondei_zal_night:
+      name: Кондиционер зал ночь
+
+  input_button:
+    kondei_zal_day:
+      name: Кондиционер зал день
       icon: mdi:white-balance-sunny
-      unit_of_measurement: кВт/ч
-    sensor.kondei_zal_night:
-      friendly_name: Кондиционер зал ночь
+    kondei_zal_night:
+      name: Кондиционер зал ночь
       icon: mdi:moon-waning-crescent
-      unit_of_measurement: кВт/ч
 
-utility_meter:
-  kondei_zal:
-    source: sensor.kondei_zal_energy
-    cycle: monthly
-    offset:
-      days: 0
-      hours: 12
-      minutes: 0
-    tariffs:
-      - night
-      - day
+  template:
+    - sensor:
+        - name: kondei_zal_clear
+          state: >
+            {{(
+              states('sensor.kondei_zal_day')|float(0) +
+              states('sensor.kondei_zal_night')|float(0)
+            )|round(2)}}
 
-sensor:
-  - platform: integration
-    name: 'kondei_zal_energy'
-    source: sensor.kondei_zal_power_2
-    unit_prefix: k
-    method: left
-    round: 2
-
-input_text:
-  kondei_zal_day:
-    name: Кондиционер зал день
-  kondei_zal_night:
-    name: Кондиционер зал ночь
-
-input_button:
-  kondei_zal_day:
-    name: Кондиционер зал день
-    icon: mdi:white-balance-sunny
-  kondei_zal_night:
-    name: Кондиционер зал ночь
-    icon: mdi:moon-waning-crescent
-
-template:
-  - sensor:
-      - name: kondei_zal_clear
-        state: >
-          {{(
-            states('sensor.kondei_zal_day')|float(0) +
-            states('sensor.kondei_zal_night')|float(0)
-          )|round(2)}}
-
-automation:
-  - alias: kondei_zal_calibrate
-    id: kondei_zal_calibrate
-    description: Калибровка потребления кондиционера в зале
-    initial_state: true
-    trigger:
-      - platform: state
-        entity_id: input_button.kondei_zal_day
-        id: kondei_zal_day
-      - platform: state
-        entity_id: input_button.kondei_zal_night
-        id: kondei_zal_night
-    action:
-      - choose:
-        - conditions:
-            - condition: trigger
-              id: kondei_zal_day
-          sequence:
-            - service: utility_meter.calibrate
-              data_template:
-                value: >
-                  {{ states('input_text.kondei_zal_day')|float }}
-              target:
-                entity_id:
-                  - sensor.kondei_zal_day
-        - conditions:
-            - condition: trigger
-              id: kondei_zal_night
-          sequence:
-            - service: utility_meter.calibrate
-              data_template:
-                value: >
-                  {{ states('input_text.kondei_zal_night')|float }}
-              target:
-                entity_id:
-                  - sensor.kondei_zal_night
+  automation:
+    - alias: kondei_zal_calibrate
+      id: kondei_zal_calibrate
+      description: Калибровка потребления кондиционера в зале
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: input_button.kondei_zal_day
+          id: kondei_zal_day
+        - platform: state
+          entity_id: input_button.kondei_zal_night
+          id: kondei_zal_night
+      action:
+        - choose:
+          - conditions:
+              - condition: trigger
+                id: kondei_zal_day
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{ states('input_text.kondei_zal_day')|float }}
+                target:
+                  entity_id:
+                    - sensor.kondei_zal_day
+          - conditions:
+              - condition: trigger
+                id: kondei_zal_night
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{ states('input_text.kondei_zal_night')|float }}
+                target:
+                  entity_id:
+                    - sensor.kondei_zal_night
