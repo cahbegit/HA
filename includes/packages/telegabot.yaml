@@ -102,9 +102,8 @@ telegram_control:
               {% else %}
                 {{'\U0001F6AB'}} Нет включённых лампочек.
               {% endif %}
-            inline_keyboard:
-              - [ { "Назад": "/start" } ]
-
+            inline_keyboard: &keyb_bn
+                      - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/balkon_control'
 
     ## Управление коридор
     - id: коридор меню управления телеграм
