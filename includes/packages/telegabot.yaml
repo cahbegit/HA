@@ -15,7 +15,7 @@ telegram_control:
             message: |
               {{'\U0001F527'}} Выбрать комнату для управления :
             inline_keyboard:
-              - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Санузел:/vanna_control'
+              - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Туалет:/vanna_control'
               - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
               - '{{''\U0001F309''}} Балкон:/balkon_control'
               - '{{''\U0001F3A5''}} Свет:/lights'
@@ -54,7 +54,7 @@ telegram_control:
                     message: |
                       {{'\U0001F527'}} Выбрать комнату для управления :
                     inline_keyboard:
-                      - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Санузел:/vanna_control'
+                      - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Туалет:/vanna_control'
                       - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
                       - '{{''\U0001F309''}} Балкон:/balkon_control'
                       - '{{''\U0001F3A5''}} Свет:/lights'
@@ -346,12 +346,12 @@ telegram_control:
                 - data:
                     target: "{{ trigger.event.data.chat_id }}"
                     message: >
-                      {{'\U0001F309'}} Управление балкон :
+                      {{'\U0001F309'}} Балкон :
 
                       Балкон -
 
-                      {{'\U0001F321'}} - {{"{{ states('sensor.ble_temperature_a4c138d94ccb') }} °C"}},
-                      {{'\U0001F4A7'}} - {{"{{ states('sensor.ble_humidity_a4c138d94ccb') }} %"}}
+                      {{'\U0001F321'}} - {{"{{ states('sensor.temperature_balkon_temperature') }} °C"}},
+                      {{'\U0001F4A7'}} - {{"{{ states('sensor.temperature_balkon_humidity') }} %"}}
                     inline_keyboard:
                       - >-
                         {{'\U000021A9'}} Вернуться:/menu_back , {{'\U000021AA'}} Обновить:/balkon_control
