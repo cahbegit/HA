@@ -7,7 +7,7 @@ telegram_control:
         - platform: event
           event_type: telegram_command
           event_data:
-            command: "/go"
+            command: "/start"
       action:
         - service: telegram_bot.send_message
           data:
@@ -18,7 +18,7 @@ telegram_control:
               - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Санузел:/vanna_control'
               - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
               - '{{''\U0001F309''}} Балкон:/balkon_control'
-              - '{{''\U0001F3A5''}} Видеозвонок:/send_videodoorbell'
+              - '{{''\U0001F3A5''}} Свет:/light'
               - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
 
     # ## Автоматизация управления главным меню
@@ -57,31 +57,53 @@ telegram_control:
                       - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Санузел:/vanna_control'
                       - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
                       - '{{''\U0001F309''}} Балкон:/balkon_control'
-                      - '{{''\U0001F3A5''}} Видеозвонок:/send_videodoorbell'
+                      - '{{''\U0001F3A5''}} Свет:/light'
                       - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
-    - id: Отправка видео
-      alias: telegram_send_videodoorbell_menu
-      initial_state: true
+    - id: telegram-status-lights
+      alias: 'IK - Telegram - статус лампочек'
+      initial_state: 'on'
       trigger:
-        - platform: event
-          event_type: telegram_callback
-          event_data: {}
+        platform: event
+        event_type: telegram_callback
+        event_data:
+          data: '/lights'  # <-- Теперь кнопка "Свет" вызовет эту команду
       action:
-        - choose:
-            - conditions:
-                - condition: template
-                  value_template: "{{ trigger.event.data.command == '/send_videodoorbell' }}"
-              sequence:
-                - service: telegram_bot.delete_message
-                  data_template:
-                    message_id: "{{ trigger.event.data.message.message_id }}"
-                    chat_id: "{{ trigger.event.data.chat_id }}"
-                - service: telegram_bot.send_video
-                  data:
-                    target: "{{ trigger.event.data.chat_id }}"
-                    caption: Видеозвонок
-                    url: >-
-                      http://192.168.31.30:1984/api/stream.mp4?src=aqara_g4&duration=15
+        - service: telegram_bot.edit_message
+          data_template:
+            message_id: '{{ trigger.event.data.message.message_id }}'
+            chat_id: '{{ trigger.event.data.chat_id }}'
+            message: |
+              {% set lights = [
+                {'entity': 'switch.1_ty_12z_switch_1', 'name': 'Коридор'},
+                {'entity': 'switch.1_ty_12z_switch_6', 'name': 'Спальня центр'},
+                {'entity': 'switch.1_ty_12z_switch_4', 'name': 'Зал центр'},
+                {'entity': 'switch.2_ty_12z_switch_1', 'name': 'Складовка'},
+                {'entity': 'switch.1_ty_12z_switch_5', 'name': 'Зал 2'},
+                {'entity': 'switch.2_ty_12z_switch_8', 'name': 'Зал балкон'},
+                {'entity': 'switch.1_ty_12z_switch_2', 'name': 'Вытяжка гардероб'},
+                {'entity': 'switch.1_ty_12z_switch_3', 'name': 'Вытяжка ванна'},
+                {'entity': 'switch.2_ty_12z_switch_7', 'name': 'Кухня балкон'},
+                {'entity': 'switch.2_ty_12z_switch_5', 'name': 'Кухня'},
+                {'entity': 'switch.2_ty_12z_switch_2', 'name': 'Ванна 1'},
+                {'entity': 'switch.2_ty_12z_switch_3', 'name': 'Ванна 2'},
+                {'entity': 'switch.2_ty_12z_switch_6', 'name': 'Фартук'},
+                {'entity': 'switch.2_ty_12z_switch_4', 'name': 'Душ'},
+                {'entity': 'switch.1_ty_12z_switch_7', 'name': 'Спальня бра лево'},
+                {'entity': 'switch.1_ty_12z_switch_8', 'name': 'Спальня бра право'}
+              ] %}
+
+              {% set on_lights = lights | selectattr('entity', 'is_state', 'on') | list %}
+
+              {% if on_lights | length > 0 %}
+                {{'\U0001F4A1'}} Включённые лампочки:
+                {% for light in on_lights %}
+                  - {{ light.name }}
+                {% endfor %}
+              {% else %}
+                {{'\U0001F6AB'}} Нет включённых лампочек.
+              {% endif %}
+            inline_keyboard:
+              - [ { "Назад": "/start" } ]
 
     ## Управление коридор
     - id: коридор меню управления телеграм
@@ -134,30 +156,7 @@ telegram_control:
                     target: "{{ trigger.event.data.chat_id }}"
                     message: *msg_en
                     inline_keyboard: *keyb_en
-            #Видео с видеозвонка
-    #            - conditions:
-    #                - condition: template
-    #                  value_template: "{{ trigger.event.data.command == '/send_video_videdoorbell' }}"
-    #              sequence:
-    #                - service: camera.record
-    #                  data:
-    #                    entity_id: camera.aqara_go2rtc
-    #                    filename: "/config/www/cam_captures/aqara_doorbell.mp4"
-    #                    duration: 10
-    #                    lookback: 0
-    #                - delay: 00:00:15
-    #                - service: telegram_bot.send_video
-    #                  data:
-    #                  file: "/config/www/cam_captures/aqara_doorbell.mp4"
-    #                - service: telegram_bot.delete_message
-    #                  data_template:
-    #                    message_id: "{{ trigger.event.data.message.message_id }}"
-    #                    chat_id: "{{ trigger.event.data.chat_id }}"
-    #                - service: telegram_bot.send_message
-    #                  data:
-    #                    target: "{{ trigger.event.data.chat_id }}"
-    #                    message: *msg_en
-    #                    inline_keyboard: *keyb_en
+
 
     ## Управление санузел
     - id: ванна меню управления телеграм
