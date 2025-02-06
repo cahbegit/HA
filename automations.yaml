@@ -253,6 +253,7 @@
           {% else %}
             Нет включённых лампочек.
           {% endif %}
-        inline_keyboard:
-          - 
-            - { "text": "Назад", "callback_data": "/start" }
+        reply_markup:
+          inline_keyboard:
+            - 
+              - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/vanna_control'
