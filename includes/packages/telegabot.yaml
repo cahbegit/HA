@@ -59,8 +59,8 @@ telegram_control:
                       - '{{''\U0001F309''}} Балкон:/balkon_control'
                       - '{{''\U0001F3A5''}} Свет:/lights'
                       - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
-    - id: telegram-status-lights
-      alias: 'IK - Telegram - статус лампочек'
+    - id: Свет
+      alias: 'Telegram-light'
       initial_state: 'on'
       trigger:
         platform: event
