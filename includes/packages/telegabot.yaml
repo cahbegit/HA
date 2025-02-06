@@ -18,7 +18,7 @@ telegram_control:
               - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Санузел:/vanna_control'
               - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
               - '{{''\U0001F309''}} Балкон:/balkon_control'
-              - '{{''\U0001F3A5''}} Свет:/light'
+              - '{{''\U0001F3A5''}} Свет:/lights'
               - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
 
     # ## Автоматизация управления главным меню
@@ -57,7 +57,7 @@ telegram_control:
                       - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Санузел:/vanna_control'
                       - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
                       - '{{''\U0001F309''}} Балкон:/balkon_control'
-                      - '{{''\U0001F3A5''}} Свет:/light'
+                      - '{{''\U0001F3A5''}} Свет:/lights'
                       - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
     - id: telegram-status-lights
       alias: 'IK - Telegram - статус лампочек'
