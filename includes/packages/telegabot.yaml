@@ -64,52 +64,54 @@ telegram_control:
       initial_state: true
       triggers:
         - event_type: telegram_callback
-          event_data: 
-            command: /lights
+          event_data: {}
           trigger: event
       actions:
-        - data_template:
-            message_id: "{{ trigger.event.data.message.message_id }}"
-            chat_id: "{{ trigger.event.data.chat_id }}"
-            message: >
-              {% set lights = [
-                {'entity': 'switch.1_ty_12z_switch_1', 'name': 'Коридор'},
-                {'entity': 'switch.1_ty_12z_switch_6', 'name': 'Спальня центр'},
-                {'entity': 'switch.1_ty_12z_switch_4', 'name': 'Зал центр'},
-                {'entity': 'switch.2_ty_12z_switch_1', 'name': 'Складовка'},
-                {'entity': 'switch.1_ty_12z_switch_5', 'name': 'Зал 2'},
-                {'entity': 'switch.2_ty_12z_switch_8', 'name': 'Зал балкон'},
-                {'entity': 'switch.1_ty_12z_switch_2', 'name': 'Вытяжка гардероб'},
-                {'entity': 'switch.1_ty_12z_switch_3', 'name': 'Вытяжка ванна'},
-                {'entity': 'switch.2_ty_12z_switch_7', 'name': 'Кухня балкон'},
-                {'entity': 'switch.2_ty_12z_switch_5', 'name': 'Кухня'},
-                {'entity': 'switch.2_ty_12z_switch_2', 'name': 'Ванна 1'},
-                {'entity': 'switch.2_ty_12z_switch_3', 'name': 'Ванна 2'},
-                {'entity': 'switch.2_ty_12z_switch_6', 'name': 'Фартук'},
-                {'entity': 'switch.2_ty_12z_switch_4', 'name': 'Душ'},
-                {'entity': 'switch.1_ty_12z_switch_7', 'name': 'Спальня бра лево'},
-                {'entity': 'switch.1_ty_12z_switch_8', 'name': 'Спальня бра право'}
-              ] %}
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ trigger.event.data.command == '/lights' }}"
+              sequence:
+                - data_template:
+                    message_id: "{{ trigger.event.data.message.message_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
+                  action: telegram_bot.delete_message
+                - data:
+                    target: "{{ trigger.event.data.chat_id }}"
+                    message: >
+                      {% set lights = [
+                      {'entity': 'switch.1_ty_12z_switch_1', 'name': 'Коридор'},
+                      {'entity': 'switch.1_ty_12z_switch_6', 'name': 'Спальня центр'},
+                      {'entity': 'switch.1_ty_12z_switch_4', 'name': 'Зал центр'},
+                      {'entity': 'switch.2_ty_12z_switch_1', 'name': 'Складовка'},
+                      {'entity': 'switch.1_ty_12z_switch_5', 'name': 'Зал 2'},
+                      {'entity': 'switch.2_ty_12z_switch_8', 'name': 'Зал балкон'},
+                      {'entity': 'switch.1_ty_12z_switch_2', 'name': 'Вытяжка гардероб'},
+                      {'entity': 'switch.1_ty_12z_switch_3', 'name': 'Вытяжка ванна'},
+                      {'entity': 'switch.2_ty_12z_switch_7', 'name': 'Кухня балкон'},
+                      {'entity': 'switch.2_ty_12z_switch_5', 'name': 'Кухня'},
+                      {'entity': 'switch.2_ty_12z_switch_2', 'name': 'Ванна 1'},
+                      {'entity': 'switch.2_ty_12z_switch_3', 'name': 'Ванна 2'},
+                      {'entity': 'switch.2_ty_12z_switch_6', 'name': 'Фартук'},
+                      {'entity': 'switch.2_ty_12z_switch_4', 'name': 'Душ'},
+                      {'entity': 'switch.1_ty_12z_switch_7', 'name': 'Спальня бра лево'},
+                      {'entity': 'switch.1_ty_12z_switch_8', 'name': 'Спальня бра право'}
+                      ] %}
 
-              {% set on_lights = lights | selectattr('entity', 'is_state', 'on') | list %}
+                      {% set on_lights = lights | selectattr('entity', 'is_state', 'on') | list %}
 
-              {% if on_lights | length > 0 %}
-                {{'\U0001F4A1'}} Включённые лампочки:
-                {% for light in on_lights %}
-                  - {{ light.name }}
-                {% endfor %}
-              {% else %}
-                {{'\U0001F6AB'}} Нет включённых лампочек.
-              {% endif %}
-            data:
-              inline_keyboard: 
-                - 
-                  - text: "{{'\U000021A9'}} Вернуться"
-                    callback_data: "/menu_back"
-                  - text: "{{'\U000021AA'}} Обновить"
-                    callback_data: "/lights"
-          action: telegram_bot.edit_message
-
+                      {% if on_lights | length > 0 %}
+                        {{'\U0001F4A1'}} Включённые лампочки:
+                        {% for light in on_lights %}
+                          - {{ light.name }}
+                        {% endfor %}
+                      {% else %}
+                        {{'\U0001F6AB'}} Нет включённых лампочек.
+                      {% endif %}
+                    inline_keyboard:
+                      - >-
+                        {{'\U000021A9'}} Вернуться:/menu_back , {{'\U000021AA'}} Обновить:/lights
+                  action: telegram_bot.send_message 
 
     ## Управление коридор
     - id: коридор меню управления телеграм
@@ -327,73 +329,31 @@ telegram_control:
     - id: балкон меню управления телеграм
       alias: telegram_balkon_menu_control
       initial_state: true
-      trigger:
-        - platform: event
-          event_type: telegram_callback
+      triggers:
+        - event_type: telegram_callback
           event_data: {}
-      action:
+          trigger: event
+      actions:
         - choose:
             - conditions:
                 - condition: template
                   value_template: "{{ trigger.event.data.command == '/balkon_control' }}"
               sequence:
-                - service: telegram_bot.delete_message
-                  data_template:
+                - data_template:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                     chat_id: "{{ trigger.event.data.chat_id }}"
-                - service: telegram_bot.send_message
-                  data:
+                  action: telegram_bot.delete_message
+                - data:
                     target: "{{ trigger.event.data.chat_id }}"
-                    message: &msg_bn |
+                    message: >
                       {{'\U0001F309'}} Управление балкон :
+
                       Балкон -
-                      {{'\U0001F321'}} - {{ states('sensor.ble_temperature_a4c138d94ccb') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.ble_humidity_a4c138d94ccb') }} %
-                    inline_keyboard: &keyb_bn
-                      - '{{''\U0001FA9F''}} Окно закрыто - {% if is_state(''cover.drivent_bd4_drivent_bd4'', ''open'')%}{{''🔴''}}{% else %}{{''🟢''}}{% endif %}:/close_drivent , {{''\U0001FA9F''}} Окно открыто - {% if is_state(''cover.drivent_bd4_drivent_bd4'', ''closed'')%}{{''🔴''}}{% else %}{{''🟢''}}{% endif %}:/open_drivent'
-                      - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/balkon_control'
-            #Закрыть окно
-            - conditions:
-                - condition: template
-                  value_template: "{{ trigger.event.data.command == '/close_drivent' }}"
-              sequence:
-                - service: cover.close_cover
-                  entity_id: cover.drivent_bd4_drivent_bd4
-                - delay:
-                    milliseconds: 500
-                - service: telegram_bot.answer_callback_query
-                  data:
-                    callback_query_id: "{{ trigger.event.data.id }}"
-                    message: |
-                      {{"\U0001F3ED"}} Окно - {% if is_state('cover.drivent_bd4_drivent_bd4', 'on') %} Включена {% else %} Выключена {% endif %}
-                - service: telegram_bot.delete_message
-                  data_template:
-                    message_id: "{{ trigger.event.data.message.message_id }}"
-                    chat_id: "{{ trigger.event.data.chat_id }}"
-                - service: telegram_bot.send_message
-                  data:
-                    target: "{{ trigger.event.data.chat_id }}"
-                    message: *msg_bn
-                    inline_keyboard: *keyb_bn
-            #открыть окно
-            - conditions:
-                - condition: template
-                  value_template: "{{ trigger.event.data.command == '/open_drivent' }}"
-              sequence:
-                - service: cover.open_cover
-                  entity_id: cover.drivent_bd4_drivent_bd4
-                - delay:
-                    milliseconds: 500
-                - service: telegram_bot.answer_callback_query
-                  data:
-                    callback_query_id: "{{ trigger.event.data.id }}"
-                    message: |
-                      {{"\U0001F3ED"}} Окно - {% if is_state('cover.drivent_bd4_drivent_bd4', 'on') %} Включена {% else %} Выключена {% endif %}
-                - service: telegram_bot.delete_message
-                  data_template:
-                    message_id: "{{ trigger.event.data.message.message_id }}"
-                    chat_id: "{{ trigger.event.data.chat_id }}"
-                - service: telegram_bot.send_message
-                  data:
-                    target: "{{ trigger.event.data.chat_id }}"
-                    message: *msg_bn
-                    inline_keyboard: *keyb_bn
+
+                      {{'\U0001F321'}} - {{"{{ states('sensor.ble_temperature_a4c138d94ccb') }} °C"}},
+                      {{'\U0001F4A7'}} - {{"{{ states('sensor.ble_humidity_a4c138d94ccb') }} %"}}
+                    inline_keyboard:
+                      - >-
+                        {{'\U000021A9'}} Вернуться:/menu_back , {{'\U000021AA'}} Обновить:/balkon_control
+                  action: telegram_bot.send_message
+
