@@ -350,8 +350,8 @@ telegram_control:
 
                       Балкон -
 
-                      {{'\U0001F321'}} - {{"{{ states('sensor.temperature_balkon_temperature') }} °C"}},
-                      {{'\U0001F4A7'}} - {{"{{ states('sensor.temperature_balkon_humidity') }} %"}}
+                      {{'\U0001F321'}} - {{ states('sensor.temperature_balkon_temperature') }} °C,
+                      {{'\U0001F4A7'}} - {{ states('sensor.temperature_balkon_humidity') }} %
                     inline_keyboard:
                       - >-
                         {{'\U000021A9'}} Вернуться:/menu_back , {{'\U000021AA'}} Обновить:/balkon_control
