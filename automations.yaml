@@ -157,37 +157,33 @@
   mode: single
 - id: '1738845974915'
   alias: IK - Telegram - status weather
-  triggers:
-  - at: 08:40:00
-    trigger: time
-  actions:
-  - data_template:
+  trigger:
+  - platform: time
+    at: "08:40:00"
+  action:
+  - service: telegram_bot.send_message
+    data:
       chat_id: '506234553'
-      message: '{{"\U0001F3E0"}} Клімат, звіт за {{ states(''sensor.time_date'') }}
+      message: >  
+        {{"\U0001F3E0"}} *Время:* {{ states('sensor.time') }}  
 
-        {{"\U0001F321"}} Температура - {{ states(''sensor.openweathermap_temperature'')
-        }} C
+        {{"\U0001F321"}} *Температура (улица):* {{ states('sensor.temperature_ulitsa_temperature_2') }}°C  
 
-        {{"\U0001F32B"}} Вологість - {{ states(''sensor.openweathermap_humidity'')
-        }} %
+        {{"💧"}} *Влажность (улица):* {{ states('sensor.temperature_ulitsa_humidity_2') }}%
+        
+        {{"🌀"}} *По ощущениям:* {{ states('sensor.openweathermap_feels_like_temperature') }}°C
+        
+        {{"\U0001F32B"}} *Прогноз:* {{ states('sensor.openweathermap_temperature') }}°C
 
-        {{"\U0001F4AA"}} Тиск - {{ (states(''sensor.openweathermap_pressure'')|float
-        * 0.7500637)|round(2) }} мм рт. ст
+        {{"\U0001F4AA"}} *Давление:* {{ (states('sensor.openweathermap_pressure')|float * 0.7500637)|round(2) }} мм рт. ст  
 
-        {{"\U00002600"}} Погода - {{ states(''sensor.openweathermap_weather'') }}
+        {{"\U00002600"}} *Погода:* {{ states('weather.openweathermap') }}
 
-        {{"\U00002B50"}} Прогноз на сьогодні - {{ states(''sensor.openweathermap_forecast_temperature'')
-        }} C
+        {{"\U00002600"}} *Погода:* {{ states('sensor.openweathermap_weather') }}
 
-        {{"\U0001F327"}} Прогноз дощу - {{ states(''sensor.openweathermap_rain'')
-        }}
+        {{"\U0001F327"}} *Дождь:* {{ states('sensor.openweathermap_rain') }} // {{"\U0001F328"}} *Снег:* {{ states('sensor.openweathermap_snow') }}
 
-        {{"\U0001F328"}} Прогноз снігу - {{ states(''sensor.openweathermap_snow'')
-        }}
-
-        '
-    action: telegram_bot.send_message
-  - data:
+  - service: telegram_bot.send_message
+    data:
       chat_id: '506234553'
-      message: '{{ "\u21a9\ufe0f" }} Панель керування:/start'
-    action: telegram_bot.send_message
+      message: '{{ "\u21a9\ufe0f" }} Меню:/start'
