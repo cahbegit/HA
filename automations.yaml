@@ -84,10 +84,10 @@
       before: '23:00:00'
       after: 09:00:00
     - condition: template
-      value_template: '{{ now() > (state_attr(''sun.sun'', ''next_setting'') | as_datetime
-        | as_local - timedelta(hours=1)) }}
-
-        '
+      value_template: "{% set sunset = state_attr('sun.sun', 'next_setting') %} {%
+        if sunset is not none %}\n  {% set sunset_time = (sunset | as_datetime | as_local
+        - timedelta(hours=1)).time() %}\n  {{ now().time() > sunset_time }}\n{% else
+        %}\n  false\n{% endif %}\n"
   - condition: device
     type: is_off
     device_id: 873a00d3bbd8fa574ee737d21efa2f19
@@ -123,7 +123,7 @@
   alias: Ночное проветривание кондиционеров (тихо)
   description: ''
   triggers:
-  - at: '23:10:00'
+  - at: '23:00:00'
     trigger: time
   - at: 02:00:00
     trigger: time
@@ -147,8 +147,9 @@
     action: climate.set_hvac_mode
   - delay:
       hours: 0
-      minutes: 5
+      minutes: 10
       seconds: 0
+      milliseconds: 0
   - target:
       entity_id: climate.c039370b68a2
     data:
@@ -159,30 +160,21 @@
   alias: IK - Telegram - status weather
   trigger:
   - platform: time
-    at: "08:40:00"
+    at: 08:40:00
   action:
   - service: telegram_bot.send_message
     data:
       chat_id: '506234553'
-      message: >  
-        {{"\U0001F3E0"}} *Время:* {{ states('sensor.time') }}  
-
-        {{"\U0001F321"}} *Температура (улица):* {{ states('sensor.temperature_ulitsa_temperature_2') }}°C  
-
-        {{"💧"}} *Влажность (улица):* {{ states('sensor.temperature_ulitsa_humidity_2') }}%
-        
-        {{"🌀"}} *По ощущениям:* {{ states('sensor.openweathermap_feels_like_temperature') }}°C
-        
-        {{"\U0001F32B"}} *Прогноз:* {{ states('sensor.openweathermap_temperature') }}°C
-
-        {{"\U0001F4AA"}} *Давление:* {{ (states('sensor.openweathermap_pressure')|float * 0.7500637)|round(2) }} мм рт. ст  
-
-        {{"\U00002600"}} *Погода:* {{ states('weather.openweathermap') }}
-
-        {{"\U00002600"}} *Погода:* {{ states('sensor.openweathermap_weather') }}
-
-        {{"\U0001F327"}} *Дождь:* {{ states('sensor.openweathermap_rain') }} // {{"\U0001F328"}} *Снег:* {{ states('sensor.openweathermap_snow') }}
-
+      message: "{{\"\\U0001F3E0\"}} *Время:* {{ states('sensor.time') }}  \n{{\"\\U0001F321\"}}
+        *Температура (улица):* {{ states('sensor.temperature_ulitsa_temperature_2')
+        }}°C  \n{{\"\U0001F4A7\"}} *Влажность (улица):* {{ states('sensor.temperature_ulitsa_humidity_2')
+        }}%\n{{\"\U0001F300\"}} *По ощущениям:* {{ states('sensor.openweathermap_feels_like_temperature')
+        }}°C\n{{\"\\U0001F32B\"}} *Прогноз:* {{ states('sensor.openweathermap_temperature')
+        }}°C\n{{\"\\U0001F4AA\"}} *Давление:* {{ (states('sensor.openweathermap_pressure')|float
+        * 0.7500637)|round(2) }} мм рт. ст  \n{{\"\\U00002600\"}} *Погода:* {{ states('weather.openweathermap')
+        }}\n{{\"\\U00002600\"}} *Погода:* {{ states('sensor.openweathermap_weather')
+        }}\n{{\"\\U0001F327\"}} *Дождь:* {{ states('sensor.openweathermap_rain') }}
+        // {{\"\\U0001F328\"}} *Снег:* {{ states('sensor.openweathermap_snow') }}\n"
   - service: telegram_bot.send_message
     data:
       chat_id: '506234553'
