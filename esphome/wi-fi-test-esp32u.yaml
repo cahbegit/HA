@@ -1,0 +1,47 @@
+esphome:
+  name: wi-fi-test-esp32u
+  friendly_name: Wi-Fi test ESP32U
+
+esp32:
+  board: nodemcu-32s  # Пробуем NodeMCU-32S как альтернативу
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "vCo1+BhTuhMBfmWGiGlzf3BBU5U04Huo18cOVagcDdU="
+
+ota:
+  - platform: esphome
+    password: "ec8018def943cb70698d0f9ef320f5f1"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Wi-Fi-Test-Esp32U"
+    password: "OMuexhBBnkxt"
+
+captive_portal:
+
+web_server:
+  port: 80
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+  - platform: copy
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
