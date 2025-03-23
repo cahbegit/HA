@@ -7,10 +7,10 @@ substitutions:
   device_name: "powmrbms"
   node_name: "powmrbms"
   node_id: powmrbms
-  inverter_tx_pin: GPIO20
-  inverter_rx_pin: GPIO21
+  inverter_tx_pin: GPIO17
+  inverter_rx_pin: GPIO16
   inverter_voltage_offset: "0"
-  update_interval: 30s # Minimum 10s recommended to avoid duplicate command errors
+  update_interval: 15s # Minimum 10s recommended to avoid duplicate command errors
   select_skip_updates: "2"
   jk_bms_name: "jkbms"
   jk_bms_description: "JKBMSble"
@@ -18,7 +18,7 @@ substitutions:
   jk_bms_protocol_version: "JK02_32S"
 
 esp32:
-  board: esp32-c3-devkitm-1
+  board: nodemcu-32s
   framework:
     type: esp-idf
 
@@ -225,11 +225,19 @@ sensor:
     emergency_time_countdown:
       name: "${name} emergency time countdown"
 
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+  - platform: wifi_signal
     name: "WiFi Signal dB"
     id: wifi_signal_db
     update_interval: 60s
     entity_category: "diagnostic"
+  - platform: copy
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
 
 switch:
   - platform: jk_bms_ble

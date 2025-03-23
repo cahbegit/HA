@@ -103,6 +103,7 @@
     device_id: 873a00d3bbd8fa574ee737d21efa2f19
     entity_id: 33ee7cc3ac1ded76fac68f1955de3778
     domain: switch
+    enabled: false
   - condition: device
     type: is_off
     device_id: 4b7714e3f237f2e24adee6c08e84c7a6
