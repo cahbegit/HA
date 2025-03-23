@@ -1,22 +1,28 @@
-esphome:
-  name: ibms
-  friendly_name: IBMS
-  comment: "Monitor and control a PowMr inverter and JK-BMS"
-  includes:
-    - "ibms/powmrbms/helpers"
-  
-# Здесь мы указываем, какие внешние компоненты (например, BMS) подключаем через GitHub
 external_components:
   - source: github://syssi/esphome-jk-bms@main
     refresh: 0s
 
-packages:
-  inverter: !include ibms/modules/interter.yaml
+substitutions:
+  name: "ibms"
+  device_name: "powmr"
+  node_name: "powmr"
+  node_id: powmr
+  inverter_tx_pin: GPIO17
+  inverter_rx_pin: GPIO16
+  inverter_voltage_offset: "0"
+  update_interval: 30s
+  select_skip_updates: "2"
+  device_description: "Monitor a PowMr inverter and JK-BMS"
+  tx_pin: GPIO1
+  rx_pin: GPIO3
 
 esp32:
   board: nodemcu-32s
   framework:
     type: esp-idf
+
+packages:
+  main: !include ibms/main.yaml
 
 # Enable logging
 logger:
@@ -24,9 +30,6 @@ logger:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-  ap:
-    ssid: "${node_name} Fallback"
-    password: !secret ap_password
 
 # OTA configuration
 ota:
@@ -41,19 +44,7 @@ api:
 
 captive_portal:
 
-substitutions:
-  name: ibms
-  device_name: "powmr"
-  node_name: "powmr"
-  node_id: powmr
-  inverter_tx_pin: GPIO17
-  inverter_rx_pin: GPIO16
-  inverter_voltage_offset: "0"
-  update_interval: 30s
-  select_skip_updates: "2"
-  device_description: "Monitor a PowMr inverter and JK-BMS"
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+
 
 # Настройки UART для инвертора и BMS
 uart:
