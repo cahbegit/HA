@@ -9,7 +9,12 @@ esphome:
     version: 1.3.3
   platformio_options:
     board_build.flash_mode: dio
-    
+  on_boot:
+    priority: 600
+    then:
+      - lambda: |-
+          ESP_LOGI("main", "Marking firmware as valid...");
+          esp_ota_mark_app_valid();    
 packages:
   inverter: !include {
     file: modules/inverter.yaml
