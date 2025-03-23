@@ -10,3 +10,4 @@ www/
 themes/
 home-assistant.log.1
 home-assistant.log.fault
+esphome/secrets.yaml
