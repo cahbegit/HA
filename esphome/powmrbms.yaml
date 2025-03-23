@@ -10,7 +10,7 @@ substitutions:
   inverter_tx_pin: GPIO17
   inverter_rx_pin: GPIO16
   inverter_voltage_offset: "0"
-  update_interval: 15s # Minimum 10s recommended to avoid duplicate command errors
+  update_interval: 30s # Minimum 10s recommended to avoid duplicate command errors
   select_skip_updates: "2"
   jk_bms_name: "jkbms"
   jk_bms_description: "JKBMSble"
@@ -36,10 +36,6 @@ logger:
 time:
   - platform: homeassistant
     id: hass_time
-
-web_server:
-  port: 80
-#  ota: false
 
 esp32_ble_tracker:
   on_ble_advertise:

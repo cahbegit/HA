@@ -10,9 +10,9 @@ esphome:
   friendly_name: ${device_description}
 
 esp32:
-  board: esp32dev
+  board: esp32-c3-devkitm-1
   framework:
-    type: arduino
+    type: esp-idf
 
 external_components:
   - source: ${external_components_source}
@@ -228,6 +228,21 @@ sensor:
       name: "${name} errors bitmask"
     emergency_time_countdown:
       name: "${name} emergency time countdown"
+
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
 
 switch:
   - platform: jk_bms_ble
