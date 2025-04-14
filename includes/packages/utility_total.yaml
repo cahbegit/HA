@@ -320,11 +320,11 @@ utility_total:
                   - service: select.select_option
                     target:
                       entity_id: 
-                          - select.counter_energy
-                          - select.meter_total_energy
-                          - select.fridge
-                          - select.workplace
                           - select.light_kn
+                          - select.kondei_spalnia
+                          - select.kondei_zal
+                          - select.workplace
+                          - select.kotel_zariad
                     data:
                       option: day
               - conditions:
@@ -338,11 +338,11 @@ utility_total:
                   - service: select.select_option
                     target:
                       entity_id: 
-                          - select.counter_energy
-                          - select.meter_total_energy
-                          - select.fridge
-                          - select.workplace
                           - select.light_kn
+                          - select.kondei_spalnia
+                          - select.kondei_zal
+                          - select.workplace
+                          - select.kotel_zariad
                     data:
                       option: night
 
