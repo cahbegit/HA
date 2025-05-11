@@ -29,6 +29,14 @@ web_server:
   port: 80
 
 # Реле
+output:
+  - platform: ledc
+    pin: GPIO3
+    frequency: 1000 Hz
+    id: pwm_dimmer
+    min_power: 0.09
+    max_power: 1.0
+
 switch:
   # Реле для спальни
   - platform: gpio
@@ -37,6 +45,11 @@ switch:
       number: GPIO5
       inverted: true
     name: "SpalnaP"
+  - platform: template
+    name: "Диммер включен"
+    id: dimmer_switch
+    optimistic: true
+    restore_mode: ALWAYS_ON
 
   # Реле для зал
   - platform: gpio
@@ -87,3 +100,22 @@ sensor:
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
     device_class: ""
+
+# === Светильник с использованием PWM    
+light:
+  - platform: monochromatic
+    name: "PWM Analog Dimmer"
+    id: analog_dimmer
+    output: pwm_dimmer
+    default_transition_length: 0.5s
+    restore_mode: RESTORE_DEFAULT_ON
+    gamma_correct: 1.5  # коррекция яркости
+    on_turn_on:
+      - if:
+          condition:
+            switch.is_on: dimmer_switch
+          then:
+            - light.turn_on: analog_dimmer
+    on_turn_off:
+      then:
+        - light.turn_off: analog_dimmer    
