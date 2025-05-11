@@ -2,7 +2,7 @@ utility_kotel_zariad:
 
   homeassistant:
     customize:
-      sensor.kotel_zariad_power_2:
+      sensor.kotel_zariad_power:
         friendly_name: Котёл заряд мощность
         unit_of_measurement: Вт
         device_class: power
@@ -52,7 +52,7 @@ utility_kotel_zariad:
   sensor:
     - platform: integration
       name: 'kotel_zariad_energy'
-      source: sensor.kotel_zariad_power_2
+      source: sensor.kotel_zariad_power
       unit_prefix: k
       method: left
       round: 2

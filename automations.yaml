@@ -86,7 +86,7 @@
     - condition: template
       value_template: "{% set sunset = state_attr('sun.sun', 'next_setting') %} {%
         if sunset is not none %}\n  {% set sunset_time = (sunset | as_datetime | as_local
-        - timedelta(hours=1)).time() %}\n  {{ now().time() > sunset_time }}\n{% else
+        - timedelta(hours=2)).time() %}\n  {{ now().time() > sunset_time }}\n{% else
         %}\n  false\n{% endif %}\n"
   - condition: device
     type: is_off

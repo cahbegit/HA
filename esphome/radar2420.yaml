@@ -1,0 +1,91 @@
+esphome:
+  name: radar2420
+  friendly_name: Radar2420
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+# Включение логирования
+logger:
+  level: DEBUG
+
+# Включение Home Assistant API
+api:
+  encryption:
+    key: "MNIjifd02yepnk7/C3LBKXh0pophQa/rrcodPF8SFxI="
+
+# OTA-обновление
+ota:
+  platform: esphome
+  password: "ec61c91c17a88912735020ef6ab6d329"
+
+# Настройка Wi-Fi
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  # Статический IP (опционально, замените на актуальный)
+
+# Включение captive portal
+captive_portal:
+
+# Веб-сервер для диагностики
+web_server:
+  port: 80
+  include_internal: true
+
+uart:
+  tx_pin: GPIO21
+  rx_pin: GPIO20
+  baud_rate: 115200
+
+ld2420:
+
+text_sensor:
+  - platform: ld2420
+    fw_version:
+      name: LD2420 Firmware
+
+sensor:
+  - platform: ld2420
+    moving_distance:
+      name : Moving Distance
+
+binary_sensor:
+  - platform: ld2420
+    has_target:
+      name: Presence
+
+select:
+  - platform: ld2420
+    operating_mode:
+      name: Operating Mode
+
+number:
+  - platform: ld2420
+    presence_timeout:
+      name: Detection Presence Timeout
+    min_gate_distance:
+      name: Detection Gate Minimum
+    max_gate_distance:
+      name: Detection Gate Maximum
+    # See "Number" section below for detail
+    gate_select:
+      name: Select Gate to Set
+    still_threshold:
+      name: Set Still Threshold Value
+    move_threshold:
+      name: Set Move Threshold Value
+
+button:
+  - platform: ld2420
+    apply_config:
+      name: Apply Config
+    factory_reset:
+      name: Factory Reset
+    restart_module:
+      name: Restart Module
+    revert_config:
+      name: Undo Edits`

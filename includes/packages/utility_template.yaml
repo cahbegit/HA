@@ -22,3 +22,41 @@ utility_template:
           unit_of_measurement: "W"  # Указываем единицу измерения
           device_class: power       # Класс устройства - мощность
           state_class: measurement  # Тип данных - измерения
+        - name: "low_battery_sensor"
+          unique_id: low_battery_sensor_main
+          state: >
+            {% set batteries = [
+              'sensor.motion_sensor_2_battery_2',
+              'sensor.spalnia_shtora_battery',
+              'sensor.temperature_humidity_sensor_battery_2',
+              'sensor.temperature_spalnia_battery',
+              'sensor.temperature_ulitsa_battery',
+              'sensor.temperature_vanna_battery',
+              'sensor.wireless_scene_switch_battery'
+            ] %}
+            {% for entity in batteries %}
+              {% set val = states(entity) | int(100) %}
+              {% if val < 20 %}
+                {{ state_attr(entity, 'friendly_name') or entity }}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          icon: mdi:battery-alert
+          attributes:
+            battery_levels: >
+              {% set out = namespace(result=[]) %}
+              {% set batteries = [
+                'sensor.motion_sensor_2_battery_2',
+                'sensor.spalnia_shtora_battery',
+                'sensor.temperature_humidity_sensor_battery_2',
+                'sensor.temperature_spalnia_battery',
+                'sensor.temperature_ulitsa_battery',
+                'sensor.temperature_vanna_battery',
+                'sensor.wireless_scene_switch_battery'
+              ] %}
+              {% for entity in batteries %}
+                {% set val = states(entity) | int(100) %}
+                {% set name = state_attr(entity, 'friendly_name') or entity %}
+                {% set out.result = out.result + [name ~ ': ' ~ val ~ '%'] %}
+              {% endfor %}
+              {{ out.result }}

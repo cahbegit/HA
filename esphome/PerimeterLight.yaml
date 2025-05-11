@@ -1,0 +1,89 @@
+esphome:
+  name: perimeter
+  friendly_name: ControlPerimeterLight
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "+kpW/8XZc8atYGG9m3lLsdG88eSMLkZVp0IsCpYHr38="
+
+ota:
+  - platform: esphome
+    password: "54bf91a970d60661e685445975cd7623"
+
+wifi:
+  ssid: !secret wifi_ssidt
+  password: !secret wifi_passwordt
+
+captive_portal:
+
+web_server:
+  port: 80
+
+# Реле
+switch:
+  # Реле для спальни
+  - platform: gpio
+    id: spalnaP
+    pin: 
+      number: GPIO5
+      inverted: true
+    name: "SpalnaP"
+
+  # Реле для зал
+  - platform: gpio
+    id: zalP
+    pin: 
+      number: GPIO6
+      inverted: true
+    name: "ZalP"
+
+# Виртуальные кнопки для переключения реле с задержкой
+button:
+  - platform: template
+    name: "SpalnaP (Toggle)"
+    on_press:
+      - switch.turn_on: spalnaP
+      - delay: 300ms
+      - switch.turn_off: spalnaP
+
+  - platform: template
+    name: "ZalP (Toggle)"
+    on_press:
+      - switch.turn_on: zalP
+      - delay: 300ms
+      - switch.turn_off: zalP
+
+# Сенсоры
+sensor:
+  - platform: uptime
+    name: "Uptime"
+    entity_category: "diagnostic"
+    device_class: duration
+    update_interval: 60s
+  - platform: internal_temperature
+    name: "Controller Temperature"
+    update_interval: 10s
+    state_class: measurement
+    device_class: temperature  
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
