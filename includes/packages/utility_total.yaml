@@ -301,14 +301,12 @@ utility_total:
         description: Переключение тарифов
         initial_state: true
         trigger:
-    ## Сенсор ночного тарифа
-        - platform: state
-          entity_id: binary_sensor.night
-    # Проверка раз в 5 минут
-        - platform: time_pattern
-          minutes: '/5'
+          - platform: state
+            entity_id: binary_sensor.night
+          - platform: time_pattern
+            minutes: '/5'
         action:
-            - choose:
+          - choose:
               - conditions:
                   - condition: state
                     entity_id: binary_sensor.night
@@ -320,11 +318,12 @@ utility_total:
                   - service: select.select_option
                     target:
                       entity_id: 
-                          - select.light_kn
-                          - select.kondei_spalnia
-                          - select.kondei_zal
-                          - select.workplace
-                          - select.kotel_zariad
+                        - select.counter_energy
+                        - select.light_kn
+                        - select.kondei_spalnia
+                        - select.kondei_zal
+                        - select.workplace
+                        - select.kotel_zariad
                     data:
                       option: day
               - conditions:
@@ -338,11 +337,12 @@ utility_total:
                   - service: select.select_option
                     target:
                       entity_id: 
-                          - select.light_kn
-                          - select.kondei_spalnia
-                          - select.kondei_zal
-                          - select.workplace
-                          - select.kotel_zariad
+                        - select.counter_energy
+                        - select.light_kn
+                        - select.kondei_spalnia
+                        - select.kondei_zal
+                        - select.workplace
+                        - select.kotel_zariad
                     data:
                       option: night
 

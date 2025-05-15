@@ -7,10 +7,8 @@ esp32:
   framework:
     type: arduino
 
-# Enable logging
 logger:
 
-# Enable Home Assistant API
 api:
   encryption:
     key: "+kpW/8XZc8atYGG9m3lLsdG88eSMLkZVp0IsCpYHr38="
@@ -28,7 +26,6 @@ captive_portal:
 web_server:
   port: 80
 
-# Реле
 output:
   - platform: ledc
     pin: GPIO3
@@ -38,20 +35,13 @@ output:
     max_power: 1.0
 
 switch:
-  # Реле для спальни
   - platform: gpio
     id: spalnaP
     pin: 
       number: GPIO5
       inverted: true
     name: "SpalnaP"
-  - platform: template
-    name: "Диммер включен"
-    id: dimmer_switch
-    optimistic: true
-    restore_mode: ALWAYS_ON
 
-  # Реле для зал
   - platform: gpio
     id: zalP
     pin: 
@@ -59,7 +49,6 @@ switch:
       inverted: true
     name: "ZalP"
 
-# Виртуальные кнопки для переключения реле с задержкой
 button:
   - platform: template
     name: "SpalnaP (Toggle)"
@@ -75,24 +64,25 @@ button:
       - delay: 300ms
       - switch.turn_off: zalP
 
-# Сенсоры
 sensor:
   - platform: uptime
-    name: "Uptime"
-    entity_category: "diagnostic"
-    device_class: duration
+    name: "Uptime Seconds"
+    id: uptime_sensor
     update_interval: 60s
+
   - platform: internal_temperature
     name: "Controller Temperature"
     update_interval: 10s
     state_class: measurement
-    device_class: temperature  
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    device_class: temperature
+
+  - platform: wifi_signal
     name: "WiFi Signal dB"
     id: wifi_signal_db
     update_interval: 60s
     entity_category: "diagnostic"
-  - platform: copy # Reports the WiFi signal strength in %
+
+  - platform: copy
     source_id: wifi_signal_db
     name: "WiFi Signal Percent"
     filters:
@@ -101,21 +91,25 @@ sensor:
     entity_category: "diagnostic"
     device_class: ""
 
-# === Светильник с использованием PWM    
 light:
   - platform: monochromatic
-    name: "PWM Analog Dimmer"
+    name: "SpalnaPDimm"
     id: analog_dimmer
     output: pwm_dimmer
     default_transition_length: 0.5s
     restore_mode: RESTORE_DEFAULT_ON
-    gamma_correct: 1.5  # коррекция яркости
-    on_turn_on:
-      - if:
-          condition:
-            switch.is_on: dimmer_switch
-          then:
-            - light.turn_on: analog_dimmer
-    on_turn_off:
-      then:
-        - light.turn_off: analog_dimmer    
+    gamma_correct: 1.5
+
+text_sensor:
+  - platform: template
+    name: "Uptime (formatted)"
+    update_interval: 60s
+    lambda: |-
+      int seconds = (int) id(uptime_sensor).state;
+      int days = seconds / 86400;
+      int hours = (seconds % 86400) / 3600;
+      int minutes = (seconds % 3600) / 60;
+      char buffer[32];
+      sprintf(buffer, "%dd %02dh %02dm", days, hours, minutes);
+      return std::string(buffer);
+    icon: "mdi:clock-outline"
