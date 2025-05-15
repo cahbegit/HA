@@ -164,22 +164,36 @@ utility_total:
 
           - name: total_energy
             state: >
-                {{(
-                   states('sensor.all_in_pro_energy')|float(0) +
-                   states('sensor.holodilnik_energy')|float(0) +
-                   states('sensor.svet_pitanie_energy')|float(0)
-                  )|round(2)}}
-                  
+              {{ (
+                states('sensor.all_in_pro_energy')|float(0) +
+                states('sensor.holodilnik_energy')|float(0) +
+                states('sensor.svet_pitanie_energy')|float(0)
+              ) | round(2) }}
+            availability: >
+              {{ [
+                states('sensor.all_in_pro_energy'),
+                states('sensor.holodilnik_energy'),
+                states('sensor.svet_pitanie_energy')
+              ] | select('is_number') | list | count == 3 }}
           - name: total_power
             state: >
-                {{(
-                   states('sensor.svet_platy_power_2')|float(0) +
-                   states('sensor.svet_pitanie_power_2')|float(0) +
-                   states('sensor.internet_power_2')|float(0) +
-                   states('sensor.all_in_pro_power_2')|float(0) +
-                   states('sensor.kholodilnik_power_2')|float(0) +
-                   states('sensor.kotel_power_2')|float(0)
-                  )|round(2)}}
+              {{(
+                states('sensor.svet_platy_power_2')|float(0) +
+                states('sensor.svet_pitanie_power_2')|float(0) +
+                states('sensor.internet_power_2')|float(0) +
+                states('sensor.all_in_pro_power_2')|float(0) +
+                states('sensor.kholodilnik_power_2')|float(0) +
+                states('sensor.kotel_power_2')|float(0)
+                )|round(2)}}
+            availability: >
+              {{ [
+                states('sensor.svet_platy_power_2'),
+                states('sensor.svet_pitanie_power_2'),
+                states('sensor.internet_power_2'),
+                states('sensor.all_in_pro_power_2'),
+                states('sensor.kholodilnik_power_2'),
+                states('sensor.kotel_power_2')
+              ] | select('is_number') | list | count > 0 }}
 
           - name: counter_energy_clear
             state: >
