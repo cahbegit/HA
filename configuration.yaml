@@ -14,9 +14,6 @@ scene: !include scenes.yaml
 influxdb: !include influxdb.yaml
 telegram_bot: !include includes/telegram.yaml
 notify: !include includes/notify.yaml
-media_player:
-  - platform: aquostv
-    host: 192.168.2.21
 recorder:
   purge_interval: 14
   purge_keep_days: 90

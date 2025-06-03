@@ -338,6 +338,7 @@ utility_total:
                         - select.kondei_zal
                         - select.workplace
                         - select.kotel_zariad
+                        - select.kholodilnik
                     data:
                       option: day
               - conditions:
@@ -357,6 +358,7 @@ utility_total:
                         - select.kondei_zal
                         - select.workplace
                         - select.kotel_zariad
+                        - select.kholodilnik
                     data:
                       option: night
 

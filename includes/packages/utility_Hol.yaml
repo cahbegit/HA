@@ -1,0 +1,105 @@
+utility_kholodilnik:
+  
+  homeassistant:
+    customize:
+      sensor.kholodilnik_power_2:
+        friendly_name: Холодильник мощность
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:air-conditioner
+      sensor.kholodilnik_energy:
+        friendly_name: Холодильник энергия
+        icon: mdi:chart-line
+
+      sensor.kholodilnik_clear:
+        friendly_name: Холодильник всего
+        icon: mdi:air-conditioner
+        unit_of_measurement: кВт/ч
+      sensor.kholodilnik_day:
+        friendly_name: Холодильник день
+        icon: mdi:white-balance-sunny
+        unit_of_measurement: кВт/ч
+      sensor.kholodilnik_night:
+        friendly_name: Холодильник ночь
+        icon: mdi:moon-waning-crescent
+        unit_of_measurement: кВт/ч
+
+  utility_meter:
+    kholodilnik:
+      source: sensor.kholodilnik_energy
+      cycle: monthly
+      offset:
+        days: 0
+        hours: 12
+        minutes: 0
+      tariffs:
+        - night
+        - day
+
+  sensor:
+    - platform: integration
+      name: 'kholodilnik_energy'
+      source: sensor.kholodilnik_power_2
+      unit_prefix: k
+      method: left
+      round: 2
+
+  input_text:
+    kholodilnik_day:
+      name: Холодильник день
+    kholodilnik_night:
+      name: Холодильник ночь
+
+  input_button:
+    kholodilnik_day:
+      name: Холодильник день
+      icon: mdi:white-balance-sunny
+    kholodilnik_night:
+      name: Холодильник ночь
+      icon: mdi:moon-waning-crescent
+
+  template:
+    - sensor:
+        - name: kholodilnik_clear
+          state: >
+            {{(
+              states('sensor.kholodilnik_day')|float(0) +
+              states('sensor.kholodilnik_night')|float(0)
+            )|round(2)}}
+
+  automation:
+    - alias: kholodilnik_calibrate
+      id: kholodilnik_calibrate
+      description: Калибровка потребления холодильника
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: input_button.kholodilnik_day
+          id: kholodilnik_day
+        - platform: state
+          entity_id: input_button.kholodilnik_night
+          id: kholodilnik_night
+      action:
+        - choose:
+          - conditions:
+              - condition: trigger
+                id: kholodilnik_day
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{ states('input_text.kholodilnik_day')|float }}
+                target:
+                  entity_id:
+                    - sensor.kholodilnik_day
+          - conditions:
+              - condition: trigger
+                id: kholodilnik_night
+            sequence:
+              - service: utility_meter.calibrate
+                data_template:
+                  value: >
+                    {{ states('input_text.kholodilnik_night')|float }}
+                target:
+                  entity_id:
+                    - sensor.kholodilnik_night

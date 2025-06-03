@@ -1,0 +1,23 @@
+youtube:
+  alias: muzyt
+  mode: single
+  sequence:
+  - variables:
+      random_index: '{{ range(1, 41) | random }}'
+  - target:
+      entity_id: media_player.android_tv_192_168_2_21
+    action: media_player.turn_on
+  - delay: 00:00:03
+  - target:
+      entity_id: media_player.android_tv_192_168_2_21
+    data:
+      volume_level: 0.3
+    action: media_player.volume_set
+  - delay: 00:00:01
+  - data:
+      entity_id: media_player.android_tv_192_168_2_21
+      command: 'am start -a android.intent.action.VIEW -d "https://www.youtube.com/playlist?list=WL&index={{
+        random_index }}"
+
+        '
+    action: androidtv.adb_command

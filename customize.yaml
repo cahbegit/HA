@@ -204,3 +204,5 @@
       friendly_name: "Ошибки"
     sensor.jk_bms_jk_bms_total_runtime_formatted:
       friendly_name: "Форматированное общее время работы"
+    media_player.android_tv_192_168_2_21:
+      friendly_name: "Зал TV"  
