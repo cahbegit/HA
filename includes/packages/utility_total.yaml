@@ -79,7 +79,7 @@ utility_total:
           - day
 
       meter_total_energy:
-        source: sensor.total_energy
+        source: sensor.total_energy_from_power
         cycle: monthly
         offset:
           days: 0
@@ -155,6 +155,15 @@ utility_total:
             device_class: running
             
       - sensor:
+
+
+
+          - platform: integration
+            source: sensor.total_power
+            name: total_energy_from_power
+            unit_prefix: k
+            round: 2
+            method: left
 
           - name: month
             state: >

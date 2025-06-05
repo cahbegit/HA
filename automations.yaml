@@ -180,3 +180,65 @@
     data:
       chat_id: '506234553'
       message: '{{ "\u21a9\ufe0f" }} Меню:/start'
+- id: '1749116001554'
+  alias: KonZalUtro1
+  description: ''
+  triggers:
+  - at: 06:00:00
+    trigger: time
+  conditions:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  actions:
+  - target:
+      entity_id: climate.c039370837e4
+    data:
+      hvac_mode: cool
+    action: climate.set_hvac_mode
+  - target:
+      entity_id: climate.c039370837e4
+    data:
+      temperature: 16
+    action: climate.set_temperature
+  - target:
+      entity_id: climate.c039370837e4
+    data:
+      fan_mode: high
+    action: climate.set_fan_mode
+  mode: single
+- id: '1749116318986'
+  alias: KonZalUtro2
+  description: ''
+  triggers:
+  - at: 06:50:00
+    trigger: time
+  conditions:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  actions:
+  - target:
+      entity_id: climate.c039370837e4
+    data:
+      temperature: 23
+    action: climate.set_temperature
+  - target:
+      entity_id: climate.c039370837e4
+    data:
+      preset_mode: eco
+    action: climate.set_preset_mode
+  - target:
+      entity_id: climate.c039370837e4
+    data:
+      fan_mode: low
+    action: climate.set_fan_mode
+  mode: single

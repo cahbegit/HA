@@ -21,3 +21,84 @@ youtube:
 
         '
     action: androidtv.adb_command
+samtvsleep:
+  alias: samtvsleep
+  mode: single
+  sequence:
+  - target:
+      entity_id: media_player.samstv
+    action: media_player.turn_on
+  - target:
+      entity_id: remote.samstv
+    data:
+      command: KEY_SLEEP
+    action: remote.send_command
+  - delay: 1
+  - target:
+      entity_id: remote.samstv
+    data:
+      command:
+      - KEY_ENTER
+      - KEY_DOWN
+      - KEY_ENTER
+      - KEY_EXIT
+    action: remote.send_command
+samtvyt:
+  alias: samtvyt
+  mode: single
+  sequence:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: media_player.samstv
+        state: 'off'
+      sequence:
+      - target:
+          entity_id: media_player.samstv
+        action: media_player.turn_on
+      - delay: 00:00:10
+  - target:
+      entity_id: media_player.samstv
+    data:
+      volume_level: 0.3
+    action: media_player.volume_set
+  - delay: 00:00:02
+  - target:
+      entity_id: media_player.samstv
+    data:
+      volume_level: 0.3
+    action: media_player.volume_set
+  - delay: 00:00:02
+  - target:
+      entity_id: media_player.samstv
+    data:
+      media_content_type: url
+      media_content_id: https://www.youtube.com/watch?v=BXU26m8GH8g
+      enqueue: play
+    action: media_player.play_media
+atvsleep:
+  alias: atvsleep
+  mode: single
+  sequence:
+  - target:
+      entity_id: media_player.android_tv_192_168_2_21
+    action: media_player.turn_on
+  - data:
+      entity_id: media_player.android_tv_192_168_2_21
+      command: input keyevent 223
+    action: androidtv.adb_command
+  - delay: 00:00:02
+  - data:
+      entity_id: media_player.android_tv_192_168_2_21
+      command: input keyevent 20
+    action: androidtv.adb_command
+  - delay: 00:00:01
+  - data:
+      entity_id: media_player.android_tv_192_168_2_21
+      command: input keyevent 66
+    action: androidtv.adb_command
+  - delay: 00:00:01
+  - data:
+      entity_id: media_player.android_tv_192_168_2_21
+      command: input keyevent 4
+    action: androidtv.adb_command
