@@ -341,6 +341,7 @@ utility_total:
                     target:
                       entity_id: 
                         - select.counter_energy
+                        - select.meter_total_energy
                         - select.light_kn
                         - select.kondei_spalnia
                         - select.kondei_zal
@@ -361,6 +362,7 @@ utility_total:
                     target:
                       entity_id: 
                         - select.counter_energy
+                        - select.meter_total_energy
                         - select.light_kn
                         - select.kondei_spalnia
                         - select.kondei_zal
