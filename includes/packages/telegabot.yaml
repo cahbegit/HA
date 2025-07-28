@@ -17,7 +17,7 @@ telegram_control:
             inline_keyboard:
               - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Туалет:/vanna_control'
               - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
-              - '{{''\U0001F3E2''}} Спальня:/spalnia_control' , {{''\U0001F309''}} Балкон:/balkon_control'
+              - '{{''\U0001F3E2''}} Спальня:/spalnia_control , {{''\U0001F309''}} Балкон:/balkon_control'
               - '{{''\U0001F3A5''}} Свет:/lights'
               - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
 
@@ -56,7 +56,7 @@ telegram_control:
                     inline_keyboard:
                       - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Туалет:/vanna_control'
                       - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
-                      - '{{''\U0001F3E2''}} Спальня:/spalnia_control' , {{''\U0001F309''}} Балкон:/balkon_control'
+                      - '{{''\U0001F3E2''}} Спальня:/spalnia_control , {{''\U0001F309''}} Балкон:/balkon_control'
                       - '{{''\U0001F3A5''}} Свет:/lights'
                       - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
     - id: Свет

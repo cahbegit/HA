@@ -39,8 +39,8 @@
         "voltage": 212,
         "state": "ON",
         "countdown": 0,
-        "current": 0.07,
-        "power": 11,
+        "current": 0.78,
+        "power": 106,
         "energy": 53.33,
         "last_seen": "2025-07-28T06:59:12.963Z",
         "linkquality": 140
@@ -48,16 +48,16 @@
     "0xa4c1387a139ad75c": {
         "voltage": 3000,
         "battery": 100,
-        "temperature": 4.8,
-        "humidity": 39.87,
+        "temperature": 5.98,
+        "humidity": 43.73,
         "last_seen": "2025-07-28T07:00:51.410Z",
         "linkquality": 124
     },
     "0xa4c138fa4e037846": {
         "voltage": 3000,
         "battery": 100,
-        "temperature": 25.84,
-        "humidity": 40.86,
+        "temperature": 25.78,
+        "humidity": 41.02,
         "last_seen": "2025-07-28T06:51:57.442Z",
         "linkquality": 140
     }
