@@ -1,0 +1,27 @@
+mqtt:
+  server: mqtt://core-mosquitto:1883
+  base_topic: zigbee2mqtt
+  version: 5
+# Serial settings
+serial:
+  port: /dev/ttyUSB0
+  adapter: ember
+# Set output power to max 20
+advanced:
+  transmit_power: 20
+  channel: 11
+  pan_id: GENERATE
+  network_key: GENERATE
+  availability_blocklist: []
+  availability_passlist: []
+  last_seen: ISO_8601
+  log_level: info
+homeassistant:
+  enabled: true
+  legacy_action_sensor: true
+  experimental_event_entities: false
+permit_join: false
+devices:
+  - devices.yaml
+groups:
+  - groups.yaml

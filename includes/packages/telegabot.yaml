@@ -56,7 +56,7 @@ telegram_control:
                     inline_keyboard:
                       - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Туалет:/vanna_control'
                       - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
-                      - '{{''\U0001F309''}} Балкон:/balkon_control'
+                      - '{{''\U0001F3E2''}} Спальня:/spalnia_control' , '{{''\U0001F309''}} Балкон:/balkon_control'
                       - '{{''\U0001F3A5''}} Свет:/lights'
                       - '{{''\U0001F6AB''}} Убрать меню:/menu_hide'
     - id: Свет
@@ -190,9 +190,9 @@ telegram_control:
                     message: &msg_bt |
                       {{'\U0001F6C0'}} Управление Ванна :
                       Ванна -
-                      {{'\U0001F6B6'}} - {% if is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'on') %} Движение {% else %} Нет движения {% endif %} {{'\U0001F6AA'}} Дверь - {% if is_state('binary_sensor.0x00158d00054495dc_contact', 'on') %} Открыта {% else %} Закрыта {% endif %}
-                      {{'\U0001F6B1'}} - Ванна - {% if is_state('binary_sensor.0xa4c1387e2e1acaa2_water_leak', 'on') %} Протечка {% else %} Сухо {% endif %}
-                      {{'\U0001F321'}} - {{ states('sensor.ble_temperature_a4c138cec970') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.ble_humidity_a4c138cec970') }} %
+                      {{'\U0001F6B6'}} - {% if is_state('binary_sensor.temp6_presence', 'on') %} Движение {% else %} Нет движения {% endif %} {{'\U0001F6AA'}} Дверь - {% if is_state('binary_sensor.0x00158d00054495dc_contact', 'on') %} Открыта {% else %} Закрыта {% endif %}
+                      {{'\U0001F6B1'}} - Ванна - {% if is_state('binary_sensor.water_leak_sensor_moisture', 'on') %} Протечка {% else %} Сухо {% endif %}
+                      {{'\U0001F321'}} - {{ states('sensor.temp6_temperature') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.temp6_humidity') }} %
                     inline_keyboard: &keyb_bt
                       - '{{''\U0001F4A1''}} Люстра - {% if is_state(''switch.0xf082c0fffe00cce2'', ''off'')%}{{''🔴''}}{% else %}{{''🟢''}}{% endif %}:/toggle_vannaya'
                       - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/vanna_control'
@@ -321,9 +321,40 @@ telegram_control:
                       Кухня -
                       {{'\U0001F6B6'}} - {% if is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'on') %} Движение {% else %} Нет движения {% endif %} {{'\U0001F6AA'}} Дверь - {% if is_state('binary_sensor.0x00158d00054495dc_contact', 'on') %} Открыта {% else %} Закрыта {% endif %}
                       {{'\U0001F6B1'}} - Кухня - {% if is_state('binary_sensor.0xa4c13894f2143b7b_water_leak', 'on') %} Протечка {% else %} Сухо {% endif %}
-                      {{'\U0001F321'}} - {{ states('sensor.ble_temperature_kukhnia') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.ble_humidity_kukhnia') }} %
+                      {{'\U0001F321'}} - {{ states('sensor.temp3_temperature') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.temp3_humidity') }} %
                     inline_keyboard: &keyb_kh
                       - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/kuhnya_control'
+
+    ## Управление спальня
+    - id: спальня меню управления телеграм
+      alias: telegram_kuhnya_menu_control
+      initial_state: true
+      trigger:
+        - platform: event
+          event_type: telegram_callback
+          event_data: {}
+      action:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ trigger.event.data.command == '/spalnia_control' }}"
+              sequence:
+                - service: telegram_bot.delete_message
+                  data_template:
+                    message_id: "{{ trigger.event.data.message.message_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
+                - service: telegram_bot.send_message
+                  data:
+                    target: "{{ trigger.event.data.chat_id }}"
+                    message: &msg_kh |
+                      {{'\U0001F374'}} Управление Кухня :
+                      Кухня -
+                      {{'\U0001F6B6'}} - {% if is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'on') %} Движение {% else %} Нет движения {% endif %} {{'\U0001F6AA'}} Дверь - {% if is_state('binary_sensor.0x00158d00054495dc_contact', 'on') %} Открыта {% else %} Закрыта {% endif %}
+                      {{'\U0001F6B1'}} - Кухня - {% if is_state('binary_sensor.0xa4c13894f2143b7b_water_leak', 'on') %} Протечка {% else %} Сухо {% endif %}
+                      {{'\U0001F321'}} - {{ states('sensor.ble_temperature_kukhnia') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.ble_humidity_kukhnia') }} %
+                    inline_keyboard: &keyb_kh
+                      - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/spalnia_control'
+
 
     ###Управление Балкон
     - id: балкон меню управления телеграм
@@ -350,8 +381,8 @@ telegram_control:
 
                       Балкон -
 
-                      {{'\U0001F321'}} - {{ states('sensor.temperature_balkon_temperature') }} °C,
-                      {{'\U0001F4A7'}} - {{ states('sensor.temperature_balkon_humidity') }} %
+                      {{'\U0001F321'}} - {{ states('sensor.temperature_ulitsa_temperature') }} °C,
+                      {{'\U0001F4A7'}} - {{ states('sensor.temperature_ulitsa_humidity') }} %
                     inline_keyboard:
                       - >-
                         {{'\U000021A9'}} Вернуться:/menu_back , {{'\U000021AA'}} Обновить:/balkon_control

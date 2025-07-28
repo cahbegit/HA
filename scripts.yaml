@@ -3,19 +3,20 @@ youtube:
   mode: single
   sequence:
   - variables:
-      random_index: '{{ range(1, 41) | random }}'
+      random_index: '{{ range(1, 47) | random }}'
   - target:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: media_player.aquos_tve21a_2
     action: media_player.turn_on
+    data: {}
   - delay: 00:00:03
   - target:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: media_player.aquos_tve21a_2
     data:
       volume_level: 0.3
     action: media_player.volume_set
   - delay: 00:00:01
   - data:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: media_player.aquos_tve21a_2
       command: 'am start -a android.intent.action.VIEW -d "https://www.youtube.com/playlist?list=WL&index={{
         random_index }}"
 
@@ -81,24 +82,25 @@ atvsleep:
   mode: single
   sequence:
   - target:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: media_player.aquos_tve21a_2
     action: media_player.turn_on
+    data: {}
   - data:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: media_player.aquos_tve21a_2
       command: input keyevent 223
     action: androidtv.adb_command
   - delay: 00:00:02
   - data:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: media_player.aquos_tve21a_2
       command: input keyevent 20
     action: androidtv.adb_command
   - delay: 00:00:01
   - data:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: media_player.aquos_tve21a_2
       command: input keyevent 66
     action: androidtv.adb_command
   - delay: 00:00:01
   - data:
-      entity_id: media_player.android_tv_192_168_2_21
+      entity_id: mmedia_player.aquos_tve21a_2
       command: input keyevent 4
     action: androidtv.adb_command

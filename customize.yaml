@@ -204,5 +204,13 @@
       friendly_name: "Ошибки"
     sensor.jk_bms_jk_bms_total_runtime_formatted:
       friendly_name: "Форматированное общее время работы"
-    media_player.android_tv_192_168_2_21:
+    media_player.aquos_tve21a_2:
       friendly_name: "Зал TV"  
+    sensor.temp3_temperature:
+      friendly_name: "Балкон" 
+    sensor.temp4_temperature:
+      friendly_name: "УлицаХолод"       
+    sensor.temp5_temperature:
+      friendly_name: "Сервер"
+    sensor.temp6_temperature:
+      friendly_name: "Ванна"

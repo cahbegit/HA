@@ -22,8 +22,13 @@
       - sensor.temperature_spalnia_temperature
       - sensor.temperature_ulitsa_humidity
       - sensor.temperature_ulitsa_temperature
-      - sensor.temperature_vanna_humidity
-      - sensor.temperature_vanna_temperature
-      - sensor.temperature_humidity_sensor_humidity_2
-      - sensor.temperature_humidity_sensor_temperature_2
       - sensor.all_in_pro_voltage_2
+      - sensor.rozetka_power
+      - sensor.temp3_temperature
+      - sensor.temp4_temperature
+      - sensor.temp5_temperature
+      - sensor.temp6_temperature
+      - sensor.temp3_humidity      
+      - sensor.temp4_humidity
+      - sensor.temp5_humidity
+      - sensor.temp6_humidity      

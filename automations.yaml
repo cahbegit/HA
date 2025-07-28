@@ -203,13 +203,18 @@
   - target:
       entity_id: climate.c039370837e4
     data:
-      temperature: 16
+      temperature: 18
     action: climate.set_temperature
   - target:
       entity_id: climate.c039370837e4
     data:
       fan_mode: high
     action: climate.set_fan_mode
+  - target:
+      entity_id: climate.c039370837e4
+    data:
+      preset_mode: boost
+    action: climate.set_preset_mode
   mode: single
 - id: '1749116318986'
   alias: KonZalUtro2
@@ -242,3 +247,78 @@
       fan_mode: low
     action: climate.set_fan_mode
   mode: single
+- id: '1751875744814'
+  alias: Лето спальня
+  description: Включение охлаждения 21° на полчаса в тихом режиме
+  triggers:
+  - at: '23:00:00'
+    trigger: time
+  - at: 02:00:00
+    trigger: time
+  - at: 05:00:00
+    trigger: time
+  conditions: []
+  actions:
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      preset_mode: sleep
+    action: climate.set_preset_mode
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      fan_mode: low
+    action: climate.set_fan_mode
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      temperature: 21
+    action: climate.set_temperature
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      hvac_mode: cool
+    action: climate.set_hvac_mode
+  - delay:
+      minutes: 30
+  - target:
+      entity_id: climate.c039370b68a2
+    data:
+      hvac_mode: 'off'
+    action: climate.set_hvac_mode
+  mode: single
+- id: '1753429709783'
+  alias: Автосвет ванна
+  description: Включает свет при движении и выключает через 5 минут после отсутствия,
+    только с 8 до 22
+  triggers:
+  - entity_id: binary_sensor.temp6_presence
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.temp6_presence
+    to: 'off'
+    for: 00:05:00
+    trigger: state
+  conditions:
+  - condition: time
+    after: 08:00:00
+    before: '22:00:00'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.temp6_presence
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: switch.2_ty_12z_switch_2
+        action: switch.turn_on
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.temp6_presence
+        state: 'off'
+      sequence:
+      - target:
+          entity_id: switch.2_ty_12z_switch_2
+        action: switch.turn_off
+  mode: restart

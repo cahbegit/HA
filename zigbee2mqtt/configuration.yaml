@@ -1,0 +1,44 @@
+mqtt:
+  server: mqtt://core-mosquitto:1883
+  base_topic: zigbee2mqtt
+  version: 5
+  user: addons
+  password: ohdu6eish1fiuG4ao9ahbeas1aaXie8fah0ohpohsu0veax9eeFaiG6chee9aiza
+serial:
+  port: /dev/ttyUSB0
+  adapter: ember
+advanced:
+  transmit_power: 20
+  channel: 11
+  pan_id: 31964
+  network_key:
+    - 205
+    - 189
+    - 16
+    - 181
+    - 43
+    - 186
+    - 45
+    - 240
+    - 35
+    - 145
+    - 82
+    - 10
+    - 200
+    - 160
+    - 190
+    - 4
+  last_seen: ISO_8601
+  log_level: info
+homeassistant:
+  enabled: true
+  legacy_action_sensor: true
+  experimental_event_entities: false
+devices:
+  - devices.yaml
+groups:
+  - groups.yaml
+version: 4
+frontend:
+  enabled: true
+  port: 8099
