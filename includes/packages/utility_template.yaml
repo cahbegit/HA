@@ -27,12 +27,14 @@ utility_template:
           state: >
             {% set batteries = [
               'sensor.motion_sensor_2_battery_2',
-              'sensor.spalnia_shtora_battery',
-              'sensor.temperature_humidity_sensor_battery_2',
-              'sensor.temperature_spalnia_battery',
-              'sensor.temperature_ulitsa_battery',
-              'sensor.temperature_vanna_battery',
-              'sensor.wireless_scene_switch_battery'
+              'sensor.temp1_battery',
+              'sensor.temp2_battery',
+              'sensor.temp3_battery',
+              'sensor.temp4_battery',
+              'sensor.temp5_battery',
+              'sensor.temp6_battery',
+              'sensor.wireless_scene_switch_battery',
+              'sensor.spalnia_shtora_battery'
             ] %}
             {% for entity in batteries %}
               {% set val = states(entity) | int(100) %}
@@ -46,13 +48,15 @@ utility_template:
             battery_levels: >
               {% set out = namespace(result=[]) %}
               {% set batteries = [
-                'sensor.motion_sensor_2_battery_2',
-                'sensor.spalnia_shtora_battery',
-                'sensor.temperature_humidity_sensor_battery_2',
-                'sensor.temperature_spalnia_battery',
-                'sensor.temperature_ulitsa_battery',
-                'sensor.temperature_vanna_battery',
-                'sensor.wireless_scene_switch_battery'
+                  'sensor.motion_sensor_2_battery_2',
+                  'sensor.temp1_battery',
+                  'sensor.temp2_battery',
+                  'sensor.temp3_battery',
+                  'sensor.temp4_battery',
+                  'sensor.temp5_battery',
+                  'sensor.temp6_battery',
+                  'sensor.wireless_scene_switch_battery',
+                  'sensor.spalnia_shtora_battery'
               ] %}
               {% for entity in batteries %}
                 {% set val = states(entity) | int(100) %}

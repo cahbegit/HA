@@ -13,7 +13,7 @@ telegram_control:
           data:
             target: "{{ trigger.event.data.user_id }}"
             message: |
-              {{'\U0001F527'}} Выбрать комнату для управления :
+              {{'\U0001F527'}} Выбрать комнату для управления:
             inline_keyboard:
               - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Туалет:/vanna_control'
               - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
@@ -52,7 +52,7 @@ telegram_control:
                   data:
                     target: "{{ trigger.event.data.chat_id }}"
                     message: |
-                      {{'\U0001F527'}} Выбрать комнату для управления :
+                      {{'\U0001F527'}} Выбрать комнату для управления:
                     inline_keyboard:
                       - '{{''\U0001F6B6''}} Коридор:/koridor_control , {{''\U0001F6C0''}} Туалет:/vanna_control'
                       - '{{''\U0001F3E2''}} Зал:/zal_control , {{''\U0001F374''}} Кухня:/kuhnya_control'
@@ -139,6 +139,7 @@ telegram_control:
                       {{'\U0001F6AA'}} Коридорная дверь - {% if is_state('binary_sensor.0x00158d000119378d_contact', 'on') %} Открыта {% else %} Закрыта {% endif %}
                       {{'\U0001F6B6'}} - {% if is_state('binary_sensor.0x00158d00010f8920_occupancy', 'on') %} Движение {% else %} Нет движения {% endif %}
                       {{'\U0001F321'}} - {{ states('sensor.ble_temperature_a4c1388bd919') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.ble_temperature_a4c1388bd919') }} %
+                      {{'\U000023F0'}} Последнее движение: {{ states.binary_sensor.motion_sensor_2.last_changed.strftime('%d.%m.%Y %H:%M:%S') }}
                     inline_keyboard: &keyb_en
                       - '{{''\U0001F4A1''}} Лампочка - {% if is_state(''switch.sonoff_1001f888c1_1'', ''off'')%}{{''🔴''}}{% else %}{{''🟢''}}{% endif %}:/toggle_en_bulb_light'
                       - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/koridor_control'
@@ -194,7 +195,7 @@ telegram_control:
                       {{'\U0001F6B1'}} - Ванна - {% if is_state('binary_sensor.water_leak_sensor_moisture', 'on') %} Протечка {% else %} Сухо {% endif %}
                       {{'\U0001F321'}} - {{ states('sensor.temp6_temperature') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.temp6_humidity') }} %
                     inline_keyboard: &keyb_bt
-                      - '{{''\U0001F4A1''}} Люстра - {% if is_state(''switch.0xf082c0fffe00cce2'', ''off'')%}{{''🔴''}}{% else %}{{''🟢''}}{% endif %}:/toggle_vannaya'
+                      - '{{''\U0001F4A1''}} Люстра - {% if is_state(''switch.2_ty_12z_switch_2'', ''off'')%}{{''🔴''}}{% else %}{{''🟢''}}{% endif %}:/toggle_vannaya'
                       - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/vanna_control'
             - conditions:
                 - condition: template
@@ -346,18 +347,16 @@ telegram_control:
                 - service: telegram_bot.send_message
                   data:
                     target: "{{ trigger.event.data.chat_id }}"
-                    message: &msg_kh |
+                    message: &msg_sp |
                       {{'\U0001F374'}} Управление Кухня :
                       Кухня -
-                      {{'\U0001F6B6'}} - {% if is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'on') %} Движение {% else %} Нет движения {% endif %} {{'\U0001F6AA'}} Дверь - {% if is_state('binary_sensor.0x00158d00054495dc_contact', 'on') %} Открыта {% else %} Закрыта {% endif %}
-                      {{'\U0001F6B1'}} - Кухня - {% if is_state('binary_sensor.0xa4c13894f2143b7b_water_leak', 'on') %} Протечка {% else %} Сухо {% endif %}
-                      {{'\U0001F321'}} - {{ states('sensor.ble_temperature_kukhnia') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.ble_humidity_kukhnia') }} %
-                    inline_keyboard: &keyb_kh
+                      {{'\U0001F321'}} - {{ states('ssensor.temperature_spalnia_temperature') }} °C, {{'\U0001F4A7'}} - {{ states('sensor.temperature_spalnia_humidity') }} %
+                    inline_keyboard: &keyb_sp
                       - '{{''\U000021A9''}} Вернуться:/menu_back , {{''\U000021AA''}} Обновить:/spalnia_control'
 
 
     ###Управление Балкон
-    - id: балкон меню управления телеграм
+    - id: терасса меню управления телеграм
       alias: telegram_balkon_menu_control
       initial_state: true
       triggers:
@@ -377,9 +376,9 @@ telegram_control:
                 - data:
                     target: "{{ trigger.event.data.chat_id }}"
                     message: >
-                      {{'\U0001F309'}} Балкон :
+                      {{'\U0001F309'}} Терасса :
 
-                      Балкон -
+                      Терасса -
 
                       {{'\U0001F321'}} - {{ states('sensor.temperature_ulitsa_temperature') }} °C,
                       {{'\U0001F4A7'}} - {{ states('sensor.temperature_ulitsa_humidity') }} %

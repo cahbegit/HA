@@ -72,9 +72,9 @@
   alias: Калидор
   description: ''
   triggers:
-  - type: motion
-    device_id: 860c11ab066da855ae1fb2edc9475b09
-    entity_id: cb7673430ee2dce2f65a579abf13e3bb
+  - type: occupied
+    device_id: c9e91f7ed602c98c23be2a0dfacfaea3
+    entity_id: 7daab7e16b1392702bd43d8f122545f5
     domain: binary_sensor
     trigger: device
   conditions:
@@ -86,7 +86,7 @@
     - condition: template
       value_template: "{% set sunset = state_attr('sun.sun', 'next_setting') %} {%
         if sunset is not none %}\n  {% set sunset_time = (sunset | as_datetime | as_local
-        - timedelta(hours=2)).time() %}\n  {{ now().time() > sunset_time }}\n{% else
+        - timedelta(hours=4)).time() %}\n  {{ now().time() > sunset_time }}\n{% else
         %}\n  false\n{% endif %}\n"
   - condition: device
     type: is_off
@@ -167,8 +167,8 @@
     data:
       chat_id: '506234553'
       message: "{{\"\\U0001F3E0\"}} *Время:* {{ states('sensor.time') }}  \n{{\"\\U0001F321\"}}
-        *Температура (улица):* {{ states('sensor.temperature_ulitsa_temperature_2')
-        }}°C  \n{{\"\U0001F4A7\"}} *Влажность (улица):* {{ states('sensor.temperature_ulitsa_humidity_2')
+        *Температура (улица):* {{ states('sensor.temp1_temperature')
+        }}°C  \n{{\"\U0001F4A7\"}} *Влажность (улица):* {{ states('sensor.temp1_humidity')
         }}%\n{{\"\U0001F300\"}} *По ощущениям:* {{ states('sensor.openweathermap_feels_like_temperature')
         }}°C\n{{\"\\U0001F32B\"}} *Прогноз:* {{ states('sensor.openweathermap_temperature')
         }}°C\n{{\"\\U0001F4AA\"}} *Давление:* {{ (states('sensor.openweathermap_pressure')|float

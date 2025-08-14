@@ -21,13 +21,5 @@ recorder:
     entities:
       - sensor.time
 
-camera:
-  - platform: ffmpeg
-    name: Cam_Top
-    input: rtsp://192.168.2.5:8554/top
-
-  - platform: ffmpeg
-    name: Cam_Bottom
-    input: rtsp://192.168.2.5:8554/bottom
 
 

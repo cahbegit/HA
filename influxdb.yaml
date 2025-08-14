@@ -24,11 +24,29 @@
       - sensor.temperature_ulitsa_temperature
       - sensor.all_in_pro_voltage_2
       - sensor.rozetka_power
-      - sensor.temp3_temperature
+      - sensor.rozetka2_power
+      - sensor.rozetka3_power
+      - sensor.rozetka4_power
+      - sensor.temp1_temperature
+      - sensor.temp2_temperature
+      - sensor.temp3_temperature      
       - sensor.temp4_temperature
       - sensor.temp5_temperature
       - sensor.temp6_temperature
+      - sensor.temp1_humidity    
+      - sensor.temp2_humidity          
       - sensor.temp3_humidity      
       - sensor.temp4_humidity
       - sensor.temp5_humidity
-      - sensor.temp6_humidity      
+      - sensor.temp6_humidity
+      - sensor.powmrbms_battery_charge_current
+      - sensor.powmrbms_battery_current
+      - sensor.powmrbms_battery_discharge_current
+      - sensor.powmrbms_battery_power
+      - sensor.powmrbms_battery_voltage
+      - sensor.powmrbms_jkbms_charging_power
+      - sensor.powmrbms_jkbms_current
+      - sensor.powmrbms_jkbms_discharging_power
+      - sensor.powmrbms_load_power
+      - sensor.powmrbms_jkbms_power
+      - sensor.powmrbms_jkbms_total_voltage
