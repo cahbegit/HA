@@ -114,10 +114,14 @@
     entity_id: 26005799a4cbaf2395ba6787528c9073
     domain: switch
   - delay:
-      minutes: 5
+      hours: 0
+      minutes: 3
+      seconds: 0
+      milliseconds: 0
   - target:
       entity_id: 26005799a4cbaf2395ba6787528c9073
     action: switch.turn_off
+    data: {}
   mode: single
 - id: '1738685065988'
   alias: Ночное проветривание кондиционеров (тихо)
