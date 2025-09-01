@@ -1,0 +1,63 @@
+blueprint:
+  name: Tuya Zigbee Button (SH-SC07) - три действия
+  description: >
+    Автоматизация для кнопки Tuya SH-SC07 (через Zigbee2MQTT).
+    Поддерживает single, double и hold. 
+    Можно задать разные действия для каждого.
+  domain: automation
+  input:
+    button_entity:
+      name: Энтити кнопки
+      description: Сенсор кнопки из Zigbee2MQTT (обычно sensor.button_action)
+      selector:
+        entity:
+          domain: sensor
+
+    switch_single:
+      name: Свитч для single
+      description: Включать/выключать этот свитч при одинарном нажатии
+      selector:
+        entity:
+          domain: switch
+
+    switch_double:
+      name: Свитч для double
+      description: Включать/выключать этот свитч при двойном нажатии
+      selector:
+        entity:
+          domain: switch
+      default: []
+
+    switches_hold:
+      name: Свитчи для hold
+      description: Эти свитчи будут выключены при долгом удержании
+      selector:
+        target:
+          entity:
+            domain: switch
+      default: []
+
+mode: single
+
+trigger:
+  - platform: state
+    entity_id: !input button_entity
+
+action:
+  - choose:
+      - conditions: "{{ trigger.to_state.state == 'single' }}"
+        sequence:
+          - service: switch.toggle
+            target:
+              entity_id: !input switch_single
+
+      - conditions: "{{ trigger.to_state.state == 'double' }}"
+        sequence:
+          - service: switch.toggle
+            target:
+              entity_id: !input switch_double
+
+      - conditions: "{{ trigger.to_state.state == 'hold' }}"
+        sequence:
+          - service: switch.turn_off
+            target: !input switches_hold

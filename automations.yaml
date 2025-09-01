@@ -323,3 +323,15 @@
           entity_id: switch.2_ty_12z_switch_2
         action: switch.turn_off
   mode: restart
+- id: '1756374867490'
+  alias: Кнопка калидор
+  description: ''
+  use_blueprint:
+    path: button_to_switch.yaml
+    input:
+      button_entity: sensor.button_action
+      switch_single: switch.1_ty_12z_switch_1
+      switches_hold:
+        device_id:
+        - 873a00d3bbd8fa574ee737d21efa2f19
+        - 4b7714e3f237f2e24adee6c08e84c7a6

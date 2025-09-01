@@ -396,14 +396,16 @@ utility_total:
                   - service: notify.telegram_cahbe
                     data:
                       message: | 
-                         {{"\U0001F4C5"}} Начался новый месяц - {{ states('sensor.month') }}
-                         {{"\U0000303D"}} Электросчетчик всего {{ states('sensor.counter_energy_clear') }} КВт ч
-                         {{"\U00002600"}} День - {{ states('sensor.counter_energy_day') }} КВт ч, Ночь - {{ states('sensor.counter_energy_night') }} КВт ч
+                         {{"\U0001F4C5"}} {{as_timestamp(now()) | int | timestamp_custom("%H:%M:%S %d.%m.%Y") }}
+                         {{"\U0001F3E0"}} Квартира - {{ states('sensor.workplace_clear') }} КВт ч, День - {{ states('sensor.workplace_day') }} КВт ч, Ночь - {{ states('sensor.workplace_night') }} КВт ч
+                         {{"\U0001F4A1"}} Свет - {{ states('sensor.light_kn_clear') }} КВт ч, День - {{ states('sensor.light_kn_day') }} КВт ч, Ночь - {{ states('sensor.light_kn_night') }} КВт ч
+                         {{"\U00002744"}} Спальня - {{ states('sensor.kondei_spalnia_clear') }} КВт ч, День - {{ states('sensor.kondei_spalnia_day') }} КВт ч, Ночь - {{ states('sensor.kondei_spalnia_night') }} КВт ч
+                         {{"\U00002744"}} Зал - {{ states('sensor.kondei_zal_clear') }} КВт ч, День - {{ states('sensor.kondei_zal_day') }} КВт ч, Ночь - {{ states('sensor.kondei_zal_night') }} КВт ч
                          {{"\U0001F4E8"}} Потребление за месяц:
+                         {{"\U00002600"}} День - {{ states('sensor.meter_total_energy_day') }} КВт ч, Ночь - {{ states('sensor.meter_total_energy_night') }} КВт ч
+                         {{"\U0001F4B5"}} Cтоимость, день - {{ states('sensor.total_energy_day_cost') }} грн, ночь - {{ states('sensor.total_energy_night_cost') }} грн 
                          {{"\U000026A1"}} Всего - {{ states('sensor.meter_total_energy_clear') }} КВт ч
                          {{"\U0001F4B5"}} Cтоимость {{ states('sensor.total_energy_clear_cost') }} грн
-                         {{"\U00002600"}} День - {{ states('sensor.meter_total_energy_day') }} КВт ч, Ночь - {{ states('sensor.meter_total_energy_night') }} КВт ч
-                         {{"\U0001F4B5"}} Cтоимость, день - {{ states('sensor.total_energy_day_cost') }} грн, ночь - {{ states('sensor.total_energy_night_cost') }} грн   
             - choose:
               - conditions:
                   - condition: trigger
@@ -413,10 +415,12 @@ utility_total:
                     data:
                       message: | 
                          {{"\U0001F4C5"}} {{as_timestamp(now()) | int | timestamp_custom("%H:%M:%S %d.%m.%Y") }}
-                         {{"\U0000303D"}} Электросчетчик всего {{ states('sensor.counter_energy_clear') }} КВт ч
-                         {{"\U00002600"}} День - {{ states('sensor.counter_energy_day') }} КВт ч, Ночь - {{ states('sensor.counter_energy_night') }} КВт ч
+                         {{"\U0001F3E0"}} Квартира - {{ states('sensor.workplace_clear') }} КВт ч, День - {{ states('sensor.workplace_day') }} КВт ч, Ночь - {{ states('sensor.workplace_night') }} КВт ч
+                         {{"\U0001F4A1"}} Свет - {{ states('sensor.light_kn_clear') }} КВт ч, День - {{ states('sensor.light_kn_day') }} КВт ч, Ночь - {{ states('sensor.light_kn_night') }} КВт ч
+                         {{"\U00002744"}} Спальня - {{ states('sensor.kondei_spalnia_clear') }} КВт ч, День - {{ states('sensor.kondei_spalnia_day') }} КВт ч, Ночь - {{ states('sensor.kondei_spalnia_night') }} КВт ч
+                         {{"\U00002744"}} Зал - {{ states('sensor.kondei_zal_clear') }} КВт ч, День - {{ states('sensor.kondei_zal_day') }} КВт ч, Ночь - {{ states('sensor.kondei_zal_night') }} КВт ч
                          {{"\U0001F4E8"}} Потребление за месяц:
-                         {{"\U000026A1"}} Всего - {{ states('sensor.meter_total_energy_clear') }} КВт ч
-                         {{"\U0001F4B5"}} Cтоимость {{ states('sensor.total_energy_clear_cost') }} грн
                          {{"\U00002600"}} День - {{ states('sensor.meter_total_energy_day') }} КВт ч, Ночь - {{ states('sensor.meter_total_energy_night') }} КВт ч
                          {{"\U0001F4B5"}} Cтоимость, день - {{ states('sensor.total_energy_day_cost') }} грн, ночь - {{ states('sensor.total_energy_night_cost') }} грн 
+                         {{"\U000026A1"}} Всего - {{ states('sensor.meter_total_energy_clear') }} КВт ч
+                         {{"\U0001F4B5"}} Cтоимость {{ states('sensor.total_energy_clear_cost') }} грн
