@@ -18,8 +18,8 @@ ota:
     password: "cecaf292577f10925f447fd6cf54f69e"
 
 wifi:
-  ssid: !secret wifi_ssidt
-  password: !secret wifi_passwordt
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
 
 captive_portal:
 
