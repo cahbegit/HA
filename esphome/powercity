@@ -11,15 +11,15 @@ logger:
 
 api:
   encryption:
-    key: "L7sxywpOdm0G4gLcIM+5I4cSBzz0cku1zITW6rUI5fQ="
+    key: "uV8nJqY3Zb5Qx4pR2kH6eF9tLm1Vw0Xa"
 
 ota:
   - platform: esphome
-    password: "cecaf292577f10925f447fd6cf54f69e"
+    password: "a7d9c3f1e6b8g2h4i0j5k7l9m2n8p3q1"
 
 wifi:
-  ssid: !secret wifi_ssidt
-  password: !secret wifi_passwordt
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
 
 captive_portal:
 
@@ -52,16 +52,6 @@ sensor:
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
     device_class: ""
-
-switch:
-  - platform: gpio
-    id: boiler_relay
-    name: "Реле котла"
-    pin: 
-      number: GPIO9
-      mode: OUTPUT
-      inverted: true
-    restore_mode: ALWAYS_OFF
 
 text_sensor:
   - platform: template
