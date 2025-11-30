@@ -1,0 +1,76 @@
+esphome:
+  name: termostat
+  friendly_name: Termostat
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: "L7sxywpOdm0G4gLcIM+5I4cSBzz0cku1zITW6rUI5fQ="
+
+ota:
+  - platform: esphome
+    password: "cecaf292577f10925f447fd6cf54f69e"
+
+wifi:
+  ssid: !secret wifi_ssidt
+  password: !secret wifi_passwordt
+
+captive_portal:
+
+web_server:
+  port: 80
+
+sensor:
+  - platform: uptime
+    name: "Uptime Seconds"
+    id: uptime_sensor
+    update_interval: 60s
+
+  - platform: internal_temperature
+    name: "Controller Temperature"
+    update_interval: 10s
+    state_class: measurement
+    device_class: temperature
+
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
+
+button:
+  - platform: template
+    name: "SpalnaP (Toggle)"
+    on_press:
+      - switch.turn_on: spalnaP
+      - delay: 300ms
+      - switch.turn_off: spalnaP
+
+text_sensor:
+  - platform: template
+    name: "Uptime (formatted)"
+    update_interval: 60s
+    lambda: |-
+      int seconds = (int) id(uptime_sensor).state;
+      int days = seconds / 86400;
+      int hours = (seconds % 86400) / 3600;
+      int minutes = (seconds % 3600) / 60;
+      char buffer[32];
+      sprintf(buffer, "%dd %02dh %02dm", days, hours, minutes);
+      return std::string(buffer);
+    icon: "mdi:clock-outline"

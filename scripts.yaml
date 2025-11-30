@@ -4,24 +4,25 @@ youtube:
   sequence:
   - variables:
       random_index: '{{ range(1, 47) | random }}'
-  - target:
-      entity_id: media_player.aquos_tve21a_2
-    action: media_player.turn_on
+  - action: media_player.turn_on
     data: {}
+    target:
+      entity_id: media_player.android_tv_192_168_2_21
   - delay: 00:00:03
-  - target:
-      entity_id: media_player.aquos_tve21a_2
-    data:
+  - data:
       volume_level: 0.3
     action: media_player.volume_set
+    target:
+      entity_id: media_player.android_tv_192_168_2_21
   - delay: 00:00:01
   - data:
-      entity_id: media_player.aquos_tve21a_2
       command: 'am start -a android.intent.action.VIEW -d "https://www.youtube.com/playlist?list=WL&index={{
         random_index }}"
 
         '
     action: androidtv.adb_command
+    target:
+      entity_id: media_player.android_tv_192_168_2_21
 samtvsleep:
   alias: samtvsleep
   mode: single

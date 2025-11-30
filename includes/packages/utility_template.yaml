@@ -1,28 +1,31 @@
 utility_template:
   
-    template:
-      - binary_sensor:
-          - name: "Саша дома"
-            state: >
-              {{ is_state('device_tracker.poco_x5_pro_5g', 'home') or
-                 is_state('device_tracker.poco_x5_pro_5g_2', 'home') or
-                 is_state('device_tracker.poco_x5_pro_5g_3', 'home') }}
-          - name: "Лена дома"
-            state: >
-              {{ is_state('device_tracker.xiaomi_11_lite_5g_ne', 'home') or
-                 is_state('device_tracker.xiaomi_11_lite_5g_ne_2', 'home') or
-                 is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') }}
-      - sensor:
+  template:
+    - binary_sensor:
+        - name: "Саша дома"
+          state: >
+            {{ is_state('device_tracker.poco_x5_pro_5g', 'home') or
+               is_state('device_tracker.poco_x5_pro_5g_2', 'home') or
+               is_state('device_tracker.poco_x5_pro_5g_3', 'home') }}
+
+        - name: "Лена дома"
+          state: >
+            {{ is_state('device_tracker.xiaomi_11_lite_5g_ne', 'home') or
+               is_state('device_tracker.xiaomi_11_lite_5g_ne_2', 'home') or
+               is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') }}
+
+    - sensor:
         - name: "sensor.Kotel_Power_Delta"
           state: >
             {{ (
               states('sensor.kotel_power_2')|float(0) - 
-              states('sensor.kotel_zariad_power_2')|float(0)
+              states('sensor.kotel_zariad_power')|float(0)
             )|round(2) }}
-          unit_of_measurement: "W"  # Указываем единицу измерения
-          device_class: power       # Класс устройства - мощность
-          state_class: measurement  # Тип данных - измерения
-        - name: "low_battery_sensor"
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+
+        - name: "Заряд датчиков"
           unique_id: low_battery_sensor_main
           state: >
             {% set batteries = [
@@ -48,15 +51,15 @@ utility_template:
             battery_levels: >
               {% set out = namespace(result=[]) %}
               {% set batteries = [
-                  'sensor.motion_sensor_2_battery_2',
-                  'sensor.temp1_battery',
-                  'sensor.temp2_battery',
-                  'sensor.temp3_battery',
-                  'sensor.temp4_battery',
-                  'sensor.temp5_battery',
-                  'sensor.temp6_battery',
-                  'sensor.wireless_scene_switch_battery',
-                  'sensor.spalnia_shtora_battery'
+                'sensor.motion_sensor_2_battery_2',
+                'sensor.temp1_battery',
+                'sensor.temp2_battery',
+                'sensor.temp3_battery',
+                'sensor.temp4_battery',
+                'sensor.temp5_battery',
+                'sensor.temp6_battery',
+                'sensor.wireless_scene_switch_battery',
+                'sensor.spalnia_shtora_battery'
               ] %}
               {% for entity in batteries %}
                 {% set val = states(entity) | int(100) %}
@@ -64,3 +67,39 @@ utility_template:
                 {% set out.result = out.result + [name ~ ': ' ~ val ~ '%'] %}
               {% endfor %}
               {{ out.result }}
+
+        - name: "Yasno Power Status Dynamic"
+          icon: mdi:transmission-tower
+          state: >
+            {% set power = states('sensor.yasno_dnipro_dnem_5_1_electricity') %}
+            {% if power == 'normal' %}
+              {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_planned_outage') %}
+            {% elif power == 'disconnected' %}
+              {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_connectivity') %}
+            {% else %}
+              {{ "Неизвестно" }}
+            {% endif %}
+
+            {% if t in ("unknown", "unavailable", "") %}
+              Нет данных
+            {% else %}
+              {% set target = t | as_datetime %}
+              {% set now = now() %}
+              {% if target < now %}
+                Уже должно было быть
+              {% else %}
+                {% set delta = target - now %}
+                {% set days = delta.days %}
+                {% set hours = (delta.seconds // 3600) %}
+                {% set minutes = (delta.seconds % 3600) // 60 %}
+
+                {% if days > 0 %}
+                  Через {{ days }} д {{ hours }} ч
+                {% elif hours > 0 %}
+                  Через {{ hours }} ч {{ minutes }} мин
+                {% else %}
+                  Через {{ minutes }} мин
+                {% endif %}
+              {% endif %}
+            {% endif %}
+

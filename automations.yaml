@@ -69,7 +69,7 @@
       entity_id: switch.1_ty_12z_switch_3
   mode: single
 - id: '1737387903512'
-  alias: Калидор
+  alias: Калидор — свет
   description: ''
   triggers:
   - type: occupied
@@ -80,56 +80,39 @@
   conditions:
   - condition: and
     conditions:
+    - condition: sun
+      after: sunset
+      after_offset: -04:00:00
     - condition: time
       before: '23:00:00'
-      after: 09:00:00
+  - condition: or
+    conditions:
     - condition: template
-      value_template: "{% set sunset = state_attr('sun.sun', 'next_setting') %} {%
-        if sunset is not none %}\n  {% set sunset_time = (sunset | as_datetime | as_local
-        - timedelta(hours=4)).time() %}\n  {{ now().time() > sunset_time }}\n{% else
+      value_template: "{% set e = states.binary_sensor.sasha_doma %} {% if e.state
+        == 'on' %}\n  {{ (now() - e.last_changed).total_seconds() < 180 }}\n{% else
         %}\n  false\n{% endif %}\n"
-  - condition: device
-    type: is_off
-    device_id: 873a00d3bbd8fa574ee737d21efa2f19
-    entity_id: a84cb9bdac660866bfebf197017b268d
-    domain: switch
-  - condition: device
-    type: is_off
-    device_id: 873a00d3bbd8fa574ee737d21efa2f19
-    entity_id: 56e653fd9c820a0b9fa70c317581a0be
-    domain: switch
-  - condition: device
-    type: is_off
-    device_id: 4b7714e3f237f2e24adee6c08e84c7a6
-    entity_id: 7e455e38618820bf522d8de174efc490
-    domain: switch
-  - condition: device
-    type: is_off
-    device_id: 4b7714e3f237f2e24adee6c08e84c7a6
-    entity_id: 91dd3daa6da748733ccb3fb26cab39d1
-    domain: switch
+    - condition: template
+      value_template: "{% set e = states.binary_sensor.lena_doma %} {% if e.state
+        == 'on' %}\n  {{ (now() - e.last_changed).total_seconds() < 180 }}\n{% else
+        %}\n  false\n{% endif %}\n"
   actions:
-  - type: turn_on
-    device_id: 873a00d3bbd8fa574ee737d21efa2f19
-    entity_id: 26005799a4cbaf2395ba6787528c9073
-    domain: switch
-  - delay:
-      hours: 0
-      minutes: 3
-      seconds: 0
-      milliseconds: 0
   - target:
-      entity_id: 26005799a4cbaf2395ba6787528c9073
+      entity_id: switch.26005799a4cbaf2395ba6787528c9073
+    action: switch.turn_on
+  - delay: 00:03:00
+  - target:
+      entity_id: switch.26005799a4cbaf2395ba6787528c9073
     action: switch.turn_off
-    data: {}
   mode: single
 - id: '1738685065988'
-  alias: Ночное проветривание кондиционеров (тихо)
+  alias: Ночное проветривание спальня (тихо)
   description: ''
   triggers:
   - at: '23:00:00'
     trigger: time
-  - at: 02:00:00
+  - at: 01:00:00
+    trigger: time
+  - at: 03:00:00
     trigger: time
   - at: 05:00:00
     trigger: time
@@ -151,7 +134,7 @@
     action: climate.set_hvac_mode
   - delay:
       hours: 0
-      minutes: 10
+      minutes: 15
       seconds: 0
       milliseconds: 0
   - target:
@@ -290,8 +273,8 @@
   mode: single
 - id: '1753429709783'
   alias: Автосвет ванна
-  description: Включает свет при движении и выключает через 5 минут после отсутствия,
-    только с 8 до 22
+  description: Включает свет при движении и выключает через 5 минут после последнего
+    движения
   triggers:
   - entity_id: binary_sensor.temp6_presence
     to: 'on'
@@ -319,6 +302,10 @@
         entity_id: binary_sensor.temp6_presence
         state: 'off'
       sequence:
+      - delay: 00:05:00
+      - condition: state
+        entity_id: binary_sensor.temp6_presence
+        state: 'off'
       - target:
           entity_id: switch.2_ty_12z_switch_2
         action: switch.turn_off
@@ -335,3 +322,60 @@
         device_id:
         - 873a00d3bbd8fa574ee737d21efa2f19
         - 4b7714e3f237f2e24adee6c08e84c7a6
+- id: '1763649607541'
+  alias: Настройка поведения зарядки по времени
+  description: Меняем состояние автомата зарядки по расписанию
+  triggers:
+  - at: 00:30:00
+    trigger: time
+  - at: 08:30:00
+    trigger: time
+  actions:
+  - choose:
+    - conditions:
+      - condition: time
+        after: 00:30:00
+        before: 08:30:00
+      sequence:
+      - target:
+          entity_id: select.kotel_zariad_releystatus
+        data:
+          option: Включено
+        action: select.select_option
+    - conditions:
+      - condition: time
+        after: 08:30:00
+        before: 00:30:00
+      sequence:
+      - target:
+          entity_id: select.kotel_zariad_releystatus
+        data:
+          option: Выключено
+        action: select.select_option
+  mode: single
+- id: '1763728297733'
+  alias: Управление холодильником
+  description: Включаем/выключаем холодильник в зависимости от состояния батареи
+  triggers:
+  - entity_id: binary_sensor.powmrbms_on_battery
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.powmrbms_on_battery
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: switch.kholodilnik_switch_2
+        action: switch.turn_off
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.powmrbms_on_battery
+        state: 'off'
+      sequence:
+      - delay: 00:03:00
+      - target:
+          entity_id: switch.kholodilnik_switch_2
+        action: switch.turn_on
+  mode: single
