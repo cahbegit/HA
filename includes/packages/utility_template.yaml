@@ -13,6 +13,13 @@ utility_template:
             {{ is_state('device_tracker.xiaomi_11_lite_5g_ne', 'home') or
                is_state('device_tracker.xiaomi_11_lite_5g_ne_2', 'home') or
                is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') }}
+               
+        - name: "internet_off"
+          unique_id: internet_off
+          state: >
+            {{ states('sensor.mikrotik_router_download_speed') | float(0) < 1 }}
+          delay_on: 
+            seconds: 30               
 
     - sensor:
         - name: "sensor.Kotel_Power_Delta"
@@ -41,7 +48,7 @@ utility_template:
             ] %}
             {% for entity in batteries %}
               {% set val = states(entity) | int(100) %}
-              {% if val < 20 %}
+              {% if val < 50 %}
                 {{ state_attr(entity, 'friendly_name') or entity }}
                 {% break %}
               {% endif %}
@@ -67,39 +74,4 @@ utility_template:
                 {% set out.result = out.result + [name ~ ': ' ~ val ~ '%'] %}
               {% endfor %}
               {{ out.result }}
-
-        - name: "Yasno Power Status Dynamic"
-          icon: mdi:transmission-tower
-          state: >
-            {% set power = states('sensor.yasno_dnipro_dnem_5_1_electricity') %}
-            {% if power == 'normal' %}
-              {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_planned_outage') %}
-            {% elif power == 'disconnected' %}
-              {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_connectivity') %}
-            {% else %}
-              {{ "Неизвестно" }}
-            {% endif %}
-
-            {% if t in ("unknown", "unavailable", "") %}
-              Нет данных
-            {% else %}
-              {% set target = t | as_datetime %}
-              {% set now = now() %}
-              {% if target < now %}
-                Уже должно было быть
-              {% else %}
-                {% set delta = target - now %}
-                {% set days = delta.days %}
-                {% set hours = (delta.seconds // 3600) %}
-                {% set minutes = (delta.seconds % 3600) // 60 %}
-
-                {% if days > 0 %}
-                  Через {{ days }} д {{ hours }} ч
-                {% elif hours > 0 %}
-                  Через {{ hours }} ч {{ minutes }} мин
-                {% else %}
-                  Через {{ minutes }} мин
-                {% endif %}
-              {% endif %}
-            {% endif %}
 

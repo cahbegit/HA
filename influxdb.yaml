@@ -46,3 +46,7 @@
       - sensor.powmrbms_load_power
       - sensor.powmrbms_jkbms_power
       - sensor.powmrbms_jkbms_total_voltage
+      - sensor.powmrbms_jkbms_cell_voltage_1
+      - sensor.powmrbms_jkbms_cell_voltage_2
+      - sensor.powmrbms_jkbms_cell_voltage_3
+      - sensor.powmrbms_jkbms_cell_voltage_4
