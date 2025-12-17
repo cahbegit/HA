@@ -4,6 +4,7 @@ substitutions:
   external_components_source: github://syssi/esphome-jk-bms@main
   mac_address: C8:47:80:1F:73:7B
   protocol_version: JK02_32S
+  node_id: jk
 
 esphome:
   name: ${name}
