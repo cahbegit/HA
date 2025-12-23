@@ -158,11 +158,8 @@
         }}°C\n{{\"\\U0001F4AA\"}} *Давление:* {{ (states('sensor.openweathermap_pressure')|float
         * 0.7500637)|round(2) }} мм рт. ст  \n{{\"\\U00002600\"}} *Погода:* {{ states('sensor.openweathermap_weather')
         }}\n{{\"\\U0001F327\"}} *Дождь:* {{ states('sensor.openweathermap_rain') }}
-        // {{\"\\U0001F328\"}} *Снег:* {{ states('sensor.openweathermap_snow') }}\n"
-    action: telegram_bot.send_message
-  - data:
-      chat_id: '506234553'
-      message: '{{ "\u21a9\ufe0f" }} Меню:/start'
+        {{\"\\U0001F328\"}} *Снег:* {{ states('sensor.openweathermap_snow') }}        
+        \n {{\"\u21a9\ufe0f\"}} Меню:/start'\n"
     action: telegram_bot.send_message
 - id: '1749116001554'
   alias: KonZalUtro1
