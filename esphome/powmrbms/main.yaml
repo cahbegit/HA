@@ -1,6 +1,3 @@
-external_components:
-  - source: github://odya/esphome-powmr-hybrid-inverter@main
-    components: [powmr_inverter]
 esphome:
   name: "${device_name}"
   friendly_name: "${node_name}"
@@ -12,7 +9,7 @@ esphome:
     version: 1.3.3
 packages:
   inverter: !include {
-    file: modules/inverter.yaml
+    file: modules/inverter.yaml 
   }
 
 #  debug: !include modules/debug.yaml
