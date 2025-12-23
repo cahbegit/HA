@@ -2,3 +2,4 @@
     api_key: 8417965032:AAGNOBDd04fJQbdld0E_-bvs_kNiH3DPiWc #Токен
     allowed_chat_ids:
       - 506234553		# telegram ID, що матиме доступ до бота
+       

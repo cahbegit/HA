@@ -14,3 +14,4 @@ esphome/secrets.yaml
 zigbee2mqtt/
 esphome/powmrbms/secrets.yaml
 .ha_run.lock
+includes/telegram.yaml
