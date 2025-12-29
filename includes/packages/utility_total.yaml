@@ -379,9 +379,9 @@ utility_total:
                     data:
                       option: night
 
-      - alias: send_to_telegramm
-        id: send_to_telegramm
-        description: Отправка в телеграмм
+      - alias: Telegram - energy
+        id: telegram_energy
+        description: Отчёт по электроэнергии за месяц
         initial_state: true
         trigger:
     # Отправка утром
