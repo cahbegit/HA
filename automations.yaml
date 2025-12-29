@@ -397,20 +397,17 @@
       sequence:
       - action: telegram_bot.send_message
         data:
-          chat_id: '506234553'
-          message: '{{ "⚡❌" }} *Свет пропал!* {% set t = states(''sensor.yasno_dnipro_dnem_5_1_next_connectivity'')
-            -%} {%- if t not in [''unknown'', ''unavailable'', ''''] -%} {% set ts
-            = as_timestamp(t) -%} {% set delta = ts - now().timestamp() -%} {% set
-            h = (delta // 3600) | int -%} {% set m = ((delta % 3600) // 60) | int
-            -%}
-
-            {{ "⏳" }} *Ожидаемое включение:* {{ ts | timestamp_custom(''%d.%m.%Y %H:%M'',
-            true) }} {{ "⌛" }} *Через:* {{ h }} ч {{ m }} мин {%- else -%} {{ "⏳"
-            }} *Ожидаемое включение:* нет данных {%- endif %}
-
-            {{ "↩️" }} Меню:/start
-
-            '
+          chat_id:
+          - '506234553'
+          - '515837462'
+          message: "{{ \"⚡❌\" }} *Свет пропал!*\\n {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_connectivity')
+            -%} {% if t not in ['unknown', 'unavailable', ''] -%}\n  {% set ts = as_timestamp(t)
+            -%}\n  {% set delta = ts - now().timestamp() -%}\n  {% set h = (delta
+            // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n  {{
+            \"⏳\" }} *Ожидаемое включение:* {{ ts | timestamp_custom('%d.%m.%Y %H:%M',
+            true) }}\\n\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else -%}\n
+            \ {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %}\\n {{ \"↩️\"
+            }} Меню: /start\n"
     - conditions:
       - condition: state
         entity_id: device_tracker.humanmonitor
@@ -418,13 +415,15 @@
       sequence:
       - action: telegram_bot.send_message
         data:
-          chat_id: '506234553'
-          message: "{{ \"⚡✅\" }} *Свет появился!* {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_planned_outage')
-            -%} {%- if t not in ['unknown', 'unavailable', ''] -%} {% set ts = as_timestamp(t)
-            -%} {% set delta = ts - now().timestamp() -%} {% set h = (delta // 3600)
-            | int -%} {% set m = ((delta % 3600) // 60) | int -%}\n{{ \"\U0001F4C5\"
-            }} *Следующее плановое отключение:* {{ ts | timestamp_custom('%d.%m.%Y
-            %H:%M', true) }} {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин {%- else -%}
-            {{ \"\U0001F4C5\" }} *Следующее плановое отключение:* нет данных {%- endif
-            %}\n{{ \"↩️\" }} Меню:/start\n"
+          chat_id:
+          - '506234553'
+          - '515837462'
+          message: "{{ \"⚡✅\" }} *Свет появился!*\\n {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_planned_outage')
+            -%} {% if t not in ['unknown', 'unavailable', ''] -%}\n  {% set ts = as_timestamp(t)
+            -%}\n  {% set delta = ts - now().timestamp() -%}\n  {% set h = (delta
+            // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n  {{
+            \"\U0001F4C5\" }} *Следующее плановое отключение:* {{ ts | timestamp_custom('%d.%m.%Y
+            %H:%M', true) }}\\n\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{%
+            else -%}\n  {{ \"\U0001F4C5\" }} *Следующее плановое отключение:* нет
+            данных\n{% endif %}\\n {{ \"↩️\" }} Меню: /start\n"
   mode: single
