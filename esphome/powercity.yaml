@@ -1,6 +1,7 @@
 esphome:
   name: powercity
   friendly_name: powercity
+  comment: "Автономный индикатор наличия городской сети"
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -11,11 +12,12 @@ logger:
 
 api:
   encryption:
-    key: "uV8nJqY3Zb5Qx4pR2kH6eF9tLm1Vw0Xa"
+    key: "s4HqN8x6qY3Gk2C0RzZ4uVnL8pTtK5B7EJ0M9dF1mWs="
 
 ota:
   - platform: esphome
     password: "a7d9c3f1e6b8g2h4i0j5k7l9m2n8p3q1"
+
 
 wifi:
   ssid: !secret wifi_ssidt
@@ -25,6 +27,19 @@ captive_portal:
 
 web_server:
   port: 80
+
+# =======================
+# ВРЕМЯ (SNTP)
+# =======================
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Kiev
+
+# =======================
+# СЕНСОРЫ
+# =======================
 
 sensor:
   - platform: uptime
