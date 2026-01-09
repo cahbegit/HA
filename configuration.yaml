@@ -24,4 +24,3 @@ media_player:
   - platform: aquostv
     host: 192.168.2.21
     name: media_player.android_tv_192_168_2_21
-

@@ -19,8 +19,7 @@ utility_template:
           state: >
             {{ states('sensor.mikrotik_router_download_speed') | float(0) < 1 }}
           delay_on: 
-            seconds: 30               
-
+            seconds: 30
     - sensor:
         - name: "sensor.Kotel_Power_Delta"
           state: >
@@ -74,4 +73,3 @@ utility_template:
                 {% set out.result = out.result + [name ~ ': ' ~ val ~ '%'] %}
               {% endfor %}
               {{ out.result }}
-

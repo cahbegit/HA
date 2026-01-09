@@ -380,20 +380,20 @@
   alias: Telegram - power status
   description: ''
   triggers:
-  - entity_id: device_tracker.humanmonitor
-    from: home
-    to: not_home
+  - entity_id: binary_sensor.192_168_2_219
+    from: 'on'
+    to: 'off'
     trigger: state
-  - entity_id: device_tracker.humanmonitor
-    from: not_home
-    to: home
+  - entity_id: binary_sensor.192_168_2_219
+    from: 'off'
+    to: 'on'
     trigger: state
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: device_tracker.humanmonitor
-        state: not_home
+        entity_id: binary_sensor.192_168_2_219
+        state: 'off'
       sequence:
       - action: telegram_bot.send_message
         data:
@@ -406,12 +406,19 @@
             // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n\n
             \ {{ \"⏳\" }} *Ожидаемое включение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
             %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
-            -%}\n  {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %}\n{{
+            -%}\n  {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %}\n
+            {% set soc = states('sensor.powmrbms_jkbms_state_of_charge') %}
+            {% if soc not in ['unknown', 'unavailable', ''] %}
+            🔋 *Заряд батареи:* {{ soc }} %
+            {% else %}
+            🔋 *Заряд батареи:* нет данных
+            {% endif %}
+            {{
             \"↩️\" }} Меню: /start\n"
     - conditions:
       - condition: state
-        entity_id: device_tracker.humanmonitor
-        state: home
+        entity_id: binary_sensor.192_168_2_219
+        state: 'on'
       sequence:
       - action: telegram_bot.send_message
         data:
@@ -425,5 +432,12 @@
             \ {{ \"\U0001F4C5\" }} *Следующее плановое отключение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
             %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
             -%}\n  {{ \"\U0001F4C5\" }} *Следующее плановое отключение:* нет данных\n{%
-            endif %}\n{{ \"↩️\" }} Меню: /start\n"
+            endif %}\n
+            {% set soc = states('sensor.powmrbms_jkbms_state_of_charge') %}
+            {% if soc not in ['unknown', 'unavailable', ''] %}
+            🔋 *Заряд батареи:* {{ soc }} %
+            {% else %}
+            🔋 *Заряд батареи:* нет данных
+            {% endif %}
+            {{ \"↩️\" }} Меню: /start\n"
   mode: single
