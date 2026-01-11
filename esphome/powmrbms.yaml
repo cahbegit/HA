@@ -1,63 +1,58 @@
-external_components:
-  - source: github://syssi/esphome-jk-bms@main
-    refresh: 0s
-
 substitutions:
-  name: "jkbms"
-  device_name: "powmrbms"
-  node_name: "powmrbms"
+  name: jkbms
   node_id: powmrbms
-  inverter_tx_pin: GPIO17
-  inverter_rx_pin: GPIO16
-  inverter_voltage_offset: "0"
-  update_interval: 30s # Minimum 10s recommended to avoid duplicate command errors
-  select_skip_updates: "2"
-  jk_bms_name: "jkbms"
-  jk_bms_description: "JKBMSble"
-  jk_bms_mac_address: "C8:47:80:1F:73:7B"  # Замени на MAC-адрес твоего JK-BMS
-  jk_bms_protocol_version: "JK02_32S"
+  device_description: "Monitor and control a JK-BMS v11 via bluetooth"
+  external_components_source: github://syssi/esphome-jk-bms@main
+  mac_address: C8:47:80:1F:73:7B
+  protocol_version: JK02_32S
+
+esphome:
+  name: ${name}
+  comment: ${device_description}
+  min_version: 2024.6.0
+  project:
+    name: "syssi.esphome-jk-bms"
+    version: 2.3.0
 
 esp32:
-  board: nodemcu-32s
+  board: esp32-c3-devkitm-1
   framework:
     type: esp-idf
 
-packages:
-  main: !include powmrbms/main.yaml
-  # You can replace next 2 lines with your common configs for all devices
-  common_system: !include powmrbms/common_system.yaml
-  common_sensors: !include powmrbms/common_sensors.yaml
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+- platform: esphome
+  password: !secret ota_password2
+  id: "${node_id}_ota"
+
+api:
+  reboot_timeout: 10min
+  encryption:
+    key: !secret api_encryption_key2
+
+web_server:
+  port: 80    
 
 logger:
-  level: WARN
+  level: DEBUG
   logs:
-    component: ERROR # Fix for issue #4717 "Component xxxxxx took a long time for an operation"
-
-time:
-  - platform: homeassistant
-    id: hass_time
-
-esp32_ble_tracker:
-  on_ble_advertise:
-    then:
-      - lambda: |-
-          if (x.get_name().rfind("JK-", 0) == 0) {
-            ESP_LOGI("ble_adv", "New JK-BMS found");
-            ESP_LOGI("ble_adv", "  Name: %s", x.get_name().c_str());
-            ESP_LOGI("ble_adv", "  MAC address: %s", x.address_str().c_str());
-            ESP_LOGD("ble_adv", "  Advertised service UUIDs:");
-            for (auto uuid : x.get_service_uuids()) {
-              ESP_LOGD("ble_adv", "    - %s", uuid.to_string().c_str());
-            }
-          }
+    esp32_ble_tracker: INFO
+    esp32_ble_client: INFO
 
 ble_client:
-  - mac_address: ${jk_bms_mac_address}
+  - mac_address: ${mac_address}
     id: client0
 
 jk_bms_ble:
   - ble_client_id: client0
-    protocol_version: ${jk_bms_protocol_version}
+    protocol_version: ${protocol_version}
     throttle: 5s
     id: bms0
 
@@ -150,6 +145,8 @@ number:
       name: "${name} power tube overtemperature protection"
     power_tube_overtemperature_protection_recovery:
       name: "${name} power tube overtemperature protection recovery"
+    discharge_precharge_time:
+      name: "${name} discharge precharge time"
 
 sensor:
   - platform: jk_bms_ble
@@ -221,20 +218,6 @@ sensor:
     emergency_time_countdown:
       name: "${name} emergency time countdown"
 
-  - platform: wifi_signal
-    name: "WiFi Signal dB"
-    id: wifi_signal_db
-    update_interval: 60s
-    entity_category: "diagnostic"
-  - platform: copy
-    source_id: wifi_signal_db
-    name: "WiFi Signal Percent"
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
-    entity_category: "diagnostic"
-    device_class: ""
-
 switch:
   - platform: jk_bms_ble
     charging:
@@ -262,8 +245,8 @@ switch:
 
   - platform: ble_client
     ble_client_id: client0
-    id: ble_client_switch0
     name: "${name} enable bluetooth connection"
+    id: ble_client_switch0
 
 text_sensor:
   - platform: jk_bms_ble
@@ -271,3 +254,7 @@ text_sensor:
       name: "${name} errors"
     total_runtime_formatted:
       name: "${name} total runtime formatted"
+    software_version:
+      name: "${name} software version"
+    hardware_version:
+      name: "${name} hardware version"
