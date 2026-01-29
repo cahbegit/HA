@@ -1,7 +1,7 @@
 substitutions:
   name: jkbms
   node_id: powmrbms
-  device_description: "Monitor and control a JK-BMS v11 via bluetooth"
+  device_description: "Monitor and control a JK-BMS v19 via bluetooth"
   external_components_source: github://syssi/esphome-jk-bms@main
   mac_address: C8:47:80:4E:4F:EB
   protocol_version: JK02_32S
@@ -68,6 +68,10 @@ binary_sensor:
       name: "${name} heating"
     online_status:
       name: "${name} online status"
+    dry_contact_1:
+      name: "${name} dry contact 1"
+    dry_contact_2:
+      name: "${name} dry contact 2"
 
 button:
   - platform: jk_bms_ble
@@ -117,6 +121,10 @@ number:
       name: "${name} cell request charge voltage"
     cell_request_float_voltage:
       name: "${name} cell request float voltage"
+    cell_request_charge_voltage_time:
+      name: "${name} cell request charge voltage time"
+    cell_request_float_voltage_time:
+      name: "${name} cell request float voltage time"
     charge_overcurrent_protection_delay:
       name: "${name} charge overcurrent protection delay"
     charge_overcurrent_protection_recovery_time:
@@ -147,6 +155,10 @@ number:
       name: "${name} power tube overtemperature protection recovery"
     discharge_precharge_time:
       name: "${name} discharge precharge time"
+    heating_start_temperature:
+      name: "${name} heating start temperature"
+    heating_stop_temperature:
+      name: "${name} heating stop temperature"
 
 sensor:
   - platform: jk_bms_ble
@@ -201,6 +213,8 @@ sensor:
       name: "${name} balancing"
     state_of_charge:
       name: "${name} state of charge"
+    state_of_health:
+      name: "${name} state of health"
     capacity_remaining:
       name: "${name} capacity remaining"
     total_battery_capacity_setting:
@@ -217,6 +231,10 @@ sensor:
       name: "${name} errors bitmask"
     emergency_time_countdown:
       name: "${name} emergency time countdown"
+    charge_status_id:
+      name: "${name} charge status id"
+    charge_status_time_elapsed:
+      name: "${name} charge status time elapsed"
 
 switch:
   - platform: jk_bms_ble
@@ -254,6 +272,8 @@ text_sensor:
       name: "${name} errors"
     total_runtime_formatted:
       name: "${name} total runtime formatted"
+    charge_status:
+      name: "${name} charge status"
     software_version:
       name: "${name} software version"
     hardware_version:
