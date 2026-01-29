@@ -1,15 +1,19 @@
 substitutions:
+  device_name: "MustUsb"
+  name: "Must inverter"
+  device_description: "Monitor MUST inverter via USB serial"
   inverter_id: inverter
-  updates: 5s
-  api_key: "pJ+1diNeePHmj/5EGNAGLSV76ngR1gtpKeZkvC1o7QY="
-  ota_password: "2ea87526fba5ac621872aa7de04e2299"
+  updates: 20s
+  api_key: "PN3sBbMzPyWZrb7RSIASdOeDb4gLua990WCb7hu4K+8="
+  ota_password: "51a22ba212f0d02bf35c0742fe3d8a19"
 
 esphome:
   name: inverter-monitor
   comment: "Inverter monitor"
+  min_version: 2025.7.0
 
 esp32:
-  board: esp32dev
+  board: esp32-s3-devkitc-1
   framework:
     type: esp-idf
 
@@ -17,9 +21,13 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
-# INFO is better for ESP perfomance, change to DEBUG if you have any issues
+web_server:
+  port: 80    
+
+# INFO is better for ESP perfomance, change to DEBUG and uncommit hardware_uart if you have any issues
 logger:
-  level: INFO  
+  level: INFO
+  # hardware_uart: uart0
 
 api:
   encryption:
@@ -29,20 +37,24 @@ ota:
   - platform: esphome
     password: ${ota_password}
 
-web_server:
-  port: 80    
+switch:
+  - platform: restart
+    name: "${device_name} restart"
 
-uart:
-  - id: uart_inverter
-    baud_rate: 19200
-    tx_pin: GPIO18
-    rx_pin: GPIO19
-    stop_bits: 1
-    parity: NONE
-    data_bits: 8
-    debug:
-      direction: BOTH
-      dummy_receiver: false
+usb_host:
+  devices:
+    - id: usb_modbus
+      vid: 0x1A86
+      pid: 0x7523
+
+usb_uart:
+  - type: ch340
+    vid: 0x1A86
+    pid: 0x7523
+    channels:
+      - id: uart_inverter
+        baud_rate: 19200
+        buffer_size: 1024
 
 modbus:
   - id: modbus_inverter
@@ -53,16 +65,29 @@ modbus_controller:
   - id: must_inverter
     address: 0x04
     modbus_id: modbus_inverter
-    command_throttle: 200ms
+    command_throttle: 300ms
     setup_priority: -10
     update_interval: ${updates}
 
 sensor:
+  - platform: modbus_controller
+    address: 113
+    name: "State of Charge"
+    unit_of_measurement: "%"
+    register_type: holding
+
+  - platform: modbus_controller
+    address: 114
+    name: "State of Health"
+    unit_of_measurement: "%"
+    register_type: holding
+
   # charger sensors
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     address: 15201
     name: "PV Charger Workstate"
+    icon: mdi:battery-charging-50
     register_type: holding
 
   - platform: modbus_controller
@@ -111,6 +136,7 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
+    id: pv_charging_power
     modbus_controller_id: must_inverter
     address: 15208
     register_type: holding
@@ -118,7 +144,7 @@ sensor:
     unit_of_measurement: "W"
     accuracy_decimals: 1
     icon: mdi:flash
-  
+
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     address: 15209
@@ -218,6 +244,17 @@ sensor:
     icon: mdi:sine-wave
     filters:
       multiply: 0.1
+    on_value_range:
+      - below: !lambda 'return id(inv_grid_chg_start).state;'
+        then:
+          - select.set_index:
+              id: charger_source_priority
+              index: 1  # SNU
+      - above: !lambda 'return id(inv_grid_chg_stop).state;'
+        then:
+          - select.set_index:
+              id: charger_source_priority
+              index: 0  # SCO
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
@@ -501,6 +538,8 @@ sensor:
   
   - platform: template
     name: "Accumulated load power"
+    state_class: total_increasing
+    device_class: energy
     unit_of_measurement: kWh
     accuracy_decimals: 1
     lambda: !lambda return (id(load_mwh).state * 1000.0 + id(load_kwh).state);
@@ -577,6 +616,13 @@ select:
       "APL (90-280VAC)": 2
       "GEN (Generator)": 3
 
+  - platform: modbus_controller
+    id: solar_use_aim
+    name: "Solar Use Aim"
+    address: 20112
+    optionsmap:
+      "LBU (Load, Battery, Utility)": 0
+      "BLU (Battery, Load, Utility)": 1
 
 number:
   - platform: modbus_controller
@@ -636,3 +682,38 @@ number:
     address: 20132
     value_type: U_WORD
     multiply: 10
+
+  - platform: modbus_controller
+    name: "Max Grid Charger current"
+    unit_of_measurement: "A"
+    address: 20125
+    value_type: U_WORD
+    lambda: "return x * 0.1; "
+    write_lambda: |-
+      return x * 10 ;  
+
+  - platform: template
+    name: "INV Enable grid charge"
+    id: inv_grid_chg_start
+    device_class: voltage
+    unit_of_measurement: "V"
+    min_value: 48
+    max_value: 58.4
+    initial_value: 51
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    mode: box
+    
+  - platform: template
+    name: "INV Disable grid charge"
+    id: inv_grid_chg_stop
+    device_class: voltage
+    unit_of_measurement: "V"
+    min_value: 48
+    max_value: 58.4
+    initial_value: 53
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    mode: box

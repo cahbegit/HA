@@ -21,31 +21,37 @@ wifi:
   ssid: !secret wifi_ssidt
   password: !secret wifi_passwordt
 
-captive_portal:
 
 web_server:
   port: 80
 
 output:
   - platform: ledc
-    pin: GPIO3
+    pin: GPIO10
     frequency: 1000 Hz
     id: pwm_dimmer
     min_power: 0.09
     max_power: 1.0
 
+  - platform: ledc
+    pin: GPIO9
+    frequency: 1000 Hz
+    id: pwm_dimmer1
+    min_power: 0.09
+    max_power: 1.0    
+
 switch:
   - platform: gpio
     id: spalnaP
     pin: 
-      number: GPIO5
+      number: GPIO6
       inverted: true
     name: "SpalnaP"
 
   - platform: gpio
     id: zalP
     pin: 
-      number: GPIO6
+      number: GPIO7
       inverted: true
     name: "ZalP"
 
@@ -99,6 +105,14 @@ light:
     default_transition_length: 0.5s
     restore_mode: RESTORE_DEFAULT_ON
     gamma_correct: 1.5
+
+  - platform: monochromatic
+    name: "ZalPDimm"
+    id: analog_dimmer1
+    output: pwm_dimmer1
+    default_transition_length: 0.5s
+    restore_mode: RESTORE_DEFAULT_ON
+    gamma_correct: 1.5  
 
 text_sensor:
   - platform: template

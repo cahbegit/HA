@@ -12,6 +12,7 @@ utility_template:
           state: >
             {{ is_state('device_tracker.xiaomi_11_lite_5g_ne', 'home') or
                is_state('device_tracker.xiaomi_11_lite_5g_ne_2', 'home') or
+               is_state('device_tracker.redmi_note_14_pro_5g', 'home') or
                is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') }}
                
         - name: "internet_off"

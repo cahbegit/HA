@@ -1,10 +1,10 @@
 substitutions:
   name: jk
+  node_id: jk
   device_description: "Monitor and control a JK-BMS v11 via bluetooth"
   external_components_source: github://syssi/esphome-jk-bms@main
-  mac_address: C8:47:80:1F:73:7B
-  protocol_version: JK02_32S
-  node_id: jk
+  mac_address: C8:47:80:4E:4F:EB
+  protocol_version: JK02_32S 
 
 esphome:
   name: ${name}
@@ -40,8 +40,6 @@ ota:
     then:
       - switch.turn_off: ble_client_switch0
       - logger.log: "BLE connection suspended for OTA update"
-
-captive_portal:
 
 web_server:
   port: 80      

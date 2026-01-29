@@ -74,34 +74,30 @@
   triggers:
   - type: occupied
     device_id: c9e91f7ed602c98c23be2a0dfacfaea3
-    entity_id: 7daab7e16b1392702bd43d8f122545f5
+    entity_id: binary_sensor.7daab7e16b1392702bd43d8f122545f5
     domain: binary_sensor
     trigger: device
   conditions:
-  - condition: and
-    conditions:
-    - condition: sun
-      after: sunset
-      after_offset: -04:00:00
-    - condition: time
-      before: '23:00:00'
-  - condition: or
-    conditions:
-    - condition: template
-      value_template: "{% set e = states.binary_sensor.sasha_doma %} {% if e.state
-        == 'on' %}\n  {{ (now() - e.last_changed).total_seconds() < 180 }}\n{% else
-        %}\n  false\n{% endif %}\n"
-    - condition: template
-      value_template: "{% set e = states.binary_sensor.lena_doma %} {% if e.state
-        == 'on' %}\n  {{ (now() - e.last_changed).total_seconds() < 180 }}\n{% else
-        %}\n  false\n{% endif %}\n"
+  - condition: sun
+    after: sunset
+    after_offset: -04:00:00
+  - condition: time
+    before: '23:00:00'
+  - condition: template
+    value_template: '{% set now_sec = now().timestamp() %} {% set sasha = states.binary_sensor.sasha_doma
+      %} {% set lena = states.binary_sensor.lena_doma %} {% set sasha_last = sasha.last_changed.timestamp()
+      if sasha.state == ''on'' else 0 %} {% set lena_last = lena.last_changed.timestamp()
+      if lena.state == ''on'' else 0 %} {{ (now_sec - sasha_last < 180) or (now_sec
+      - lena_last < 180) }}
+
+      '
   actions:
   - target:
-      entity_id: switch.26005799a4cbaf2395ba6787528c9073
+      entity_id: switch.1_ty_12z_switch_1
     action: switch.turn_on
   - delay: 00:03:00
   - target:
-      entity_id: switch.26005799a4cbaf2395ba6787528c9073
+      entity_id: switch.1_ty_12z_switch_1
     action: switch.turn_off
   mode: single
 - id: '1738685065988'
@@ -406,14 +402,10 @@
             // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n\n
             \ {{ \"⏳\" }} *Ожидаемое включение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
             %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
-            -%}\n  {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %}\n
-            {% set soc = states('sensor.powmrbms_jkbms_state_of_charge') %}
-            {% if soc not in ['unknown', 'unavailable', ''] %}
-            🔋 *Заряд батареи:* {{ soc }} %
-            {% else %}
-            🔋 *Заряд батареи:* нет данных
-            {% endif %}
-            {{
+            -%}\n  {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %}\n {%
+            set soc = states('sensor.jkbms_jkbms_state_of_charge') %} {% if soc not
+            in ['unknown', 'unavailable', ''] %} \U0001F50B *Заряд батареи:* {{ soc
+            }} % {% else %} \U0001F50B *Заряд батареи:* нет данных {% endif %} {{
             \"↩️\" }} Меню: /start\n"
     - conditions:
       - condition: state
@@ -432,12 +424,70 @@
             \ {{ \"\U0001F4C5\" }} *Следующее плановое отключение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
             %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
             -%}\n  {{ \"\U0001F4C5\" }} *Следующее плановое отключение:* нет данных\n{%
-            endif %}\n
-            {% set soc = states('sensor.powmrbms_jkbms_state_of_charge') %}
-            {% if soc not in ['unknown', 'unavailable', ''] %}
-            🔋 *Заряд батареи:* {{ soc }} %
-            {% else %}
-            🔋 *Заряд батареи:* нет данных
-            {% endif %}
-            {{ \"↩️\" }} Меню: /start\n"
+            endif %}\n {% set soc = states('sensor.jkbms_jkbms_state_of_charge') %}
+            {% if soc not in ['unknown', 'unavailable', ''] %} \U0001F50B *Заряд батареи:*
+            {{ soc }} % {% else %} \U0001F50B *Заряд батареи:* нет данных {% endif
+            %} {{ \"↩️\" }} Меню: /start\n"
+  mode: single
+- id: '1767000000002'
+  alias: Автозапуск зарядки аккумулятора
+  description: Включает зарядку ночью, если появился стабильный городской свет
+  triggers:
+  - entity_id: binary_sensor.192_168_2_219
+    to: 'on'
+    for: 00:10:00
+    trigger: state
+  conditions:
+  - condition: time
+    after: '23:30:00'
+    before: 08:00:00
+  - condition: state
+    entity_id: switch.kotel_zariad_switch
+    state: 'off'
+  - condition: state
+    entity_id: switch.kholodilnik_switch_2
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.kotel_zariad_switch
+    action: switch.turn_on
+  - data:
+      target:
+      - 506234553
+      - 515837462
+      message: "⚡✅ *Городская сеть стабильна (10 мин)*   \U0001F319 Ночное окно активно
+        (23:30–08:00)\n\U0001F9CA Холодильник включён — нагрузка подтверждена   \U0001F50C
+        *Автомат зарядки включён автоматически*\n↩️ Меню: /start\n"
+    action: telegram_bot.send_message
+  mode: single
+- id: '1769447130342'
+  alias: Автостарт зарядки
+  description: Ночной автозапуск зарядки от города
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.192_168_2_219
+    to: 'on'
+    for: 00:10:00
+  conditions:
+  - condition: time
+    after: '23:30:00'
+    before: 08:00:00
+  - condition: state
+    entity_id: switch.kotel_zariad_switch
+    state: 'off'
+  - condition: state
+    entity_id: switch.kholodilnik_switch_2
+    state: 'on'
+  actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.kotel_zariad_switch
+  - action: telegram_bot.send_message
+    data:
+      target:
+      - 506234553
+      - 515837462
+      message: "⚡✅ *Городская сеть стабильна (10 мин)*   \U0001F319 Ночное окно активно
+        (23:30–08:00)\n\U0001F9CA Холодильник включён — нагрузка подтверждена   \U0001F50C
+        *Автомат зарядки включён автоматически*\n↩️ Меню: /start\n"
   mode: single

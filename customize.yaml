@@ -220,3 +220,23 @@
       friendly_name: "Сервер"
     sensor.temp6_temperature:
       friendly_name: "Ванна"
+    sensor.termostat_temperatura_1:
+      friendly_name: "Выход"
+    sensor.termostat_temperatura_2:
+      friendly_name: "Обратка"
+    sensor.termostat_temperatura_3:
+      friendly_name: "Гребёнка" 
+    sensor.termostat_temperatura_4:
+      friendly_name: "Ванна"
+    sensor.termostat_temperatura_5:
+      friendly_name: "Кухня"
+    sensor.termostat_temperatura_6:
+      friendly_name: "Зал1"
+    sensor.termostat_temperatura_7:
+      friendly_name: "Зал2"
+    sensor.termostat_temperatura_8:
+      friendly_name: "Калидор"
+    sensor.termostat_temperatura_9:
+      friendly_name: "Спальня"
+    sensor.termostat_temperatura_10:
+      friendly_name: "Тёплый контур"      

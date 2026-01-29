@@ -35,18 +35,22 @@
       - sensor.temp4_humidity
       - sensor.temp5_humidity
       - sensor.temp6_humidity
-      - sensor.powmrbms_battery_charge_current
-      - sensor.powmrbms_battery_current
-      - sensor.powmrbms_battery_discharge_current
-      - sensor.powmrbms_battery_power
-      - sensor.powmrbms_battery_voltage
-      - sensor.powmrbms_jkbms_charging_power
-      - sensor.powmrbms_jkbms_current
-      - sensor.powmrbms_jkbms_discharging_power
-      - sensor.powmrbms_load_power
-      - sensor.powmrbms_jkbms_power
-      - sensor.powmrbms_jkbms_total_voltage
-      - sensor.powmrbms_jkbms_cell_voltage_1
-      - sensor.powmrbms_jkbms_cell_voltage_2
-      - sensor.powmrbms_jkbms_cell_voltage_3
-      - sensor.powmrbms_jkbms_cell_voltage_4
+      - sensor.jkbms_jkbms_charging_power
+      - sensor.jkbms_jkbms_current
+      - sensor.jkbms_jkbms_discharging_power
+      - sensor.jkbms_jkbms_power
+      - sensor.jkbms_jkbms_total_voltage
+      - sensor.jkbms_jkbms_cell_voltage_1
+      - sensor.jkbms_jkbms_cell_voltage_2
+      - sensor.jkbms_jkbms_cell_voltage_3
+      - sensor.jkbms_jkbms_cell_voltage_4
+      - sensor.termostat_temperatura_1
+      - sensor.termostat_temperatura_2
+      - sensor.termostat_temperatura_3
+      - sensor.termostat_temperatura_4
+      - sensor.termostat_temperatura_5
+      - sensor.termostat_temperatura_6
+      - sensor.termostat_temperatura_7
+      - sensor.termostat_temperatura_8
+      - sensor.termostat_temperatura_9
+      - sensor.termostat_temperatura_10
