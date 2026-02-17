@@ -3,7 +3,8 @@ substitutions:
   node_id: powmrbms
   device_description: "Monitor and control a JK-BMS v19 via bluetooth"
   external_components_source: github://syssi/esphome-jk-bms@main
-  mac_address: C8:47:80:4E:4F:EB
+  # mac_address: C8:47:80:4E:4F:EB
+  mac_address: C8:47:80:1E:3C:0D
   protocol_version: JK02_32S
 
 esphome:
