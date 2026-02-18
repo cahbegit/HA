@@ -58,7 +58,20 @@ modbus_controller:
     update_interval: ${updates}
 
 sensor:
-  # charger sensors
+
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+  - platform: copy
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""      
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
@@ -77,19 +90,6 @@ sensor:
       multiply: 0.1
 
   # inverter sensors
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25201
-    register_type: holding
-    name: "Inverter Work state"
-    # 0:PowerOn
-    # 1:SelfTest
-    # 2:OffGrid
-    # 3:Grid-Tie
-    # 4:ByPass
-    # 5:Stop
-    # 6:Grid charging
-    # https://gist.github.com/vladyspavlov/5ac21cb58923482eff8e7bbb2d0854b3?permalink_comment_id=5301160#gistcomment-5301160
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
@@ -255,48 +255,6 @@ sensor:
     accuracy_decimals: 1
     icon: mdi:temperature-celsius
 
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25237
-    register_type: holding
-    name: "Inverter Relay state"
-    icon: mdi:electric-switch
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25238
-    register_type: holding
-    name: "Inverter Relay state Grid"
-    icon: mdi:electric-switch
-    
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25239
-    register_type: holding
-    name: "Inverter Relay state Load"
-    icon: mdi:electric-switch
-    
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25240
-    register_type: holding
-    name: "Inverter Relay state NLine"
-    icon: mdi:electric-switch
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25241
-    register_type: holding
-    name: "Inverter Relay state DC"
-    icon: mdi:electric-switch
-    
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25242
-    register_type: holding
-    name: "Inverter Relay state Earth"
-    icon: mdi:electric-switch
-
 # Inverter Accumulated discharge power
   - platform: modbus_controller
     modbus_controller_id: must_inverter
@@ -426,6 +384,24 @@ sensor:
     accuracy_decimals: 1
     icon: mdi:flash
 
+text_sensor:
+  - platform: modbus_controller
+    modbus_controller_id: must_inverter
+    name: "Inverter Work State"
+    address: 25201
+    register_type: holding
+    lambda: |-
+      int state = atoi(x.c_str());
+      switch (state) {
+        case 0: return {"PowerOn"};
+        case 1: return {"SelfTest"};
+        case 2: return {"OffGrid"};
+        case 3: return {"Grid-Tie"};
+        case 4: return {"ByPass"};
+        case 5: return {"Stop"};
+        case 6: return {"Grid Charging"};
+        default: return {"Unknown"};
+      }
 
 select:
   - platform: modbus_controller
@@ -462,9 +438,9 @@ select:
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
-    id: solar_charger_current
-    name: "Inverter Charger current"
-    address: 20132
+    id: grid_max_charge_current
+    name: "Grid Max Charge Current"
+    address: 20125
     value_type: U_WORD
     optionsmap:
       "10 A": 100
@@ -476,7 +452,42 @@ select:
       "70 A": 700
       "80 A": 800
 
+  - platform: modbus_controller
+    modbus_controller_id: must_inverter
+    id: absorb_charge_current
+    name: "Absorb Charge Current"
+    address: 20126
+    value_type: U_WORD
+    optionsmap:
+      "10 A": 100
+      "20 A": 200
+      "30 A": 300
+
 number:
+ 
+  - platform: modbus_controller
+    id: batt_float_voltage
+    name: "PV Charger Float voltage"
+    unit_of_measurement: "V"
+    address: 10103
+    value_type: U_WORD
+    min_value: 13.0
+    max_value: 14.0
+    step: 0.1
+    mode: box
+    multiply: 10
+
+  - platform: modbus_controller
+    id: batt_absorb_voltage
+    name: "PV Charger Absorb voltage"
+    unit_of_measurement: "V"
+    address: 10104
+    value_type: U_WORD
+    min_value: 13.0
+    max_value: 13.8
+    step: 0.1
+    mode: box
+    multiply: 10
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
@@ -488,7 +499,7 @@ number:
     min_value: 10.0
     max_value: 13.2
     step: 0.1
-    mode: slider
+    mode: box
     lambda: "return x * 0.1;"
     write_lambda: |-
       return x * 10;
@@ -503,7 +514,7 @@ number:
     min_value: 13.2
     max_value: 14.4
     step: 0.1
-    mode: slider
+    mode: box
     multiply: 10
 
   - platform: modbus_controller
@@ -516,7 +527,7 @@ number:
     min_value: 10.0
     max_value: 12.5
     step: 0.1
-    mode: slider
+    mode: box
     multiply: 10
 
   - platform: modbus_controller
@@ -529,6 +540,7 @@ number:
     min_value: 13.8
     max_value: 14.8
     step: 0.1
-    mode: slider
+    mode: box
     multiply: 10
+
 
