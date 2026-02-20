@@ -75,22 +75,6 @@ sensor:
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
-    address: 15217
-    register_type: holding
-    id: charger_total_mwh
-    internal: true
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 15218
-    register_type: holding
-    id: charger_total_kwh
-    internal: true
-    filters:
-      multiply: 0.1
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
     address: 25205
     name: "Inverter Battery Voltage"
     register_type: holding
@@ -206,7 +190,7 @@ sensor:
 
   - platform: modbus_controller
     address: 25226
-    name: "Grid frequency"
+    name: "Inverter Grid frequency"
     register_type: holding
     accuracy_decimals: 2
     unit_of_measurement: "Hz"
@@ -231,6 +215,18 @@ sensor:
     accuracy_decimals: 1
     icon: mdi:temperature-celsius 
 
+  - platform: modbus_controller
+    modbus_controller_id: must_inverter
+    address: 15201
+    name: "Inverter PV Charger Workstate"
+    register_type: holding
+
+  - platform: modbus_controller
+    modbus_controller_id: must_inverter
+    address: 15203
+    name: "Inverter charging state"
+    register_type: holding  
+
 # Inverter Accumulated discharge power
   - platform: modbus_controller
     modbus_controller_id: must_inverter
@@ -249,7 +245,7 @@ sensor:
       multiply: 0.1
 
   - platform: template
-    name: "Accumulated discharger power"
+    name: "Inverter Accumulated discharger power"
     unit_of_measurement: kWh
     accuracy_decimals: 1
     lambda: !lambda 'return (id(discharger_total_mwh).state * 1000.0 + id(discharger_total_kwh).state);'
@@ -271,32 +267,11 @@ sensor:
       multiply: 0.1
   
   - platform: template
-    name: "Accumulated buy power"
+    name: "Inverter Accumulated buy power"
     unit_of_measurement: kWh
     lambda: |-
      return (id(buy_mwh).state * 1000.0 + id(buy_kwh).state);
     accuracy_decimals: 1
-
-# Inverter Accumulated sell power
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25251
-    register_type: holding
-    id: sell_mwh
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25252
-    register_type: holding
-    id: sell_kwh
-    filters:
-      multiply: 0.1
-
-  - platform: template
-    name: "Accumulated sell power"
-    unit_of_measurement: kWh
-    accuracy_decimals: 1
-    lambda: !lambda return (id(sell_mwh).state * 1000.0 + id(sell_kwh).state);
 
 # Inverter Accumulated load power
   - platform: modbus_controller
@@ -316,7 +291,7 @@ sensor:
       multiply: 0.1
   
   - platform: template
-    name: "Accumulated load power"
+    name: "Inverter Accumulated load power"
     unit_of_measurement: kWh
     accuracy_decimals: 1
     lambda: !lambda return (id(load_mwh).state * 1000.0 + id(load_kwh).state);
@@ -344,8 +319,8 @@ sensor:
 text_sensor:
   - platform: modbus_controller
     modbus_controller_id: must_inverter
-    id: Charger_workstate
-    name: "Charger workstate"
+    id: Charger_workstate1
+    name: "Inverter Charger workstate1"
     address: 15201
     register_type: holding
     raw_encode: HEXBYTES
@@ -365,8 +340,8 @@ text_sensor:
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
-    id: charging_state
-    name: "charging state"
+    id: charging_state1
+    name: "Inverter charging state1"
     address: 15203
     register_type: holding
     raw_encode: HEXBYTES
@@ -417,7 +392,7 @@ select:
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     id: grid_max_charge_current
-    name: "Grid Max Charge Current"
+    name: "Inverter Grid Max Charge"
     address: 20125
     value_type: U_WORD
     optionsmap:
@@ -428,12 +403,11 @@ select:
       "50 A": 500
       "60 A": 600
       "70 A": 700
-      "80 A": 800
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     id: absorb_charge_current
-    name: "Absorb Charge Current"
+    name: "Inverter Absorb Charge"
     address: 20126
     value_type: U_WORD
     optionsmap:
