@@ -5,7 +5,7 @@ substitutions:
   ota_password: "2ea87526fba5ac621872aa7de04e2299"
 
 esphome:
-  name: inverter-monitor
+  name: must
   comment: "Inverter monitor"
 
 esp32:
@@ -50,7 +50,7 @@ modbus:
     send_wait_time: 200ms
 
 modbus_controller:
-  - id: must_inverter
+  - id: must
     address: 0x04
     modbus_id: modbus_inverter
     command_throttle: 200ms
@@ -74,9 +74,9 @@ sensor:
     device_class: ""      
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25205
-    name: "Inverter Battery Voltage"
+    name: "Battery Voltage"
     register_type: holding
     unit_of_measurement: "V"
     accuracy_decimals: 1
@@ -85,9 +85,9 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25206
-    name: "Inverter Voltage"
+    name: "Voltage"
     register_type: holding
     unit_of_measurement: "V"
     accuracy_decimals: 1
@@ -96,9 +96,9 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25207
-    name: "Inverter Grid voltage"
+    name: "Grid voltage"
     register_type: holding
     unit_of_measurement: "V"
     accuracy_decimals: 1
@@ -107,9 +107,9 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25209
-    name: "Inverter Control current"
+    name: "Control current"
     register_type: holding
     unit_of_measurement: "A"
     accuracy_decimals: 1
@@ -118,9 +118,9 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25210
-    name: "Inverter Current"
+    name: "Current"
     register_type: holding
     unit_of_measurement: "A"
     accuracy_decimals: 1
@@ -129,9 +129,9 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25211
-    name: "Inverter Grid current"
+    name: "Grid current"
     register_type: holding
     unit_of_measurement: "A"
     accuracy_decimals: 1
@@ -140,9 +140,9 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25212
-    name: "Inverter Load current"
+    name: "Load current"
     register_type: holding
     unit_of_measurement: "A"
     accuracy_decimals: 1
@@ -151,19 +151,19 @@ sensor:
       multiply: 0.1
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25213
     value_type: S_WORD
-    name: "Inverter Power"
+    name: "Power"
     register_type: holding
     unit_of_measurement: "W"
     accuracy_decimals: 1
     icon: mdi:flash
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25214
-    name: "Inverter Grid power"
+    name: "Grid power"
     register_type: holding
     unit_of_measurement: "W"
     accuracy_decimals: 1
@@ -171,18 +171,18 @@ sensor:
     icon: mdi:flash
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25215
-    name: "Inverter Load power"
+    name: "Load power"
     register_type: holding
     unit_of_measurement: "W"
     accuracy_decimals: 1
     icon: mdi:flash
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25216
-    name: "Inverter System load"
+    name: "System load"
     register_type: holding
     unit_of_measurement: "%"
     accuracy_decimals: 1
@@ -190,7 +190,7 @@ sensor:
 
   - platform: modbus_controller
     address: 25226
-    name: "Inverter Grid frequency"
+    name: "Grid frequency"
     register_type: holding
     accuracy_decimals: 2
     unit_of_measurement: "Hz"
@@ -198,33 +198,33 @@ sensor:
       multiply: 0.01
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25233
     register_type: holding
-    name: "Inverter temp AC radiator"
+    name: "temp AC radiator"
     accuracy_decimals: 1
     unit_of_measurement: "°C"
     icon: mdi:temperature-celsius
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25235
     register_type: holding
-    name: "Inverter temp DC Radiator "
+    name: "temp DC Radiator "
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     icon: mdi:temperature-celsius 
 
 # Inverter Accumulated discharge power
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25247
     register_type: holding
     id: discharger_total_mwh
     internal: true
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25248
     register_type: holding
     id: discharger_total_kwh
@@ -233,20 +233,20 @@ sensor:
       multiply: 0.1
 
   - platform: template
-    name: "Inverter Accumulated discharger power"
+    name: "Accumulated discharger power"
     unit_of_measurement: kWh
     accuracy_decimals: 1
     lambda: !lambda 'return (id(discharger_total_mwh).state * 1000.0 + id(discharger_total_kwh).state);'
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25249
     register_type: holding
     id: buy_mwh
     internal: true
   
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25250
     register_type: holding
     id: buy_kwh
@@ -255,7 +255,7 @@ sensor:
       multiply: 0.1
   
   - platform: template
-    name: "Inverter Accumulated buy power"
+    name: "Accumulated buy power"
     unit_of_measurement: kWh
     lambda: |-
      return (id(buy_mwh).state * 1000.0 + id(buy_kwh).state);
@@ -263,14 +263,14 @@ sensor:
 
 # Inverter Accumulated load power
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25253
     register_type: holding
     id: load_mwh
     internal: True
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25254
     register_type: holding
     id: load_kwh
@@ -279,36 +279,36 @@ sensor:
       multiply: 0.1
   
   - platform: template
-    name: "Inverter Accumulated load power"
+    name: "Accumulated load power"
     unit_of_measurement: kWh
     accuracy_decimals: 1
     lambda: !lambda return (id(load_mwh).state * 1000.0 + id(load_kwh).state);
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25273
     register_type: holding
     value_type: S_WORD
-    name: "Inverter Battery power"
+    name: "Battery power"
     unit_of_measurement: "W"
     accuracy_decimals: 1
     icon: mdi:flash
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 25274
     register_type: holding
     value_type: S_WORD
-    name: "Inverter Battery current"
+    name: "Battery current"
     unit_of_measurement: "A"
     accuracy_decimals: 1
     icon: mdi:current-dc
 
 text_sensor:
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    id: Charger_workstate1
-    name: "Inverter Charger workstate1"
+    modbus_controller_id: must
+    id: Charger_workstate
+    name: "Charger workstate"
     address: 15201
     register_type: holding
     raw_encode: HEXBYTES
@@ -327,9 +327,9 @@ text_sensor:
  #       return x;
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    id: charging_state1
-    name: "Inverter charging state1"
+    modbus_controller_id: must
+    id: charging_state
+    name: "charging state"
     address: 15203
     register_type: holding
     raw_encode: HEXBYTES
@@ -346,9 +346,9 @@ text_sensor:
 
 select:
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     id: energy_use_mode
-    name: "Inverter Energy use mode (parameter 00)"
+    name: "Energy use mode (parameter 00)"
     address: 20109
     optionsmap:
       "SBU (Solar/battery/utility)": 1
@@ -357,9 +357,9 @@ select:
       "SOL (Solar only)": 4
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     id: charger_source_priority
-    name: "Inverter Charger source priority (parameter 10)"
+    name: "Charger source priority (parameter 10)"
     address: 20143
     optionsmap:
       "CSO (Solar first)": 0
@@ -367,10 +367,10 @@ select:
       "OSO (Solar only)": 3
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     address: 20111
     id: inverter_ac_input_voltage_range
-    name: "Inverter AC input voltage range (02)"
+    name: "AC input voltage range (02)"
     optionsmap:
       "VDE (184-253VAC)": 0
       "UPS (170-280VAC)": 1
@@ -378,9 +378,9 @@ select:
       "GEN (Generator)": 3
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     id: grid_max_charge_current
-    name: "Inverter Grid Max Charge"
+    name: "Grid Max Charge"
     address: 20125
     value_type: U_WORD
     optionsmap:
@@ -393,9 +393,9 @@ select:
       "70 A": 700
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     id: absorb_charge_current
-    name: "Inverter Absorb Charge"
+    name: "Absorb Charge"
     address: 20126
     value_type: U_WORD
     optionsmap:
@@ -407,12 +407,12 @@ number:
  
   - platform: modbus_controller
     id: batt_float_voltage
-    name: "Inverter Float voltage"
+    name: "Float voltage"
     unit_of_measurement: "V"
     address: 10103
     value_type: U_WORD
     min_value: 13.0
-    max_value: 14.0
+    max_value: 14.2
     step: 0.1
     mode: box
     lambda: "return x * 0.1; "
@@ -421,10 +421,10 @@ number:
 
   - platform: modbus_controller
     id: batt_absorb_voltage
-    name: "Inverter Absorb voltage"
+    name: "Absorb voltage"
     unit_of_measurement: "V"
     address: 10104
-    min_value: 13.4
+    min_value: 13.0
     max_value: 14.2
     step: 0.1
     mode: box    
@@ -434,37 +434,9 @@ number:
       return x * 10 ;
 
   - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    id: batt_stop_dischg
-    name: "Inverter Battery stop discharging voltage"
-    unit_of_measurement: "V"
-    address: 20118
-    value_type: U_WORD
-    min_value: 10.0
-    max_value: 13.2
-    step: 0.1
-    mode: box
-    lambda: "return x * 0.1;"
-    write_lambda: |-
-      return x * 10;
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    id: batt_stop_chg
-    name: "Inverter Battery stop charging voltage"
-    unit_of_measurement: "V"
-    address: 20119
-    value_type: U_WORD
-    min_value: 13.2
-    max_value: 14.4
-    step: 0.1
-    mode: box
-    multiply: 10 
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
+    modbus_controller_id: must
     id: batt_low_voltage
-    name: "Inverter Battery low voltage"
+    name: "Battery low voltage"
     unit_of_measurement: "V"
     address: 20127
     value_type: U_WORD
@@ -474,17 +446,5 @@ number:
     mode: box
     multiply: 10
 
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    id: batt_high_voltage
-    name: "Inverter Battery high voltage"
-    unit_of_measurement: "V"
-    address: 20128
-    value_type: U_WORD
-    min_value: 13.8
-    max_value: 14.8
-    step: 0.1
-    mode: box
-    multiply: 10
 
 
