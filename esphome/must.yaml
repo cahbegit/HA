@@ -89,8 +89,6 @@ sensor:
     filters:
       multiply: 0.1
 
-  # inverter sensors
-
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     address: 25205
@@ -117,17 +115,6 @@ sensor:
     modbus_controller_id: must_inverter
     address: 25207
     name: "Inverter Grid voltage"
-    register_type: holding
-    unit_of_measurement: "V"
-    accuracy_decimals: 1
-    icon: mdi:sine-wave
-    filters:
-      multiply: 0.1
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25208
-    name: "Inverter BUS Voltage"
     register_type: holding
     unit_of_measurement: "V"
     accuracy_decimals: 1
@@ -226,34 +213,23 @@ sensor:
     filters:
       multiply: 0.01
 
-    # MOST INFO
-
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     address: 25233
     register_type: holding
-    name: "Inverter AC radiator temp"
+    name: "Inverter temp AC radiator"
     accuracy_decimals: 1
     unit_of_measurement: "°C"
-    icon: mdi:temperature-celsius
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25234
-    register_type: holding
-    name: "Inverter Transformer temp"
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
     icon: mdi:temperature-celsius
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     address: 25235
     register_type: holding
-    name: "Inverter DC Radiator temp"
+    name: "Inverter temp DC Radiator "
     unit_of_measurement: "°C"
     accuracy_decimals: 1
-    icon: mdi:temperature-celsius
+    icon: mdi:temperature-celsius 
 
 # Inverter Accumulated discharge power
   - platform: modbus_controller
@@ -278,7 +254,6 @@ sensor:
     accuracy_decimals: 1
     lambda: !lambda 'return (id(discharger_total_mwh).state * 1000.0 + id(discharger_total_kwh).state);'
 
-# Inverter Accumulated buy power
   - platform: modbus_controller
     modbus_controller_id: must_inverter
     address: 25249
@@ -366,42 +341,45 @@ sensor:
     accuracy_decimals: 1
     icon: mdi:current-dc
 
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25275
-    register_type: holding
-    value_type: S_WORD
-    name: "Inverter Battery grade"
-    unit_of_measurement: "V"
-    icon: mdi:alpha-V
-
-  - platform: modbus_controller
-    modbus_controller_id: must_inverter
-    address: 25277
-    register_type: holding
-    name: "Inverter Rated power"
-    unit_of_measurement: "W"
-    accuracy_decimals: 1
-    icon: mdi:flash
-
 text_sensor:
   - platform: modbus_controller
     modbus_controller_id: must_inverter
-    name: "Inverter Work State"
-    address: 25201
+    id: Charger_workstate
+    name: "Charger workstate"
+    address: 15201
     register_type: holding
+    raw_encode: HEXBYTES
     lambda: |-
-      int state = atoi(x.c_str());
-      switch (state) {
-        case 0: return {"PowerOn"};
-        case 1: return {"SelfTest"};
-        case 2: return {"OffGrid"};
-        case 3: return {"Grid-Tie"};
-        case 4: return {"ByPass"};
-        case 5: return {"Stop"};
-        case 6: return {"Grid Charging"};
-        default: return {"Unknown"};
-      }
+      uint16_t value = modbus_controller::word_from_hex_str(x, 0);
+        switch (value) {
+          case 0: return std::string("PowerOn");
+          case 1: return std::string("Selftest Mode");
+          case 2: return std::string("OffGrid");
+          case 3: return std::string("Grid-Tie");
+          case 4: return std::string("ByPass");
+          case 5: return std::string("Stop");
+          case 6: return std::string("Grid charging");
+          default: return std::string("Unknown");
+        }
+ #       return x;
+
+  - platform: modbus_controller
+    modbus_controller_id: must_inverter
+    id: charging_state
+    name: "charging state"
+    address: 15203
+    register_type: holding
+    raw_encode: HEXBYTES
+    lambda: |-
+      uint16_t value = modbus_controller::word_from_hex_str(x, 0);
+        switch (value) {
+          case 0: return std::string("Stop");
+          case 1: return std::string("Absorb charge");
+          case 2: return std::string("Float charge");
+          case 3: return std::string("EQ charge");
+          default: return std::string("Unknown");
+        }
+#        return x;
 
 select:
   - platform: modbus_controller
@@ -467,7 +445,7 @@ number:
  
   - platform: modbus_controller
     id: batt_float_voltage
-    name: "PV Charger Float voltage"
+    name: "Inverter Float voltage"
     unit_of_measurement: "V"
     address: 10103
     value_type: U_WORD
@@ -475,19 +453,23 @@ number:
     max_value: 14.0
     step: 0.1
     mode: box
-    multiply: 10
+    lambda: "return x * 0.1; "
+    write_lambda: |-
+      return x * 10 ;
 
   - platform: modbus_controller
     id: batt_absorb_voltage
-    name: "PV Charger Absorb voltage"
+    name: "Inverter Absorb voltage"
     unit_of_measurement: "V"
     address: 10104
-    value_type: U_WORD
-    min_value: 13.0
-    max_value: 13.8
+    min_value: 13.4
+    max_value: 14.2
     step: 0.1
-    mode: box
-    multiply: 10
+    mode: box    
+    value_type: U_WORD
+    lambda: "return x * 0.1; "
+    write_lambda: |-
+      return x * 10 ;
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
@@ -515,7 +497,7 @@ number:
     max_value: 14.4
     step: 0.1
     mode: box
-    multiply: 10
+    multiply: 10 
 
   - platform: modbus_controller
     modbus_controller_id: must_inverter
