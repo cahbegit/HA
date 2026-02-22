@@ -15,8 +15,8 @@ substitutions:
   device_description: "Monitor a PowMr inverter and JK-BMS"
   jk_bms_name: "jkbms"
   jk_bms_description: "JKBMSble"
-  #jk_bms_mac_address: "C8:47:80:1E:3C:0D"
-  jk_bms_mac_address: C8:47:80:4E:4F:EB  # Замени на MAC-адрес твоего JK-BMS
+  jk_bms_mac_address: "C8:47:80:1E:3C:0D"
+  #jk_bms_mac_address: C8:47:80:4E:4F:EB
   jk_bms_protocol_version: "JK02_32S"
 
 esp32:
