@@ -430,7 +430,7 @@
             %} {{ \"↩️\" }} Меню: /start\n"
   mode: single
 - id: '1767000000002'
-  alias: Автозапуск зарядки аккумулятора
+  alias: Telegramm Автозапуск зарядки аккумулятора
   description: Включает зарядку ночью, если появился стабильный городской свет
   triggers:
   - entity_id: binary_sensor.192_168_2_219
@@ -490,4 +490,109 @@
       message: "⚡✅ *Городская сеть стабильна (10 мин)*   \U0001F319 Ночное окно активно
         (23:30–08:00)\n\U0001F9CA Холодильник включён — нагрузка подтверждена   \U0001F50C
         *Автомат зарядки включён автоматически*\n↩️ Меню: /start\n"
+  mode: single
+- id: '1772035605972'
+  alias: Инвертор зарядка
+  description: Управление зарядкой Инвертор
+  triggers:
+  - entity_id: sensor.jkbms_jkbms_current
+    above: 5
+    id: charge_started
+    trigger: numeric_state
+  - entity_id: sensor.jkbms_jkbms_state_of_charge
+    above: 70
+    id: soc_70
+    trigger: numeric_state
+  - entity_id: sensor.jkbms_jkbms_state_of_charge
+    above: 90
+    id: soc_90
+    trigger: numeric_state
+  conditions:
+  - condition: state
+    entity_id: switch.kotel_zariad_switch
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: charge_started
+      sequence:
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.jkbms_jkbms_state_of_charge
+            below: 70
+          sequence:
+          - target:
+              entity_id: select.inverter_monitor_grid_max_charge
+            data:
+              option: 60 A
+            action: select.select_option
+          - target:
+              entity_id: number.inverter_monitor_absorb_voltage
+            data:
+              value: 14.2
+            action: number.set_value
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.jkbms_jkbms_state_of_charge
+            above: 69
+          - condition: numeric_state
+            entity_id: sensor.jkbms_jkbms_state_of_charge
+            below: 90
+          sequence:
+          - target:
+              entity_id: select.inverter_monitor_grid_max_charge
+            data:
+              option: 40 A
+            action: select.select_option
+          - target:
+              entity_id: number.inverter_monitor_absorb_voltage
+            data:
+              value: 14.2
+            action: number.set_value
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.jkbms_jkbms_state_of_charge
+            above: 89
+          sequence:
+          - target:
+              entity_id: select.inverter_monitor_grid_max_charge
+            data:
+              option: 20 A
+            action: select.select_option
+          - target:
+              entity_id: number.inverter_monitor_absorb_voltage
+            data:
+              value: 14
+            action: number.set_value
+    - conditions:
+      - condition: trigger
+        id: soc_70
+      - condition: numeric_state
+        entity_id: sensor.jkbms_jkbms_current
+        above: 5
+      sequence:
+      - target:
+          entity_id: select.inverter_monitor_grid_max_charge
+        data:
+          option: 40 A
+        action: select.select_option
+    - conditions:
+      - condition: trigger
+        id: soc_90
+      - condition: numeric_state
+        entity_id: sensor.jkbms_jkbms_current
+        above: 5
+      sequence:
+      - target:
+          entity_id: select.inverter_monitor_grid_max_charge
+        data:
+          option: 20 A
+        action: select.select_option
+      - target:
+          entity_id: number.inverter_monitor_absorb_voltage
+        data:
+          value: 14
+        action: number.set_value
   mode: single
