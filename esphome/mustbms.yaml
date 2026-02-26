@@ -1,0 +1,561 @@
+substitutions:
+  node_id: mustbms
+  device_description: "Monitor and control Invertor and JK-BMS via bluetooth"
+  external_components_source: github://syssi/esphome-jk-bms@main
+  protocol_version: JK02_32S
+  inverter_id: inverter
+  updates: 5s
+
+esphome:
+  name: mustbms
+  comment: ${device_description}
+  min_version: 2024.6.0
+  project:
+    name: "i syssi.esphome-jk-bms"
+    version: 2.3.0
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+- platform: esphome
+  password: !secret ota_password3
+  id: "${node_id}_ota"
+
+api:
+  reboot_timeout: 10min
+  encryption:
+    key: !secret api_encryption_key3
+
+web_server:
+  port: 80    
+
+logger:
+  level: INFO
+
+ble_client:
+  - mac_address: !secret mac_address
+    id: client0
+
+jk_bms_ble:
+  - ble_client_id: client0
+    protocol_version: ${protocol_version}
+    throttle: 5s
+    id: bms0
+
+uart:
+  - id: uart_inverter
+    baud_rate: 19200
+    tx_pin: GPIO4
+    rx_pin: GPIO5
+    stop_bits: 1
+    parity: NONE
+    data_bits: 8
+    debug:
+      direction: BOTH
+      dummy_receiver: false
+
+modbus:
+  - id: modbus_inverter
+    uart_id: uart_inverter
+    send_wait_time: 200ms
+
+modbus_controller:
+  - id: must
+    address: 0x04
+    modbus_id: modbus_inverter
+    command_throttle: 200ms
+    setup_priority: -10
+    update_interval: ${updates}
+
+binary_sensor:
+
+  - platform: jk_bms_ble
+    balancing:
+      name: "b balancing"
+    charging:
+      name: "b charging"
+    discharging:
+      name: "b discharging"
+    heating:
+      name: "b heating"
+    online_status:
+      name: "b online status"
+
+button:
+
+  - platform: jk_bms_ble
+    retrieve_settings:
+      name: "b retrieve settings"
+    retrieve_device_info:
+      name: "b retrieve device info"
+
+number:
+
+  - platform: modbus_controller
+    id: batt_float_voltage
+    name: "i Float voltage"
+    unit_of_measurement: "V"
+    address: 10103
+    value_type: U_WORD
+    min_value: 13.0
+    max_value: 14.2
+    step: 0.1
+    mode: box
+    lambda: "return x * 0.1; "
+    write_lambda: |-
+      return x * 10 ;
+
+  - platform: modbus_controller
+    id: batt_absorb_voltage
+    name: "i Absorb voltage"
+    unit_of_measurement: "V"
+    address: 10104
+    min_value: 13.0
+    max_value: 14.2
+    step: 0.1
+    mode: box    
+    value_type: U_WORD
+    lambda: "return x * 0.1; "
+    write_lambda: |-
+      return x * 10 ;
+
+  - platform: jk_bms_ble
+    jk_bms_ble_id: bms0
+    balance_trigger_voltage:
+      name: "b balance trigger voltage"
+    cell_count:
+      name: "b cell count"
+    total_battery_capacity:
+      name: "b total battery capacity"
+    cell_voltage_overvoltage_protection:
+      name: "b cell voltage overvoltage protection"
+    cell_voltage_overvoltage_recovery:
+      name: "b cell voltage overvoltage recovery"
+    cell_voltage_undervoltage_protection:
+      name: "b cell voltage undervoltage protection"
+    cell_voltage_undervoltage_recovery:
+      name: "b cell voltage undervoltage recovery"
+    balance_starting_voltage:
+      name: "b balance starting voltage"
+    power_off_voltage:
+      name: "b power off voltage"
+    max_charge_current:
+      name: "b max charge current"
+    max_discharge_current:
+      name: "b max discharge current"
+    smart_sleep_voltage:
+      name: "b smart sleep voltage"
+    cell_soc100_voltage:
+      name: "b cell soc100 voltage"
+    cell_soc0_voltage:
+      name: "b cell soc0 voltage"
+    cell_request_charge_voltage:
+      name: "b cell request charge voltage"
+    cell_request_float_voltage:
+      name: "b cell request float voltage"
+    cell_request_charge_voltage_time:
+      name: "b cell request charge voltage time"
+    cell_request_float_voltage_time:
+      name: "b cell request float voltage time"
+    charge_overcurrent_protection_delay:
+      name: "b charge overcurrent protection delay"
+    charge_overcurrent_protection_recovery_time:
+      name: "b charge overcurrent protection recovery time"
+    discharge_overcurrent_protection_delay:
+      name: "b discharge overcurrent protection delay"
+    discharge_overcurrent_protection_recovery_time:
+      name: "b discharge overcurrent protection recovery time"
+    short_circuit_protection_recovery_time:
+      name: "b short circuit protection recovery time"
+    charge_undertemperature_protection:
+      name: "b charge undertemperature protection"
+    charge_undertemperature_protection_recovery:
+      name: "b charge undertemperature protection recovery"
+    discharge_precharge_time:
+      name: "b discharge precharge time"
+    heating_start_temperature:
+      name: "b heating start temperature"
+    heating_stop_temperature:
+      name: "b heating stop temperature"
+
+sensor:
+
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""      
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25205
+    name: "i Battery Voltage"
+    register_type: holding
+    unit_of_measurement: "V"
+    accuracy_decimals: 1
+    icon: mdi:sine-wave
+    filters:
+      multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25206
+    name: "i Voltage"
+    register_type: holding
+    unit_of_measurement: "V"
+    accuracy_decimals: 1
+    icon: mdi:sine-wave
+    filters:
+      multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25207
+    name: "i Grid voltage"
+    register_type: holding
+    unit_of_measurement: "V"
+    accuracy_decimals: 1
+    icon: mdi:sine-wave
+    filters:
+      multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25210
+    name: "i Current"
+    register_type: holding
+    unit_of_measurement: "A"
+    accuracy_decimals: 1
+    icon: mdi:current-dc
+    filters:
+      multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25211
+    name: "i Grid current"
+    register_type: holding
+    unit_of_measurement: "A"
+    accuracy_decimals: 1
+    icon: mdi:current-ac
+    filters:
+      multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25212
+    name: "i Load current"
+    register_type: holding
+    unit_of_measurement: "A"
+    accuracy_decimals: 1
+    icon: mdi:current-ac
+    filters:
+      multiply: 0.1
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25213
+    value_type: S_WORD
+    name: "i Power"
+    register_type: holding
+    unit_of_measurement: "W"
+    accuracy_decimals: 1
+    icon: mdi:flash
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25214
+    name: "i Grid power"
+    register_type: holding
+    unit_of_measurement: "W"
+    accuracy_decimals: 1
+    value_type: S_WORD
+    icon: mdi:flash
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25215
+    name: "i Load power"
+    register_type: holding
+    unit_of_measurement: "W"
+    accuracy_decimals: 1
+    icon: mdi:flash
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25216
+    name: "i System load"
+    register_type: holding
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    icon: mdi:flash
+
+  - platform: modbus_controller
+    address: 25226
+    name: "i Grid frequency"
+    register_type: holding
+    accuracy_decimals: 2
+    unit_of_measurement: "Hz"
+    filters:
+      multiply: 0.01
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25233
+    register_type: holding
+    name: "i temp AC radiator"
+    accuracy_decimals: 1
+    unit_of_measurement: "°C"
+    icon: mdi:temperature-celsius
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25235
+    register_type: holding
+    name: "i temp DC Radiator "
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    icon: mdi:temperature-celsius 
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25247
+    register_type: holding
+    id: discharger_total_mwh
+    internal: true
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25248
+    register_type: holding
+    id: discharger_total_kwh
+    internal: true
+    filters:
+      multiply: 0.1
+
+  - platform: template
+    name: "i Accumulated discharger power"
+    unit_of_measurement: kWh
+    accuracy_decimals: 1
+    lambda: !lambda 'return (id(discharger_total_mwh).state * 1000.0 + id(discharger_total_kwh).state);'
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25249
+    register_type: holding
+    id: buy_mwh
+    internal: true
+  
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25250
+    register_type: holding
+    id: buy_kwh
+    internal: true
+    filters:
+      multiply: 0.1
+  
+  - platform: template
+    name: "i Accumulated buy power"
+    unit_of_measurement: kWh
+    lambda: |-
+     return (id(buy_mwh).state * 1000.0 + id(buy_kwh).state);
+    accuracy_decimals: 1
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25253
+    register_type: holding
+    id: load_mwh
+    internal: True
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25254
+    register_type: holding
+    id: load_kwh
+    internal: True
+    filters:
+      multiply: 0.1
+  
+  - platform: template
+    name: "i Accumulated load power"
+    unit_of_measurement: kWh
+    accuracy_decimals: 1
+    lambda: !lambda return (id(load_mwh).state * 1000.0 + id(load_kwh).state);
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25273
+    register_type: holding
+    value_type: S_WORD
+    name: "i Battery power"
+    unit_of_measurement: "W"
+    accuracy_decimals: 1
+    icon: mdi:flash
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 25274
+    register_type: holding
+    value_type: S_WORD
+    name: "i Battery current"
+    unit_of_measurement: "A"
+    accuracy_decimals: 1
+    icon: mdi:current-dc
+
+  - platform: jk_bms_ble
+    jk_bms_ble_id: bms0
+    min_cell_voltage:
+      name: "b min cell voltage"
+    max_cell_voltage:
+      name: "b max cell voltage"
+    delta_cell_voltage:
+      name: "b delta cell voltage"
+    average_cell_voltage:
+      name: "b average cell voltage"
+    cell_voltage_1:
+      name: "b cell voltage 1"
+    cell_voltage_2:
+      name: "b cell voltage 2"
+    cell_voltage_3:
+      name: "b cell voltage 3"
+    cell_voltage_4:
+      name: "b cell voltage 4"
+    cell_resistance_1:
+      name: "b cell resistance 1"
+    cell_resistance_2:
+      name: "b cell resistance 2"
+    cell_resistance_3:
+      name: "b cell resistance 3"
+    cell_resistance_4:
+      name: "b cell resistance 4"
+    total_voltage:
+      name: "b total voltage"
+    current:
+      name: "b current"
+    heating_current:
+      name: "b heating current"
+    power:
+      name: "b power"
+    charging_power:
+      name: "b charging power"
+    discharging_power:
+      name: "b discharging power"
+    temperature_sensor_1:
+      name: "b temperature sensor 1"
+    temperature_sensor_2:
+      name: "b temperature sensor 2"
+    power_tube_temperature:
+      name: "b power tube temperature"
+    balancing:
+      name: "b balancing"
+    state_of_charge:
+      name: "b state of charge"
+    state_of_health:
+      name: "b state of health"
+    capacity_remaining:
+      name: "b capacity remaining"
+    total_battery_capacity_setting:
+      name: "b total battery capacity setting"
+    charging_cycles:
+      name: "b charging cycles"
+    total_charging_cycle_capacity:
+      name: "b total charging cycle capacity"
+    total_runtime:
+      name: "b total runtime"
+    balancing_current:
+      name: "b balancing current"
+
+switch:
+
+  - platform: jk_bms_ble
+    charging:
+      name: "b charging"
+    discharging:
+      name: "b discharging"
+    balancer:
+      name: "b balancer"
+    heating:
+      name: "b heating"
+    disable_temperature_sensors:
+      name: "b disable temperature sensors"
+
+text_sensor:
+
+  - platform: jk_bms_ble
+    errors:
+      name: "b errors"
+    total_runtime_formatted:
+      name: "b total runtime formatted"
+    charge_status:
+      name: "b charge status"
+
+select:
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    id: energy_use_mode
+    name: "i Energy use mode (parameter 00)"
+    address: 20109
+    optionsmap:
+      "SBU (Solar/battery/utility)": 1
+      "SUB (Solar/utility/battery)": 2
+      "UTI (Utility only)": 3
+      "SOL (Solar only)": 4
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    id: charger_source_priority
+    name: "i Charger source priority (parameter 10)"
+    address: 20143
+    optionsmap:
+      "CSO (Solar first)": 0
+      "SNU (Solar and utility)": 2
+      "OSO (Solar only)": 3
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    address: 20111
+    id: inverter_ac_input_voltage_range
+    name: "i AC input voltage range (02)"
+    optionsmap:
+      "VDE (184-253VAC)": 0
+      "UPS (170-280VAC)": 1
+      "APL (90-280VAC)": 2
+      "GEN (Generator)": 3
+
+  - platform: modbus_controller
+    modbus_controller_id: must
+    id: grid_max_charge_current
+    name: "i Grid Max Charge"
+    address: 20125
+    value_type: U_WORD
+    optionsmap:
+      "10 A": 100
+      "20 A": 200
+      "30 A": 300
+      "40 A": 400
+      "50 A": 500
+      "60 A": 600
+      "70 A": 700

@@ -64,6 +64,7 @@ sensor:
     id: wifi_signal_db
     update_interval: 60s
     entity_category: "diagnostic"
+
   - platform: copy
     source_id: wifi_signal_db
     name: "WiFi Signal Percent"
@@ -404,7 +405,7 @@ select:
       "30 A": 300
 
 number:
- 
+
   - platform: modbus_controller
     id: batt_float_voltage
     name: "Float voltage"
