@@ -24,3 +24,21 @@ media_player:
   - platform: aquostv
     host: 192.168.2.21
     name: media_player.android_tv_192_168_2_21
+climate:
+  - platform: smart_thermostat
+    name: Smart Thermostat
+    unique_id: smart_thermostat
+    heater: switch.termostat_rele_kotla
+    invert_heater: true
+    target_sensor: sensor.temp2_temperature
+    min_temp: 18
+    max_temp: 25
+    ac_mode: False
+    target_temp: 21
+    keep_alive:
+      seconds: 60
+    away_temp: 14
+    kp: 25
+    ki: 0.01
+    kd: 200
+    pwm: 00:20:00

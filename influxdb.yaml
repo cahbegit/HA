@@ -1,8 +1,8 @@
-  username: cahbe
-  password: cahbe
+#  username: cahbe
+#  password: cahbe
   max_retries: 3
   default_measurement: state
-  database: cahbe
+#  database: cahbe
   include:
     entities:
       - sensor.all_in_pro_power_2

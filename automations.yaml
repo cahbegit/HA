@@ -429,37 +429,6 @@
             {{ soc }} % {% else %} \U0001F50B *Заряд батареи:* нет данных {% endif
             %} {{ \"↩️\" }} Меню: /start\n"
   mode: single
-- id: '1767000000002'
-  alias: Telegramm Автозапуск зарядки аккумулятора
-  description: Включает зарядку ночью, если появился стабильный городской свет
-  triggers:
-  - entity_id: binary_sensor.192_168_2_219
-    to: 'on'
-    for: 00:10:00
-    trigger: state
-  conditions:
-  - condition: time
-    after: '23:30:00'
-    before: 08:00:00
-  - condition: state
-    entity_id: switch.kotel_zariad_switch
-    state: 'off'
-  - condition: state
-    entity_id: switch.kholodilnik_switch_2
-    state: 'on'
-  actions:
-  - target:
-      entity_id: switch.kotel_zariad_switch
-    action: switch.turn_on
-  - data:
-      target:
-      - 506234553
-      - 515837462
-      message: "⚡✅ *Городская сеть стабильна (10 мин)*   \U0001F319 Ночное окно активно
-        (23:30–08:00)\n\U0001F9CA Холодильник включён — нагрузка подтверждена   \U0001F50C
-        *Автомат зарядки включён автоматически*\n↩️ Меню: /start\n"
-    action: telegram_bot.send_message
-  mode: single
 - id: '1769447130342'
   alias: Автостарт зарядки
   description: Ночной автозапуск зарядки от города
@@ -484,9 +453,9 @@
       entity_id: switch.kotel_zariad_switch
   - action: telegram_bot.send_message
     data:
-      target:
-      - 506234553
-      - 515837462
+      chat_id:
+        - 506234553
+        - 515837462
       message: "⚡✅ *Городская сеть стабильна (10 мин)*   \U0001F319 Ночное окно активно
         (23:30–08:00)\n\U0001F9CA Холодильник включён — нагрузка подтверждена   \U0001F50C
         *Автомат зарядки включён автоматически*\n↩️ Меню: /start\n"
