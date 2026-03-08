@@ -1,5 +1,5 @@
 - id: '1729770602017'
-  alias: Душ
+  alias: Душ Свет 15 минут
   description: Авто выключение света в душе
   triggers:
   - trigger: state
@@ -34,7 +34,7 @@
       entity_id: switch.2_ty_12z_switch_4
   mode: single
 - id: '1729770951551'
-  alias: Вытяжка душ
+  alias: Душ Вытяжка
   description: Авто выключение вытяжки в душе
   triggers:
   - trigger: state
@@ -80,15 +80,15 @@
   conditions:
   - condition: sun
     after: sunset
-    after_offset: -04:00:00
+    after_offset: -03:00:00
   - condition: time
     before: '23:00:00'
   - condition: template
     value_template: '{% set now_sec = now().timestamp() %} {% set sasha = states.binary_sensor.sasha_doma
       %} {% set lena = states.binary_sensor.lena_doma %} {% set sasha_last = sasha.last_changed.timestamp()
       if sasha.state == ''on'' else 0 %} {% set lena_last = lena.last_changed.timestamp()
-      if lena.state == ''on'' else 0 %} {{ (now_sec - sasha_last < 180) or (now_sec
-      - lena_last < 180) }}
+      if lena.state == ''on'' else 0 %} {{ (now_sec - sasha_last < 600) or (now_sec
+      - lena_last < 600) }}
 
       '
   actions:
@@ -99,9 +99,9 @@
   - target:
       entity_id: switch.1_ty_12z_switch_1
     action: switch.turn_off
-  mode: single
+  mode: restart
 - id: '1738685065988'
-  alias: Ночное проветривание спальня (тихо)
+  alias: Кондей спальня проветривание ночь (тихо)
   description: ''
   triggers:
   - at: '23:00:00'
@@ -225,7 +225,7 @@
     action: climate.set_fan_mode
   mode: single
 - id: '1751875744814'
-  alias: Лето спальня
+  alias: Кондей Лето спальня ночь
   description: Включение охлаждения 21° на полчаса в тихом режиме
   triggers:
   - at: '23:00:00'
@@ -265,43 +265,29 @@
     action: climate.set_hvac_mode
   mode: single
 - id: '1753429709783'
-  alias: Автосвет ванна
+  alias: Душ Автосвет в ванной
   description: Включает свет при движении и выключает через 5 минут после последнего
     движения
   triggers:
   - entity_id: binary_sensor.temp6_presence
     to: 'on'
     trigger: state
-  - entity_id: binary_sensor.temp6_presence
-    to: 'off'
-    for: 00:05:00
-    trigger: state
   conditions:
   - condition: time
     after: 08:00:00
     before: '22:00:00'
   actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.temp6_presence
-        state: 'on'
-      sequence:
-      - target:
-          entity_id: switch.2_ty_12z_switch_2
-        action: switch.turn_on
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.temp6_presence
-        state: 'off'
-      sequence:
-      - delay: 00:05:00
-      - condition: state
-        entity_id: binary_sensor.temp6_presence
-        state: 'off'
-      - target:
-          entity_id: switch.2_ty_12z_switch_2
-        action: switch.turn_off
+  - target:
+      entity_id: switch.2_ty_12z_switch_2
+    action: switch.turn_on
+  - wait_for_trigger:
+    - entity_id: binary_sensor.temp6_presence
+      to: 'off'
+      for: 00:03:00
+      trigger: state
+  - target:
+      entity_id: switch.2_ty_12z_switch_2
+    action: switch.turn_off
   mode: restart
 - id: '1756374867490'
   alias: Кнопка калидор
@@ -315,63 +301,6 @@
         device_id:
         - 873a00d3bbd8fa574ee737d21efa2f19
         - 4b7714e3f237f2e24adee6c08e84c7a6
-- id: '1763649607541'
-  alias: Настройка поведения зарядки по времени
-  description: Меняем состояние автомата зарядки по расписанию
-  triggers:
-  - at: 00:30:00
-    trigger: time
-  - at: 08:30:00
-    trigger: time
-  actions:
-  - choose:
-    - conditions:
-      - condition: time
-        after: 00:30:00
-        before: 08:30:00
-      sequence:
-      - target:
-          entity_id: select.kotel_zariad_releystatus
-        data:
-          option: Включено
-        action: select.select_option
-    - conditions:
-      - condition: time
-        after: 08:30:00
-        before: 00:30:00
-      sequence:
-      - target:
-          entity_id: select.kotel_zariad_releystatus
-        data:
-          option: Выключено
-        action: select.select_option
-  mode: single
-- id: '1763728297733'
-  alias: Управление холодильником
-  description: Включаем/выключаем холодильник в зависимости от состояния батареи
-  triggers:
-  - entity_id: binary_sensor.powmrbms_on_battery
-    trigger: state
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.powmrbms_on_battery
-        state: 'on'
-      sequence:
-      - target:
-          entity_id: switch.kholodilnik_switch_2
-        action: switch.turn_off
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.powmrbms_on_battery
-        state: 'off'
-      sequence:
-      - delay: 00:03:00
-      - target:
-          entity_id: switch.kholodilnik_switch_2
-        action: switch.turn_on
-  mode: single
 - id: '1766999646947'
   alias: Telegram - power status
   description: ''
@@ -430,7 +359,7 @@
             %} {{ \"↩️\" }} Меню: /start\n"
   mode: single
 - id: '1769447130342'
-  alias: Автостарт зарядки
+  alias: Инвертор Автостарт зарядки
   description: Ночной автозапуск зарядки от города
   triggers:
   - trigger: state
@@ -454,14 +383,14 @@
   - action: telegram_bot.send_message
     data:
       chat_id:
-        - 506234553
-        - 515837462
+      - 506234553
+      - 515837462
       message: "⚡✅ *Городская сеть стабильна (10 мин)*   \U0001F319 Ночное окно активно
         (23:30–08:00)\n\U0001F9CA Холодильник включён — нагрузка подтверждена   \U0001F50C
         *Автомат зарядки включён автоматически*\n↩️ Меню: /start\n"
   mode: single
 - id: '1772035605972'
-  alias: Инвертор зарядка
+  alias: Инвертор Зарядка мощьность
   description: Управление зарядкой Инвертор
   triggers:
   - entity_id: sensor.jkbms_jkbms_current
@@ -564,4 +493,68 @@
         data:
           value: 14
         action: number.set_value
+  mode: single
+- id: '1772974219582'
+  alias: Кондей Зал Утро
+  description: Утренний режим кондиционера
+  triggers:
+  - at: 06:00:00
+    id: start
+    trigger: time
+  - at: 06:50:00
+    id: normal
+    trigger: time
+  conditions:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: start
+      sequence:
+      - target:
+          entity_id: climate.c039370837e4
+        data:
+          hvac_mode: cool
+        action: climate.set_hvac_mode
+      - target:
+          entity_id: climate.c039370837e4
+        data:
+          temperature: 18
+        action: climate.set_temperature
+      - target:
+          entity_id: climate.c039370837e4
+        data:
+          fan_mode: high
+        action: climate.set_fan_mode
+      - target:
+          entity_id: climate.c039370837e4
+        data:
+          preset_mode: boost
+        action: climate.set_preset_mode
+    - conditions:
+      - condition: trigger
+        id: normal
+      sequence:
+      - target:
+          entity_id: climate.c039370837e4
+        data:
+          temperature: 23
+        action: climate.set_temperature
+      - target:
+          entity_id: climate.c039370837e4
+        data:
+          preset_mode: eco
+        action: climate.set_preset_mode
+      - target:
+          entity_id: climate.c039370837e4
+        data:
+          fan_mode: low
+        action: climate.set_fan_mode
   mode: single
