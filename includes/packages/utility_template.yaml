@@ -15,12 +15,6 @@ utility_template:
                is_state('device_tracker.redmi_note_14_pro_5g', 'home') or
                is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') }}
                
-        - name: "internet_off"
-          unique_id: internet_off
-          state: >
-            {{ states('sensor.mikrotik_router_download_speed') | float(0) < 1 }}
-          delay_on: 
-            seconds: 30
     - sensor:
         - name: "sensor.Kotel_Power_Delta"
           state: >
@@ -44,7 +38,7 @@ utility_template:
               'sensor.temp5_battery',
               'sensor.temp6_battery',
               'sensor.wireless_scene_switch_battery',
-              'sensor.spalnia_shtora_battery'
+              'sensor.spalnia_shtora_battery_2'
             ] %}
             {% for entity in batteries %}
               {% set val = states(entity) | int(100) %}
@@ -66,7 +60,7 @@ utility_template:
                 'sensor.temp5_battery',
                 'sensor.temp6_battery',
                 'sensor.wireless_scene_switch_battery',
-                'sensor.spalnia_shtora_battery'
+                'sensor.spalnia_shtora_battery_2'
               ] %}
               {% for entity in batteries %}
                 {% set val = states(entity) | int(100) %}

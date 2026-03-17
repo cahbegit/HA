@@ -16,7 +16,7 @@ telegram_control:
       action:
         - service: telegram_bot.send_message
           data:
-            target: "{{ trigger.event.data.user_id }}"
+            chat_id: "{{ trigger.event.data.chat_id }}"
             message: |
               {{'\U0001F527'}} Выбрать комнату для управления:
             inline_keyboard:
@@ -60,7 +60,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       {{'\U0001F527'}} Выбрать комнату для управления:
                     inline_keyboard:
@@ -81,7 +81,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       🚶 Управление коридор:
                       🚪 Дверь — {% if is_state('binary_sensor.0x00158d000119378d_contact','on') %}Открыта{% else %}Закрыта{% endif %}
@@ -106,7 +106,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: "💡 Состояние обновлено"
                     inline_keyboard:
                       - "↩️ Назад:/menu_back"
@@ -122,7 +122,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       🚽 Ванна:
                       🌡️ {{ states('sensor.temp6_temperature') }} °C
@@ -152,7 +152,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       🏠 Зал:
                       🌡️ {{ states('sensor.temp4_temperature') }} °C
@@ -192,7 +192,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       🍴 Кухня:
                       🌡️ {{ states('sensor.temp3_temperature') }} °C
@@ -211,7 +211,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       🛏️ Спальня:
                       🌡️ {{ states('sensor.temp2_temperature') }} °C
@@ -230,7 +230,7 @@ telegram_control:
                     message_id: "{{ trigger.event.data.message.message_id }}"
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       🌉 Балкон:
                       🌡️ {{ states('sensor.temp1_temperature') }} °C
@@ -252,7 +252,7 @@ telegram_control:
 
                 - service: telegram_bot.send_message
                   data:
-                    target: "{{ trigger.event.data.chat_id }}"
+                    chat_id: "{{ trigger.event.data.chat_id }}"
                     message: >
                       {% set lights = [
                         {'entity': 'switch.1_ty_12z_switch_1', 'name': 'Коридор'},

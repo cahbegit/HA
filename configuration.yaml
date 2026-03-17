@@ -31,14 +31,19 @@ climate:
     heater: switch.termostat_rele_kotla
     invert_heater: true
     target_sensor: sensor.temp2_temperature
-    min_temp: 18
-    max_temp: 25
+    min_temp: 16
+    max_temp: 26
     ac_mode: False
-    target_temp: 21
+    target_temp: 22
     keep_alive:
       seconds: 60
-    away_temp: 14
+    away_temp: 16
+    sleep_temp: 20
+    boost_temp: 23
+    boost_pid_off: true
     kp: 25
     ki: 0.01
     kd: 200
     pwm: 00:20:00
+    outdoor_sensor: sensor.temp1_temperature
+    ke: 0.5
