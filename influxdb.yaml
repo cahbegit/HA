@@ -37,15 +37,15 @@
       - sensor.temp5_humidity
       - sensor.temp6_humidity
       - sensor.temp7_humidity
-      - sensor.jkbms_jkbms_charging_power
-      - sensor.jkbms_jkbms_current
-      - sensor.jkbms_jkbms_discharging_power
-      - sensor.jkbms_jkbms_power
-      - sensor.jkbms_jkbms_total_voltage
-      - sensor.jkbms_jkbms_cell_voltage_1
-      - sensor.jkbms_jkbms_cell_voltage_2
-      - sensor.jkbms_jkbms_cell_voltage_3
-      - sensor.jkbms_jkbms_cell_voltage_4
+      - sensor.mustbms_b_charging_power
+      - sensor.mustbms_b_current
+      - sensor.mustbms_b_discharging_power
+      - sensor.mustbms_b_power
+      - sensor.mustbms_b_total_voltage
+      - sensor.mustbms_b_cell_voltage_1
+      - sensor.mustbms_b_cell_voltage_2
+      - sensor.mustbms_b_cell_voltage_3
+      - sensor.mustbms_b_cell_voltage_4
       - sensor.termostat_temperatura_1
       - sensor.termostat_temperatura_2
       - sensor.termostat_temperatura_3
