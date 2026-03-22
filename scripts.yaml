@@ -3,7 +3,7 @@ youtube:
   mode: single
   sequence:
   - variables:
-      random_index: '{{ range(1, 47) | random }}'
+      random_index: '{{ range(1, 50) | random }}'
   - action: media_player.turn_on
     data: {}
     target:

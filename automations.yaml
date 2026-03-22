@@ -10,14 +10,6 @@
       hours: 0
       minutes: 15
       seconds: 0
-  - trigger: state
-    entity_id:
-    - switch.2_ty_12z_switch_4
-    from: 'off'
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
   conditions:
   - condition: state
     entity_id: switch.2_ty_12z_switch_4
