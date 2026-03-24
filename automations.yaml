@@ -322,7 +322,7 @@
             \ {{ \"⏳\" }} *Ожидаемое включение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
             %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
             -%}\n  {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %}\n {%
-            set soc = states('sensor.jkbms_jkbms_state_of_charge') %} {% if soc not
+            set soc = states('sensor.mustbms_b_state_of_charge') %} {% if soc not
             in ['unknown', 'unavailable', ''] %} \U0001F50B *Заряд батареи:* {{ soc
             }} % {% else %} \U0001F50B *Заряд батареи:* нет данных {% endif %} {{
             \"↩️\" }} Меню: /start\n"
@@ -343,7 +343,7 @@
             \ {{ \"\U0001F4C5\" }} *Следующее плановое отключение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
             %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
             -%}\n  {{ \"\U0001F4C5\" }} *Следующее плановое отключение:* нет данных\n{%
-            endif %}\n {% set soc = states('sensor.jkbms_jkbms_state_of_charge') %}
+            endif %}\n {% set soc = states('sensor.mustbms_b_state_of_charge') %}
             {% if soc not in ['unknown', 'unavailable', ''] %} \U0001F50B *Заряд батареи:*
             {{ soc }} % {% else %} \U0001F50B *Заряд батареи:* нет данных {% endif
             %} {{ \"↩️\" }} Меню: /start\n"
@@ -383,15 +383,15 @@
   alias: Инвертор Зарядка мощьность
   description: Управление зарядкой Инвертор
   triggers:
-  - entity_id: sensor.jkbms_jkbms_current
+  - entity_id: sensor.mustbms_b_current
     above: 5
     id: charge_started
     trigger: numeric_state
-  - entity_id: sensor.jkbms_jkbms_state_of_charge
+  - entity_id: sensor.mustbms_b_state_of_charge
     above: 70
     id: soc_70
     trigger: numeric_state
-  - entity_id: sensor.jkbms_jkbms_state_of_charge
+  - entity_id: sensor.mustbms_b_state_of_charge
     above: 90
     id: soc_90
     trigger: numeric_state
@@ -408,49 +408,49 @@
       - choose:
         - conditions:
           - condition: numeric_state
-            entity_id: sensor.jkbms_jkbms_state_of_charge
+            entity_id: sensor.mustbms_b_state_of_charge
             below: 70
           sequence:
           - target:
-              entity_id: select.inverter_monitor_grid_max_charge
+              entity_id: select.mustbms_i_grid_max_charge
             data:
               option: 60 A
             action: select.select_option
           - target:
-              entity_id: number.inverter_monitor_absorb_voltage
+              entity_id: number.mustbms_i_absorb_voltage
             data:
               value: 14.2
             action: number.set_value
         - conditions:
           - condition: numeric_state
-            entity_id: sensor.jkbms_jkbms_state_of_charge
+            entity_id: sensor.mustbms_b_state_of_charge
             above: 69
           - condition: numeric_state
-            entity_id: sensor.jkbms_jkbms_state_of_charge
+            entity_id: sensor.mustbms_b_state_of_charge
             below: 90
           sequence:
           - target:
-              entity_id: select.inverter_monitor_grid_max_charge
+              entity_id: select.mustbms_i_grid_max_charge
             data:
               option: 40 A
             action: select.select_option
           - target:
-              entity_id: number.inverter_monitor_absorb_voltage
+              entity_id: number.mustbms_i_absorb_voltage
             data:
               value: 14.2
             action: number.set_value
         - conditions:
           - condition: numeric_state
-            entity_id: sensor.jkbms_jkbms_state_of_charge
+            entity_id: sensor.mustbms_b_state_of_charge
             above: 89
           sequence:
           - target:
-              entity_id: select.inverter_monitor_grid_max_charge
+              entity_id: select.mustbms_i_grid_max_charge
             data:
               option: 20 A
             action: select.select_option
           - target:
-              entity_id: number.inverter_monitor_absorb_voltage
+              entity_id: number.mustbms_i_absorb_voltage
             data:
               value: 14
             action: number.set_value
@@ -458,11 +458,11 @@
       - condition: trigger
         id: soc_70
       - condition: numeric_state
-        entity_id: sensor.jkbms_jkbms_current
+        entity_id: sensor.mustbms_b_current
         above: 5
       sequence:
       - target:
-          entity_id: select.inverter_monitor_grid_max_charge
+          entity_id: select.mustbms_i_grid_max_charge
         data:
           option: 40 A
         action: select.select_option
@@ -470,16 +470,16 @@
       - condition: trigger
         id: soc_90
       - condition: numeric_state
-        entity_id: sensor.jkbms_jkbms_current
+        entity_id: sensor.mustbms_b_current
         above: 5
       sequence:
       - target:
-          entity_id: select.inverter_monitor_grid_max_charge
+          entity_id: select.mustbms_i_grid_max_charge
         data:
           option: 20 A
         action: select.select_option
       - target:
-          entity_id: number.inverter_monitor_absorb_voltage
+          entity_id: number.mustbms_i_absorb_voltage
         data:
           value: 14
         action: number.set_value
