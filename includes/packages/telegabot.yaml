@@ -20,9 +20,10 @@ telegram_control:
             message: |
               {{'\U0001F527'}} Выбрать комнату для управления:
             inline_keyboard:
-              - "🚶 Коридор:/koridor_control , 🚽 Туалет:/vanna_control"
+              - "🚶 Коридор:/koridor_control , 🚽 Ванна:/vanna_control"
               - "🏠 Зал:/zal_control , 🍴 Кухня:/kuhnya_control"
               - "🛏️ Спальня:/spalnia_control , 🌉 Балкон:/balkon_control"
+              - "💡 Електричество:/electro , ⛅ Улица:/garden"
               - "🎥 Свет:/lights"
               - "🚫 Убрать меню:/menu_hide"
 
@@ -67,17 +68,17 @@ telegram_control:
                       - "🚶 Коридор:/koridor_control , 🚽 Туалет:/vanna_control"
                       - "🏠 Зал:/zal_control , 🍴 Кухня:/kuhnya_control"
                       - "🛏️ Спальня:/spalnia_control , 🌉 Балкон:/balkon_control"
+                      - "💡 Електричество:/electro , ⛅ Улица:/garden"
                       - "🎥 Свет:/lights"
                       - "🚫 Убрать меню:/menu_hide"
 
             ################################################################
-            # КОРИДОР — компактно
+            # КОРИДОР
             ################################################################
 
             - conditions: >
                 {{ trigger.event.data.command in ['/koridor_control', '/toggle_koridor_light'] }}
               sequence:
-                # Если нажали на лампу — переключаем
                 - choose:
                     - conditions: "{{ trigger.event.data.command == '/toggle_koridor_light' }}"
                       sequence:
@@ -99,13 +100,17 @@ telegram_control:
                 - service: telegram_bot.send_message
                   data:
                     chat_id: "{{ trigger.event.data.chat_id }}"
-                    message: |
+                    message: >
+                      {% set last = states.binary_sensor.motion_sensor_2_occupancy.last_changed %}
+                      {% set last_local = last.as_local() %}
+                      {% set diff = (now() - last_local).total_seconds() | int %}
+                      {% set minutes = (diff // 60) %}
                       🚶 Управление коридор:
                       👣 Последнее движение — 
                       {% if is_state('binary_sensor.motion_sensor_2_occupancy','on') %}
                         сейчас
                       {% else %}
-                        {{ states.binary_sensor.motion_sensor_2_occupancy.last_changed.strftime('%d.%m %H:%M:%S') }}
+                        {{ last_local.strftime('%d.%m %H:%M:%S') }} ({{ minutes }} мин. назад)
                       {% endif %}
 
                       💡 Лампочка — {{ 'Вкл' if is_state('switch.1_ty_12z_switch_1','on') else 'Выкл' }}
@@ -185,31 +190,84 @@ telegram_control:
             ################################################################
             # КУХНЯ
             ################################################################
-            - conditions: "{{ trigger.event.data.command == '/kuhnya_control' }}"
+            - conditions: >
+                {{ trigger.event.data.command in ['/kuhnya_control', '/toggle_kuhnya_lustre', '/toggle_kuhnya_perimeter'] }}
               sequence:
+                # Переключение света
+                - choose:
+                    - conditions: "{{ trigger.event.data.command == '/toggle_kuhnya_lustre' }}"
+                      sequence:
+                        - service: switch.toggle
+                          target:
+                            entity_id: switch.2_ty_12z_switch_5
+                        - service: telegram_bot.answer_callback_query
+                          data:
+                            callback_query_id: "{{ trigger.event.data.id }}"
+                            message: "💡 Люстра кухни переключена"
+
+                    - conditions: "{{ trigger.event.data.command == '/toggle_kuhnya_perimeter' }}"
+                      sequence:
+                        - service: switch.toggle
+                          target:
+                            entity_id: switch.2_ty_12z_switch_6
+                        - service: telegram_bot.answer_callback_query
+                          data:
+                            callback_query_id: "{{ trigger.event.data.id }}"
+                            message: "💡 Периметр кухни переключён"
+
+                # Удаляем старое сообщение
                 - service: telegram_bot.delete_message
                   data:
                     chat_id: "{{ trigger.event.data.chat_id }}"
                     message_id: "{{ trigger.event.data.message.message_id }}"
+
+                # Отправляем меню кухни
                 - service: telegram_bot.send_message
                   data:
                     chat_id: "{{ trigger.event.data.chat_id }}"
                     message: |
                       🍴 Кухня:
-                      🌡️ {{ states('sensor.temp3_temperature') }} °C
-                      💧 {{ states('sensor.temp3_humidity') }} %
+
+                      💡 Люстра — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_5','on') else 'Выкл' }}
+                      💡 Периметр — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_6','on') else 'Выкл' }}
                     inline_keyboard:
+                      - "💡 Люстра:/toggle_kuhnya_lustre , 💡 Периметр:/toggle_kuhnya_perimeter"
                       - "↩️ Назад:/menu_back"
 
             ################################################################
             # СПАЛЬНЯ
             ################################################################
-            - conditions: "{{ trigger.event.data.command == '/spalnia_control' }}"
+            - conditions: >
+                {{ trigger.event.data.command in ['/spalnia_control', '/toggle_spalnia_lustre', '/toggle_spalnia_perimeter'] }}
               sequence:
+                - choose:
+                    - conditions: "{{ trigger.event.data.command == '/toggle_spalnia_lustre' }}"
+                      sequence:
+                        - service: switch.toggle
+                          target:
+                            entity_id: switch.1_ty_12z_switch_6
+                        - service: telegram_bot.answer_callback_query
+                          data:
+                            callback_query_id: "{{ trigger.event.data.id }}"
+                            message: "💡 Люстра спальни переключена"
+
+                    - conditions: "{{ trigger.event.data.command == '/toggle_spalnia_perimeter' }}"
+                      sequence:
+                        - service: switch.toggle
+                          target:
+                            entity_id: button.controlperimeterlight_spalnap_toggle
+                        - service: telegram_bot.answer_callback_query
+                          data:
+                            callback_query_id: "{{ trigger.event.data.id }}"
+                            message: "💡 Периметр спальни переключён"
+
+                # Удаляем старое сообщение
                 - service: telegram_bot.delete_message
                   data:
                     chat_id: "{{ trigger.event.data.chat_id }}"
                     message_id: "{{ trigger.event.data.message.message_id }}"
+
+                # Отправляем актуальное меню спальни
                 - service: telegram_bot.send_message
                   data:
                     chat_id: "{{ trigger.event.data.chat_id }}"
@@ -217,20 +275,22 @@ telegram_control:
                       🛏️ Спальня:
                       🌡️ {{ states('sensor.temp2_temperature') }} °C
                       💧 {{ states('sensor.temp2_humidity') }} %
+
+                      💡 Люстра — {{ 'Вкл' if is_state('switch.1_ty_12z_switch_6','on') else 'Выкл' }}
+                      💡 Периметр — {{ 'Вкл' if is_state('button.controlperimeterlight_spalnap_toggle','on') else 'Выкл' }}
                     inline_keyboard:
+                      - "💡 Люстра:/toggle_spalnia_lustre , 💡 Периметр:/toggle_spalnia_perimeter"
                       - "↩️ Назад:/menu_back"
 
             ################################################################
-            # БАЛКОН — компактно
+            # БАЛКОН 
             ################################################################
 
-            # === МЕНЮ БАЛКОНА + переключение ламп ===
             - conditions: >
                 {{ trigger.event.data.command in ['/balkon_control',
                                                   '/toggle_balkon_zal',
                                                   '/toggle_balkon_kitchen'] }}
               sequence:
-                # Определяем, какую лампу переключать (если есть)
                 - choose:
                     - conditions: "{{ trigger.event.data.command == '/toggle_balkon_zal' }}"
                       sequence:
@@ -267,11 +327,116 @@ telegram_control:
                       🌡️ {{ states('sensor.temp3_temperature') }} °C
                       💧 {{ states('sensor.temp3_humidity') }} %
 
-                      💡 Зал — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_8','on') else 'Выкл' }}
-                      💡 Кухня — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_7','on') else 'Выкл' }}
+                      💡 Балкон в зале — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_8','on') else 'Выкл' }}
+                      💡 Балкон в кухне — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_7','on') else 'Выкл' }}
                     inline_keyboard:
-                      - "💡 Зал балкон:/toggle_balkon_zal , 💡 Кухня балкон:/toggle_balkon_kitchen"
+                      - "💡 Балкон в зале:/toggle_balkon_zal , 💡 Балкон в кухне:/toggle_balkon_kitchen"
                       - "↩️ Назад:/menu_back"
+
+            ################################################################
+            # ЭЛЕКТРИЧЕСТВО
+            ################################################################
+            - conditions: "{{ trigger.event.data.command == '/electro' }}"
+              sequence:
+                - service: telegram_bot.delete_message
+                  data:
+                    chat_id: "{{ trigger.event.data.chat_id }}"
+                    message_id: "{{ trigger.event.data.message.message_id }}"
+
+                - service: telegram_bot.send_message
+                  data:
+                    chat_id: "{{ trigger.event.data.chat_id }}"
+                    message: >
+                      {% set s = states %}
+
+                      💡 *Электричество:*
+
+                      ─────────────
+                      🔌 *Основное*
+                      • Квартира — {{ s('sensor.all_in_pro_power_2') }} W
+                      • Всего — {{ s('sensor.total_power') }} W
+
+                      ─────────────
+                      💡 *Освещение*
+                      • Свет — {{ s('sensor.svet_pitanie_power_2') }} W
+                      • Свет платы — {{ s('sensor.svet_platy_power_2') }} W
+
+                      ─────────────
+                      🏠 *Бытовая техника*
+                      • Холодильник — {{ s('sensor.kholodilnik_power_2') }} W
+                      • Стиралка — {{ s('sensor.stiralka_power_2') }} W
+
+                      ─────────────
+                      🔥 *Котёл / заряд*
+                      • Зарядник — {{ s('sensor.kotel_zariad_power') }} W
+                      • Котёл — {{ s('sensor.sensor_kotel_power_delta') }} W
+
+                    parse_mode: markdown
+                    inline_keyboard:
+                      - "🔄 Обновить:/electro , ↩️ Назад:/menu_back"
+
+            ################################################################
+            # УЛИЦА
+            ################################################################
+            - conditions: >
+                {{ trigger.event.data.command in ['/garden',
+                                                  '/toggle_garden_table',
+                                                  '/toggle_garden_perimeter',
+                                                  '/toggle_garden_left'] }}
+              sequence:
+                # Переключение ламп
+                - choose:
+                    - conditions: "{{ trigger.event.data.command == '/toggle_garden_table' }}"
+                      sequence:
+                        - service: switch.toggle
+                          target:
+                            entity_id: switch.2_ty_12z_switch_9
+                        - service: telegram_bot.answer_callback_query
+                          data:
+                            callback_query_id: "{{ trigger.event.data.id }}"
+                            message: "💡 Стол переключён"
+
+                    - conditions: "{{ trigger.event.data.command == '/toggle_garden_perimeter' }}"
+                      sequence:
+                        - service: switch.toggle
+                          target:
+                            entity_id: switch.2_ty_12z_switch_10
+                        - service: telegram_bot.answer_callback_query
+                          data:
+                            callback_query_id: "{{ trigger.event.data.id }}"
+                            message: "💡 Периметр переключён"
+
+                    - conditions: "{{ trigger.event.data.command == '/toggle_garden_left' }}"
+                      sequence:
+                        - service: switch.toggle
+                          target:
+                            entity_id: switch.2_ty_12z_switch_11
+                        - service: telegram_bot.answer_callback_query
+                          data:
+                            callback_query_id: "{{ trigger.event.data.id }}"
+                            message: "💡 Левый свет переключён"
+
+                # Удаляем старое сообщение
+                - service: telegram_bot.delete_message
+                  data:
+                    chat_id: "{{ trigger.event.data.chat_id }}"
+                    message_id: "{{ trigger.event.data.message.message_id }}"
+
+                # Отправляем обновлённое меню
+                - service: telegram_bot.send_message
+                  data:
+                    chat_id: "{{ trigger.event.data.chat_id }}"
+                    message: |
+                      ⛅ Улица:
+                      🌡️ {{ states('sensor.temp1_temperature') }} °C
+                      💧 {{ states('sensor.temp1_humidity') }} %
+
+                      💡 Стол — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_9','on') else 'Выкл' }}
+                      💡 Периметр — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_10','on') else 'Выкл' }}
+                      💡 Слева — {{ 'Вкл' if is_state('switch.2_ty_12z_switch_11','on') else 'Выкл' }}
+                    inline_keyboard:
+                      - "💡 Стол:/toggle_garden_table , 💡 Периметр:/toggle_garden_perimeter"
+                      - "💡 Слева:/toggle_garden_left , ↩️ Назад:/menu_back"
 
             ################################################################
             # СВЕТ — СПИСОК ВКЛЮЧЁННЫХ ЛАМПОЧЕК
