@@ -66,7 +66,7 @@ sensor:
     address: 0x2f00000074c28428
     name: "Температура 1"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: 0.0
@@ -76,7 +76,7 @@ sensor:
     address: 0x1a0000007389f228
     name: "Температура 2"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: 0.0
@@ -86,7 +86,7 @@ sensor:
     address: 0x8c0000007501d628
     name: "Температура 3"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: -0.1
@@ -96,7 +96,7 @@ sensor:
     address: 0x6700000077041e28
     name: "Температура 4"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: 0.1
@@ -106,7 +106,7 @@ sensor:
     address: 0xd100000077ab9e28
     name: "Температура 5"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: 0.0
@@ -116,7 +116,7 @@ sensor:
     address: 0x90000000754ad128
     name: "Температура 6"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: -0.1
@@ -126,7 +126,7 @@ sensor:
     address: 0xf900000077c00528
     name: "Температура 7"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: -0.2
@@ -136,7 +136,7 @@ sensor:
     address: 0x3000000076fd5528
     name: "Температура 8"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: 0.0
@@ -146,7 +146,7 @@ sensor:
     address: 0x4700000074c2b328
     name: "Температура 9"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: 0.0
@@ -156,7 +156,7 @@ sensor:
     address: 0x2300000074cf5b28
     name: "Температура 10"
     resolution: 12
-    update_interval: 5s
+    update_interval: 10s
     filters:
       - median:
       - offset: 0.2
