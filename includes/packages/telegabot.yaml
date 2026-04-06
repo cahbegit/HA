@@ -65,7 +65,7 @@ telegram_control:
                     message: |
                       {{'\U0001F527'}} Выбрать комнату для управления:
                     inline_keyboard:
-                      - "🚶 Коридор:/koridor_control , 🚽 Туалет:/vanna_control"
+                      - "🚶 Коридор:/koridor_control , 🚽 Ванна:/vanna_control"
                       - "🏠 Зал:/zal_control , 🍴 Кухня:/kuhnya_control"
                       - "🛏️ Спальня:/spalnia_control , 🌉 Балкон:/balkon_control"
                       - "💡 Електричество:/electro , ⛅ Улица:/garden"
@@ -102,17 +102,15 @@ telegram_control:
                     chat_id: "{{ trigger.event.data.chat_id }}"
                     message: >
                       {% set last = states.binary_sensor.motion_sensor_2_occupancy.last_changed %}
-                      {% set last_local = last.as_local() %}
-                      {% set diff = (now() - last_local).total_seconds() | int %}
-                      {% set minutes = (diff // 60) %}
-                      🚶 Управление коридор:
-                      👣 Последнее движение — 
-                      {% if is_state('binary_sensor.motion_sensor_2_occupancy','on') %}
-                        сейчас
-                      {% else %}
-                        {{ last_local.strftime('%d.%m %H:%M:%S') }} ({{ minutes }} мин. назад)
-                      {% endif %}
 
+                        🚶 Управление коридор:
+                        
+                        👣 Последнее движение —
+                        {% if last is not none %}
+                          {{ last.strftime('%d.%m %H:%M:%S') }}
+                        {% else %}
+                          нет данных
+                        {% endif %}
                       💡 Лампочка — {{ 'Вкл' if is_state('switch.1_ty_12z_switch_1','on') else 'Выкл' }}
                     inline_keyboard:
                       - "💡 Лампочка:/toggle_koridor_light , ↩️ Назад:/menu_back"
