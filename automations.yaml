@@ -312,7 +312,7 @@
       sequence:
       - action: telegram_bot.send_message
         data:
-          target:
+          chat_id:
           - 506234553
           - 515837462
           message: "{{ \"⚡❌\" }} *Свет пропал!* {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_connectivity')
@@ -333,7 +333,7 @@
       sequence:
       - action: telegram_bot.send_message
         data:
-          target:
+          chat_id:
           - 506234553
           - 515837462
           message: "{{ \"⚡✅\" }} *Свет появился!* {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_planned_outage')
@@ -563,8 +563,8 @@
   - choose:
     - conditions:
       - condition: time
-        after: '22:29:59'
-        before: '22:30:01'
+        after: '22:29:55'
+        before: '22:30:05'
       sequence:
       - target:
           entity_id: cover.spalnia_shtora
@@ -579,8 +579,8 @@
         - wed
         - thu
         - fri
-        after: 08:19:59
-        before: 08:20:01
+        after: 08:19:55
+        before: 08:20:05
       sequence:
       - target:
           entity_id: cover.spalnia_shtora
@@ -592,8 +592,8 @@
         weekday:
         - sat
         - sun
-        after: 09:29:59
-        before: 09:30:01
+        after: 09:29:55
+        before: 09:30:05
       sequence:
       - target:
           entity_id: cover.spalnia_shtora
