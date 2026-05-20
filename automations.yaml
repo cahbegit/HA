@@ -256,8 +256,6 @@
   mode: single
 - id: '1753429709783'
   alias: Душ Автосвет в ванной
-  description: Включает свет при движении и выключает через 5 минут после последнего
-    движения
   triggers:
   - entity_id: binary_sensor.temp6_presence
     to: 'on'
@@ -265,19 +263,43 @@
   conditions:
   - condition: time
     after: 08:00:00
-    before: '22:00:00'
+    before: '23:00:00'
   actions:
   - target:
       entity_id: switch.2_ty_12z_switch_2
     action: switch.turn_on
-  - wait_for_trigger:
-    - entity_id: binary_sensor.temp6_presence
-      to: 'off'
-      for: 00:03:00
-      trigger: state
-  - target:
-      entity_id: switch.2_ty_12z_switch_2
-    action: switch.turn_off
+  - delay: 00:00:10
+  - repeat:
+      while:
+      - condition: state
+        entity_id: switch.2_ty_12z_switch_2
+        state: 'on'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.radar2420_presence
+            state: 'on'
+          sequence:
+          - delay: 00:00:30
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.radar2420_presence
+            state: 'off'
+          sequence:
+          - delay: 00:01:00
+          - condition: state
+            entity_id: binary_sensor.radar2420_presence
+            state: 'off'
+          - condition: state
+            entity_id: binary_sensor.temp6_presence
+            state: 'off'
+            for: 00:01:00
+          - target:
+              entity_id: switch.2_ty_12z_switch_2
+            action: switch.turn_off
+        default:
+        - delay: 00:00:30
   mode: restart
 - id: '1756374867490'
   alias: Кнопка калидор
