@@ -6,15 +6,17 @@ utility_template:
           state: >
             {{ is_state('device_tracker.poco_x5_pro_5g', 'home') or
                is_state('device_tracker.poco_x5_pro_5g_2', 'home') or
-               is_state('device_tracker.poco_x5_pro_5g_3', 'home') }}
+               is_state('device_tracker.poco_x5_pro_5g_3', 'home') 
+            }}
 
         - name: "Лена дома"
           state: >
             {{ is_state('device_tracker.xiaomi_11_lite_5g_ne', 'home') or
                is_state('device_tracker.xiaomi_11_lite_5g_ne_2', 'home') or
                is_state('device_tracker.redmi_note_14_pro_5g', 'home') or
-               is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') }}
-               
+               is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') 
+            }}
+
     - sensor:
         - name: "sensor.Kotel_Power_Delta"
           state: >
@@ -37,7 +39,12 @@ utility_template:
               'sensor.temp4_battery',
               'sensor.temp5_battery',
               'sensor.temp6_battery',
-              'sensor.wireless_scene_switch_battery',
+              'sensor.temp7_battery',
+              'sensor.door1_battery',
+              'sensor.door2_battery',
+              'sensor.door3_battery',
+              'sensor.door4_battery',              
+              'sensor.button_battery',
               'sensor.spalnia_shtora_battery_2'
             ] %}
             {% for entity in batteries %}
@@ -59,7 +66,12 @@ utility_template:
                 'sensor.temp4_battery',
                 'sensor.temp5_battery',
                 'sensor.temp6_battery',
-                'sensor.wireless_scene_switch_battery',
+                'sensor.temp7_battery',
+                'sensor.door1_battery',
+                'sensor.door2_battery',
+                'sensor.door3_battery',
+                'sensor.door4_battery',
+                'sensor.button_battery',
                 'sensor.spalnia_shtora_battery_2'
               ] %}
               {% for entity in batteries %}
@@ -68,3 +80,81 @@ utility_template:
                 {% set out.result = out.result + [name ~ ': ' ~ val ~ '%'] %}
               {% endfor %}
               {{ out.result }}
+
+        # DOOR 1
+
+        - platform: history_stats
+          name: door1_day
+          entity_id: binary_sensor.door1_contact
+          state: "on"
+          type: count
+          start: "{{ today_at('00:00') }}"
+          end: "{{ now() }}"
+
+        - platform: history_stats
+          name: door1_week
+          entity_id: binary_sensor.door1_contact
+          state: "on"
+          type: count
+          start: "{{ now() - timedelta(days=7) }}"
+          end: "{{ now() }}"
+
+        - platform: history_stats
+          name: door1_month
+          entity_id: binary_sensor.door1_contact
+          state: "on"
+          type: count
+          start: "{{ now() - timedelta(days=30) }}"
+          end: "{{ now() }}"
+
+        # DOOR 2
+
+        - platform: history_stats
+          name: door2_day
+          entity_id: binary_sensor.door2_contact
+          state: "on"
+          type: count
+          start: "{{ today_at('00:00') }}"
+          end: "{{ now() }}"
+
+        - platform: history_stats
+          name: door2_week
+          entity_id: binary_sensor.door2_contact
+          state: "on"
+          type: count
+          start: "{{ now() - timedelta(days=7) }}"
+          end: "{{ now() }}"
+
+        - platform: history_stats
+          name: door2_month
+          entity_id: binary_sensor.door2_contact
+          state: "on"
+          type: count
+          start: "{{ now() - timedelta(days=30) }}"
+          end: "{{ now() }}"
+
+        # DOOR 3
+
+        - platform: history_stats
+          name: door3_day
+          entity_id: binary_sensor.door3_contact
+          state: "on"
+          type: count
+          start: "{{ today_at('00:00') }}"
+          end: "{{ now() }}"
+
+        - platform: history_stats
+          name: door3_week
+          entity_id: binary_sensor.door3_contact
+          state: "on"
+          type: count
+          start: "{{ now() - timedelta(days=7) }}"
+          end: "{{ now() }}"
+
+        - platform: history_stats
+          name: door3_month
+          entity_id: binary_sensor.door3_contact
+          state: "on"
+          type: count
+          start: "{{ now() - timedelta(days=30) }}"
+          end: "{{ now() }}"

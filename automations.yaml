@@ -64,8 +64,13 @@
   alias: Калидор — свет
   description: ''
   triggers:
+  - entity_id: binary_sensor.door1_contact
+    to: 'on'
+    id: door_open
+    trigger: state
   - entity_id: binary_sensor.motion_sensor_2_occupancy
     to: 'on'
+    id: motion
     trigger: state
   conditions:
   - condition: sun
@@ -74,21 +79,40 @@
   - condition: time
     before: '23:00:00'
   - condition: template
-    value_template: '{% set now_sec = now().timestamp() %} {% set sasha = states.binary_sensor.sasha_doma
-      %} {% set lena = states.binary_sensor.lena_doma %} {% set sasha_last = sasha.last_changed.timestamp()
-      if sasha.state == ''on'' else 0 %} {% set lena_last = lena.last_changed.timestamp()
-      if lena.state == ''on'' else 0 %} {{ (now_sec - sasha_last < 600) or (now_sec
-      - lena_last < 600) }}
-
-      '
+    value_template: "{{\n  is_state('switch.1_ty_12z_switch_5', 'off')\n  and\n  is_state('switch.1_ty_12z_switch_4',
+      'off')\n}}\n"
   actions:
-  - target:
-      entity_id: switch.1_ty_12z_switch_1
-    action: switch.turn_on
-  - delay: 00:03:00
-  - target:
-      entity_id: switch.1_ty_12z_switch_1
-    action: switch.turn_off
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: door_open
+      sequence:
+      - target:
+          entity_id: switch.1_ty_12z_switch_1
+        action: switch.turn_on
+      - wait_for_trigger:
+        - entity_id: binary_sensor.motion_sensor_2_occupancy
+          to: 'on'
+          trigger: state
+        timeout: 00:03:00
+      - target:
+          entity_id: switch.1_ty_12z_switch_1
+        action: switch.turn_off
+    - conditions:
+      - condition: trigger
+        id: motion
+      sequence:
+      - target:
+          entity_id: switch.1_ty_12z_switch_1
+        action: switch.turn_on
+      - wait_for_trigger:
+        - entity_id: binary_sensor.motion_sensor_2_occupancy
+          to: 'on'
+          trigger: state
+        timeout: 00:03:00
+      - target:
+          entity_id: switch.1_ty_12z_switch_1
+        action: switch.turn_off
   mode: restart
 - id: '1738685065988'
   alias: Кондей спальня проветривание ночь (тихо)
@@ -666,3 +690,179 @@
           temperature: 22
         action: climate.set_temperature
   mode: single
+- id: '1780910385046'
+  alias: Уличный холодильник
+  description: Уличный холодильник
+  triggers:
+  - trigger: numeric_state
+    entity_id: sensor.temp7_temperature
+    above: 12
+    id: too_hot
+  - trigger: numeric_state
+    entity_id: sensor.temp7_temperature
+    below: 7
+    id: cold_enough
+  - trigger: time
+    at: '16:00:00'
+    id: weekday_start
+  - trigger: time
+    at: '13:00:00'
+    id: weekend_start
+  - trigger: time
+    at: '22:00:00'
+    id: weekday_off
+  - trigger: time
+    at: '23:00:00'
+    id: weekend_off
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: too_hot
+      - condition: or
+        conditions:
+        - condition: and
+          conditions:
+          - condition: time
+            after: '16:00:00'
+            before: '22:00:00'
+          - condition: time
+            weekday:
+            - mon
+            - tue
+            - wed
+            - thu
+            - fri
+        - condition: and
+          conditions:
+          - condition: time
+            after: '13:00:00'
+            before: '23:00:00'
+          - condition: time
+            weekday:
+            - sat
+            - sun
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.kholodulichnyi
+    - conditions:
+      - condition: trigger
+        id: cold_enough
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.kholodulichnyi
+    - conditions:
+      - condition: trigger
+        id: weekday_start
+      - condition: numeric_state
+        entity_id: sensor.temp7_temperature
+        above: 12
+      - condition: time
+        weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.kholodulichnyi
+    - conditions:
+      - condition: trigger
+        id: weekend_start
+      - condition: numeric_state
+        entity_id: sensor.temp7_temperature
+        above: 12
+      - condition: time
+        weekday:
+        - sat
+        - sun
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.kholodulichnyi
+    - conditions:
+      - condition: trigger
+        id: weekday_off
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.kholodulichnyi
+    - conditions:
+      - condition: trigger
+        id: weekend_off
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.kholodulichnyi
+  mode: single
+- id: '1782383396299'
+  alias: Душ Автосвет в ванной v2
+  triggers:
+  - entity_id: binary_sensor.temp6_presence
+    to: 'on'
+    id: motion
+    trigger: state
+  - entity_id: binary_sensor.door2_contact
+    to: 'on'
+    id: door_open
+    trigger: state
+  - entity_id: binary_sensor.door2_contact
+    to: 'off'
+    id: door_close
+    trigger: state
+  conditions:
+  - condition: time
+    after: 08:00:00
+    before: '23:00:00'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion
+      sequence:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.door2_contact
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.door2_contact
+          state: 'off'
+          for:
+            minutes: 5
+      - target:
+          entity_id: switch.2_ty_12z_switch_2
+        action: switch.turn_on
+      - wait_for_trigger:
+        - entity_id: binary_sensor.temp6_presence
+          to: 'off'
+          for:
+            minutes: 3
+          trigger: state
+      - condition: state
+        entity_id: binary_sensor.door2_contact
+        state: 'on'
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: binary_sensor.door2_contact
+            state: 'off'
+          sequence:
+          - delay: 00:00:05
+          - target:
+              entity_id: switch.2_ty_12z_switch_2
+            action: switch.turn_off
+    - conditions:
+      - condition: trigger
+        id: door_open
+      sequence:
+      - delay: 00:00:05
+      - target:
+          entity_id: switch.2_ty_12z_switch_2
+        action: switch.turn_off
+  mode: restart

@@ -51,7 +51,7 @@
     sensor.temp6_temperature:
       friendly_name: "Ванна"
     sensor.temp7_temperature:
-      friendly_name: "Кладовка"      
+      friendly_name: "Уличный холодильник"      
     sensor.termostat_temperatura_1:
       friendly_name: "Выход"
     sensor.termostat_temperatura_2:
