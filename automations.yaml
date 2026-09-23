@@ -64,55 +64,33 @@
   alias: Калидор — свет
   description: ''
   triggers:
-  - entity_id: binary_sensor.door1_contact
+  - trigger: state
+    entity_id: binary_sensor.door1_contact
     to: 'on'
-    id: door_open
-    trigger: state
-  - entity_id: binary_sensor.motion_sensor_2_occupancy
-    to: 'on'
-    id: motion
-    trigger: state
   conditions:
-  - condition: sun
-    after: sunset
-    after_offset: -03:00:00
   - condition: time
     before: '23:00:00'
   - condition: template
     value_template: "{{\n  is_state('switch.1_ty_12z_switch_5', 'off')\n  and\n  is_state('switch.1_ty_12z_switch_4',
       'off')\n}}\n"
   actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: door_open
+  - action: switch.turn_on
+    target:
+      entity_id: switch.1_ty_12z_switch_1
+  - repeat:
       sequence:
-      - target:
-          entity_id: switch.1_ty_12z_switch_1
-        action: switch.turn_on
       - wait_for_trigger:
-        - entity_id: binary_sensor.motion_sensor_2_occupancy
+        - trigger: state
+          entity_id: binary_sensor.motion_sensor_2_occupancy
           to: 'on'
-          trigger: state
-        timeout: 00:03:00
-      - target:
-          entity_id: switch.1_ty_12z_switch_1
-        action: switch.turn_off
-    - conditions:
-      - condition: trigger
-        id: motion
-      sequence:
-      - target:
-          entity_id: switch.1_ty_12z_switch_1
-        action: switch.turn_on
-      - wait_for_trigger:
-        - entity_id: binary_sensor.motion_sensor_2_occupancy
-          to: 'on'
-          trigger: state
-        timeout: 00:03:00
-      - target:
-          entity_id: switch.1_ty_12z_switch_1
-        action: switch.turn_off
+        timeout: 00:02:00
+        continue_on_timeout: true
+      until:
+      - condition: template
+        value_template: '{{ wait.trigger is none }}'
+  - action: switch.turn_off
+    target:
+      entity_id: switch.1_ty_12z_switch_1
   mode: restart
 - id: '1738685065988'
   alias: Кондей спальня проветривание ночь (тихо)
@@ -534,7 +512,7 @@
   alias: Кондей Зал Утро
   description: Утренний режим кондиционера
   triggers:
-  - at: 06:00:00
+  - at: 05:00:00
     id: start
     trigger: time
   - at: 06:50:00
@@ -750,6 +728,31 @@
     - conditions:
       - condition: trigger
         id: cold_enough
+      - condition: not
+        conditions:
+        - condition: or
+          conditions:
+          - condition: and
+            conditions:
+            - condition: time
+              after: '16:00:00'
+              before: '18:00:00'
+            - condition: time
+              weekday:
+              - mon
+              - tue
+              - wed
+              - thu
+              - fri
+          - condition: and
+            conditions:
+            - condition: time
+              after: '13:00:00'
+              before: '15:00:00'
+            - condition: time
+              weekday:
+              - sat
+              - sun
       sequence:
       - action: switch.turn_off
         target:
@@ -866,3 +869,200 @@
           entity_id: switch.2_ty_12z_switch_2
         action: switch.turn_off
   mode: restart
+- id: '1783582375657'
+  alias: Кондиционер - выбор режима
+  description: по температуре улицы
+  triggers:
+  - trigger: numeric_state
+    entity_id: sensor.temp1_temperature
+    below: 21
+    id: ventilation
+  - trigger: numeric_state
+    entity_id: sensor.temp1_temperature
+    above: 23
+    id: cooling
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.temp1_temperature
+        below: 21
+      sequence:
+      - action: automation.turn_on
+        target:
+          entity_id: automation.nochnoe_provetrivanie_konditsionerov
+      - action: automation.turn_off
+        target:
+          entity_id: automation.leto_spalnia
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.temp1_temperature
+        above: 23
+      sequence:
+      - action: automation.turn_on
+        target:
+          entity_id: automation.leto_spalnia
+      - action: automation.turn_off
+        target:
+          entity_id: automation.nochnoe_provetrivanie_konditsionerov
+  mode: single
+- id: '1788953128373'
+  alias: Душ Автосвет в ванной v5
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.temp6_presence
+    to: 'on'
+    id: motion
+  - trigger: state
+    entity_id: binary_sensor.door2_contact
+    to: 'on'
+    id: door_open
+  conditions:
+  - condition: time
+    after: 08:00:00
+    before: '23:00:00'
+  - condition: state
+    entity_id: switch.2_ty_12z_switch_2
+    state: 'off'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: motion
+      - condition: template
+        value_template: "{{\n  is_state('binary_sensor.door2_contact', 'on')\n  or\n
+          \ (\n    as_timestamp(now())\n    - as_timestamp(states.binary_sensor.door2_contact.last_changed)\n
+          \   <= 2\n  )\n}}\n"
+      sequence: []
+    - conditions:
+      - condition: trigger
+        id: door_open
+      - condition: template
+        value_template: "{{\n  is_state('binary_sensor.temp6_presence', 'on')\n  and\n
+          \ (\n    as_timestamp(now())\n    - as_timestamp(states.binary_sensor.temp6_presence.last_changed)\n
+          \   <= 2\n  )\n}}\n"
+      sequence: []
+    default:
+    - stop: Вход не подтверждён
+  - condition: state
+    entity_id: switch.2_ty_12z_switch_2
+    state: 'off'
+  - action: switch.turn_on
+    target:
+      entity_id: switch.2_ty_12z_switch_2
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.door2_contact
+        state: 'off'
+      sequence:
+      - wait_for_trigger:
+        - trigger: state
+          entity_id: binary_sensor.door2_contact
+          to: 'on'
+          id: exit
+        - trigger: state
+          entity_id: switch.2_ty_12z_switch_2
+          to: 'off'
+          id: manual_off
+      - if:
+        - condition: template
+          value_template: "{{\n  wait.trigger is not none\n  and wait.trigger.id ==
+            'exit'\n}}\n"
+        then:
+        - delay: 00:00:05
+        - condition: state
+          entity_id: switch.2_ty_12z_switch_2
+          state: 'on'
+        - action: switch.turn_off
+          target:
+            entity_id: switch.2_ty_12z_switch_2
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.door2_contact
+        state: 'on'
+      sequence:
+      - wait_for_trigger:
+        - trigger: state
+          entity_id: binary_sensor.door2_contact
+          to: 'off'
+          id: door_close
+        - trigger: state
+          entity_id: switch.2_ty_12z_switch_2
+          to: 'off'
+          id: manual_off
+        timeout: 00:00:01
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: "{{\n  wait.trigger is not none\n  and wait.trigger.id
+              == 'door_close'\n}}\n"
+          sequence:
+          - wait_for_trigger:
+            - trigger: state
+              entity_id: binary_sensor.door2_contact
+              to: 'on'
+              id: exit
+            - trigger: state
+              entity_id: switch.2_ty_12z_switch_2
+              to: 'off'
+              id: manual_off
+          - if:
+            - condition: template
+              value_template: "{{\n  wait.trigger is not none\n  and wait.trigger.id
+                == 'exit'\n}}\n"
+            then:
+            - delay: 00:00:05
+            - condition: state
+              entity_id: switch.2_ty_12z_switch_2
+              state: 'on'
+            - action: switch.turn_off
+              target:
+                entity_id: switch.2_ty_12z_switch_2
+        - conditions:
+          - condition: template
+            value_template: '{{ wait.trigger is none }}
+
+              '
+          sequence:
+          - repeat:
+              sequence:
+              - wait_for_trigger:
+                - trigger: state
+                  entity_id: binary_sensor.temp6_presence
+                  to: 'on'
+                  id: motion_on
+                - trigger: state
+                  entity_id: binary_sensor.radar2420_presence
+                  to: 'on'
+                  id: radar_on
+                - trigger: state
+                  entity_id: binary_sensor.temp6_presence
+                  to: 'off'
+                  id: motion_off
+                - trigger: state
+                  entity_id: binary_sensor.radar2420_presence
+                  to: 'off'
+                  id: radar_off
+                - trigger: state
+                  entity_id: switch.2_ty_12z_switch_2
+                  to: 'off'
+                  id: manual_off
+                timeout: 00:03:00
+              - if:
+                - condition: template
+                  value_template: "{{\n  wait.trigger is none\n  and\n  is_state('binary_sensor.temp6_presence',
+                    'off')\n  and\n  is_state('binary_sensor.radar2420_presence',
+                    'off')\n}}\n"
+                then:
+                - action: switch.turn_off
+                  target:
+                    entity_id: switch.2_ty_12z_switch_2
+              until:
+              - condition: state
+                entity_id: switch.2_ty_12z_switch_2
+                state: 'off'
+  mode: single
+  max_exceeded: silent

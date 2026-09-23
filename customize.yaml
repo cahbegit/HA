@@ -36,8 +36,6 @@
       friendly_name: "Спальня бра лево"
     switch.1_ty_12z_switch_8:
       friendly_name: "Спальня бра право"
-    media_player.android_tv_192_168_2_21:
-      friendly_name: "Зал TV"  
     sensor.temp1_temperature:
       friendly_name: "Улица" 
     sensor.temp2_temperature:
