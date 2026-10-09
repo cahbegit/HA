@@ -412,7 +412,7 @@ utility_total:
                          {{"\U00002600"}} День - {{ states('sensor.meter_total_energy_day') }} КВт ч, Ночь - {{ states('sensor.meter_total_energy_night') }} КВт ч
                          {{"\U0001F4B5"}} Cтоимость, день - {{ states('sensor.total_energy_day_cost') }} грн, ночь - {{ states('sensor.total_energy_night_cost') }} грн 
                          {{"\U000026A1"}} Всего - {{ states('sensor.meter_total_energy_clear') }} КВт ч
-                         {{"\U0001F4B5"}} Cтоимость {{ states('sensor.total_energy_clear_cost') }} грн            - choose:
+                         {{"\U0001F4B5"}} Cтоимость {{ states('sensor.total_energy_clear_cost') }} грн
               - conditions:
                   - condition: trigger
                     id: forcibly  
