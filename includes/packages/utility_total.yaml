@@ -400,8 +400,9 @@ utility_total:
                   - condition: template
                     value_template: '{{ now().day == 1 }}'        
                 sequence:        
-                  - service: notify.telegram_cahbe
+                  - action: notify.send_message
                     data:
+                      entity_id: notify.kvartira_volodi_dubinina_6_aleksandr_poliv_506234553
                       message: | 
                          {{"\U0001F4C5"}} Начался новый месяц - {{ states('sensor.month') }}
                          {{"\U0001F3E0"}} Квартира - {{ states('sensor.workplace_clear') }} КВт ч, День - {{ states('sensor.workplace_day') }} КВт ч, Ночь - {{ states('sensor.workplace_night') }} КВт ч
@@ -417,8 +418,9 @@ utility_total:
                   - condition: trigger
                     id: forcibly  
                 sequence:        
-                  - service: notify.telegram_cahbe
+                  - action: notify.send_message
                     data:
+                      entity_id: notify.kvartira_volodi_dubinina_6_aleksandr_poliv_506234553
                       message: | 
                          {{"\U0001F4C5"}} {{as_timestamp(now()) | int | timestamp_custom("%H:%M:%S %d.%m.%Y") }}
                          {{"\U0001F3E0"}} Квартира - {{ states('sensor.workplace_clear') }} КВт ч, День - {{ states('sensor.workplace_day') }} КВт ч, Ночь - {{ states('sensor.workplace_night') }} КВт ч

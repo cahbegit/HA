@@ -13,7 +13,7 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 
 telegram_bot: !include includes/telegram.yaml
-notify: !include includes/notify.yaml
+# Legacy Telegram notify removed; notifications use Telegram bot entities.
 recorder:
   purge_interval: 14
   purge_keep_days: 90
