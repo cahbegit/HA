@@ -1,5 +1,14 @@
 utility_template:
-  
+
+sensor:
+  - platform: history_stats
+    name: Light On Today
+    entity_id: binary_sensor.192_168_2_219
+    state: "on"
+    type: time
+    start: "{{ today_at() }}"
+    end: "{{ now() }}"
+      
   template:
     - binary_sensor:
         - name: "Саша дома"
@@ -80,3 +89,18 @@ utility_template:
                 {% set out.result = out.result + [name ~ ': ' ~ val ~ '%'] %}
               {% endfor %}
               {{ out.result }}
+        - name: Light State Duration
+          unique_id: light_sensor_elapsed
+          state: >
+            {% set entity = states.binary_sensor['192_168_2_219'] %}
+            {% set seconds = (as_timestamp(now()) - as_timestamp(entity.last_changed)) | int %}
+            {% set days = seconds // 86400 %}
+            {% set hours = (seconds % 86400) // 3600 %}
+            {% set minutes = (seconds % 3600) // 60 %}
+            {% if days > 0 %}
+              {{ days }} д {{ hours }} ч {{ minutes }} мин
+            {% elif hours > 0 %}
+              {{ hours }} ч {{ minutes }} мин
+            {% else %}
+              {{ minutes }} мин
+            {% endif %}      
