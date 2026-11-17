@@ -7,6 +7,15 @@ utility_template:
       type: time
       start: "{{ today_at() }}"
       end: "{{ now() }}"
+      state_class: total_increasing
+    - platform: history_stats
+      name: Light On Yesterday
+      entity_id: binary_sensor.192_168_2_219
+      state: "on"
+      type: time
+      start: "{{ today_at() - timedelta(days=1) }}"
+      end: "{{ today_at() }}"
+
 
   template:
     - binary_sensor:
@@ -89,19 +98,29 @@ utility_template:
               {% endfor %}
               {{ out.result }}
 
-        - name: Light State Duration
-          default_entity_id: sensor.light_state_duration
-          unique_id: light_state_duration_v2
+    - triggers:
+        - trigger: state
+          entity_id: binary_sensor.192_168_2_219
+      sensor:
+        - name: Light Previous State Duration
+          unique_id: light_previous_state_duration
+          default_entity_id: sensor.light_previous_state_duration
           state: >
-            {% set entity = states['binary_sensor.192_168_2_219'] %}
-            {% set seconds = (as_timestamp(now()) - as_timestamp(entity.last_changed)) | int %}
-            {% set days = seconds // 86400 %}
-            {% set hours = (seconds % 86400) // 3600 %}
-            {% set minutes = (seconds % 3600) // 60 %}
-            {% if days > 0 %}
-              {{ days }} d {{ hours }} h {{ minutes }} min
-            {% elif hours > 0 %}
-              {{ hours }} h {{ minutes }} min
+            {% if trigger.from_state is none or trigger.to_state is none %}
+              unknown
             {% else %}
-              {{ minutes }} min
+              {% set seconds =
+                (as_timestamp(trigger.to_state.last_changed) -
+                 as_timestamp(trigger.from_state.last_changed)) | int(0) %}
+              {% set days = seconds // 86400 %}
+              {% set hours = (seconds % 86400) // 3600 %}
+              {% set minutes = (seconds % 3600) // 60 %}
+              {% set status = 'Свет был включён'
+                if trigger.from_state.state == 'on'
+                else 'Света не было' %}
+              {% if days > 0 %}
+                {{ status }}: {{ days }} д {{ hours }} ч {{ minutes }} мин
+              {% else %}
+                {{ status }}: {{ hours }} ч {{ minutes }} мин
+              {% endif %}
             {% endif %}

@@ -146,8 +146,12 @@
         }}°C\n{{\"\\U0001F4AA\"}} *Давление:* {{ (states('sensor.openweathermap_pressure')|float
         * 0.7500637)|round(2) }} мм рт. ст  \n{{\"\\U00002600\"}} *Погода:* {{ states('sensor.openweathermap_weather')
         }}\n{{\"\\U0001F327\"}} *Дождь:* {{ states('sensor.openweathermap_rain') }}
-        {{\"\\U0001F328\"}} *Снег:* {{ states('sensor.openweathermap_snow') }} \n
-        {{\"↩️\"}} Меню:/start'\n"
+        {{\"\\U0001F328\"}} *Снег:* {{ states('sensor.openweathermap_snow') }}  {%
+        set raw = states('sensor.light_on_yesterday') %} {% if raw not in ['unknown',
+        'unavailable', ''] %}\n  {% set seconds = (raw | float(0) * 3600) | int %}\n
+        \ \U0001F4A1 *За вчера свет был:* {{ seconds // 3600 }} ч {{ (seconds % 3600)
+        // 60 }} мин\n{% else %}\n  \U0001F4A1 *За вчера свет был:* нет данных\n{%
+        endif %}\n {{\"↩️\"}} Меню:/start\n"
     action: telegram_bot.send_message
 - id: '1749116001554'
   alias: KonZalUtro1
@@ -328,6 +332,7 @@
     to: 'on'
     trigger: state
   actions:
+  - delay: 00:00:01
   - choose:
     - conditions:
       - condition: state
@@ -339,17 +344,18 @@
           chat_id:
           - 506234553
           - 515837462
-          message: "{{ \"⚡❌\" }} *Свет пропал!* {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_connectivity')
+          message: "{{ \"⚡❌\" }} *Свет пропал!*\n⏱️ *Свет был:* {{ states('sensor.light_previous_state_duration')
+            | replace('Свет был включён: ', '') }}\n{% set t = states('sensor.yasno_dnipro_dnem_5_1_next_connectivity')
             -%} {% if t not in ['unknown', 'unavailable', ''] -%}\n  {% set ts = as_timestamp(t)
             -%}\n  {% set delta = ts - now().timestamp() -%}\n  {% set h = (delta
-            // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n\n
-            \ {{ \"⏳\" }} *Ожидаемое включение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
-            %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
-            -%}\n  {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %}\n {%
-            set soc = states('sensor.mustbms_b_state_of_charge') %} {% if soc not
-            in ['unknown', 'unavailable', ''] %} \U0001F50B *Заряд батареи:* {{ soc
-            }} % {% else %} \U0001F50B *Заряд батареи:* нет данных {% endif %} {{
-            \"↩️\" }} Меню: /start\n"
+            // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n  {{
+            \"⏳\" }} *Ожидаемое включение:* {{ ts | timestamp_custom('%d.%m.%Y %H:%M',
+            true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else -%}\n
+            \ {{ \"⏳\" }} *Ожидаемое включение:* нет данных\n{% endif %} {% set soc
+            = states('sensor.mustbms_b_state_of_charge') %} {% if soc not in ['unknown',
+            'unavailable', ''] %}\n  \U0001F50B *Заряд батареи:* {{ soc }} %\n{% else
+            %}\n  \U0001F50B *Заряд батареи:* нет данных\n{% endif %} {{ \"↩️\" }}
+            Меню: /start\n"
     - conditions:
       - condition: state
         entity_id: binary_sensor.192_168_2_219
@@ -360,17 +366,18 @@
           chat_id:
           - 506234553
           - 515837462
-          message: "{{ \"⚡✅\" }} *Свет появился!* {% set t = states('sensor.yasno_dnipro_dnem_5_1_next_planned_outage')
+          message: "{{ \"⚡✅\" }} *Свет появился!*\n⏱️ *Света не было:* {{ states('sensor.light_previous_state_duration')
+            | replace('Света не было: ', '') }}\n{% set t = states('sensor.yasno_dnipro_dnem_5_1_next_planned_outage')
             -%} {% if t not in ['unknown', 'unavailable', ''] -%}\n  {% set ts = as_timestamp(t)
             -%}\n  {% set delta = ts - now().timestamp() -%}\n  {% set h = (delta
-            // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n\n
-            \ {{ \"\U0001F4C5\" }} *Следующее плановое отключение:*\n  {{ ts | timestamp_custom('%d.%m.%Y
+            // 3600) | int -%}\n  {% set m = ((delta % 3600) // 60) | int -%}\n  {{
+            \"\U0001F4C5\" }} *Следующее плановое отключение:* {{ ts | timestamp_custom('%d.%m.%Y
             %H:%M', true) }}\n  {{ \"⌛\" }} *Через:* {{ h }} ч {{ m }} мин\n{% else
             -%}\n  {{ \"\U0001F4C5\" }} *Следующее плановое отключение:* нет данных\n{%
-            endif %}\n {% set soc = states('sensor.mustbms_b_state_of_charge') %}
-            {% if soc not in ['unknown', 'unavailable', ''] %} \U0001F50B *Заряд батареи:*
-            {{ soc }} % {% else %} \U0001F50B *Заряд батареи:* нет данных {% endif
-            %} {{ \"↩️\" }} Меню: /start\n"
+            endif %} {% set soc = states('sensor.mustbms_b_state_of_charge') %} {%
+            if soc not in ['unknown', 'unavailable', ''] %}\n  \U0001F50B *Заряд батареи:*
+            {{ soc }} %\n{% else %}\n  \U0001F50B *Заряд батареи:* нет данных\n{%
+            endif %} {{ \"↩️\" }} Меню: /start\n"
   mode: single
 - id: '1769447130342'
   alias: Инвертор Автостарт зарядки ночью
