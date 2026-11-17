@@ -1,5 +1,4 @@
 utility_template:
-
   sensor:
     - platform: history_stats
       name: Light On Today
@@ -8,14 +7,14 @@ utility_template:
       type: time
       start: "{{ today_at() }}"
       end: "{{ now() }}"
-        
+
   template:
     - binary_sensor:
         - name: "Саша дома"
           state: >
             {{ is_state('device_tracker.poco_x5_pro_5g', 'home') or
                is_state('device_tracker.poco_x5_pro_5g_2', 'home') or
-               is_state('device_tracker.poco_x5_pro_5g_3', 'home') 
+               is_state('device_tracker.poco_x5_pro_5g_3', 'home')
             }}
 
         - name: "Лена дома"
@@ -23,14 +22,14 @@ utility_template:
             {{ is_state('device_tracker.xiaomi_11_lite_5g_ne', 'home') or
                is_state('device_tracker.xiaomi_11_lite_5g_ne_2', 'home') or
                is_state('device_tracker.redmi_note_14_pro_5g', 'home') or
-               is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home') 
+               is_state('device_tracker.xiaomi_11_lite_5g_ne_3', 'home')
             }}
 
     - sensor:
         - name: "sensor.Kotel_Power_Delta"
           state: >
             {{ (
-              states('sensor.kotel_power_2')|float(0) - 
+              states('sensor.kotel_power_2')|float(0) -
               states('sensor.kotel_zariad_power')|float(0)
             )|round(2) }}
           unit_of_measurement: "W"
@@ -52,7 +51,7 @@ utility_template:
               'sensor.door1_battery',
               'sensor.door2_battery',
               'sensor.door3_battery',
-              'sensor.door4_battery',              
+              'sensor.door4_battery',
               'sensor.button_battery',
               'sensor.spalnia_shtora_battery_2'
             ] %}
@@ -89,18 +88,20 @@ utility_template:
                 {% set out.result = out.result + [name ~ ': ' ~ val ~ '%'] %}
               {% endfor %}
               {{ out.result }}
+
         - name: Light State Duration
-          unique_id: light_sensor_elapsed
+          default_entity_id: sensor.light_state_duration
+          unique_id: light_state_duration_v2
           state: >
-            {% set entity = states.binary_sensor['192_168_2_219'] %}
+            {% set entity = states['binary_sensor.192_168_2_219'] %}
             {% set seconds = (as_timestamp(now()) - as_timestamp(entity.last_changed)) | int %}
             {% set days = seconds // 86400 %}
             {% set hours = (seconds % 86400) // 3600 %}
             {% set minutes = (seconds % 3600) // 60 %}
             {% if days > 0 %}
-              {{ days }} д {{ hours }} ч {{ minutes }} мин
+              {{ days }} d {{ hours }} h {{ minutes }} min
             {% elif hours > 0 %}
-              {{ hours }} ч {{ minutes }} мин
+              {{ hours }} h {{ minutes }} min
             {% else %}
-              {{ minutes }} мин
-            {% endif %}      
+              {{ minutes }} min
+            {% endif %}
