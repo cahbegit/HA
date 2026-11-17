@@ -1,14 +1,14 @@
 utility_template:
 
-sensor:
-  - platform: history_stats
-    name: Light On Today
-    entity_id: binary_sensor.192_168_2_219
-    state: "on"
-    type: time
-    start: "{{ today_at() }}"
-    end: "{{ now() }}"
-      
+  sensor:
+    - platform: history_stats
+      name: Light On Today
+      entity_id: binary_sensor.192_168_2_219
+      state: "on"
+      type: time
+      start: "{{ today_at() }}"
+      end: "{{ now() }}"
+        
   template:
     - binary_sensor:
         - name: "Саша дома"
