@@ -16,3 +16,4 @@ esphome/powmrbms/secrets.yaml
 .ha_run.lock
 includes/telegram.yaml
 .cache/
+esphome/.device-builder*
