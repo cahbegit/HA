@@ -24,8 +24,8 @@ external_components:
     refresh: 0s
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: !secret wifi_ssidi
+  password: !secret wifi_passwordi
 
 ota:
 - platform: esphome

@@ -445,7 +445,7 @@
           - target:
               entity_id: select.mustbms_i_grid_max_charge
             data:
-              option: 60 A
+              option: 70 A
             action: select.select_option
           - target:
               entity_id: number.mustbms_i_absorb_voltage
@@ -463,7 +463,7 @@
           - target:
               entity_id: select.mustbms_i_grid_max_charge
             data:
-              option: 40 A
+              option: 50 A
             action: select.select_option
           - target:
               entity_id: number.mustbms_i_absorb_voltage
@@ -478,7 +478,7 @@
           - target:
               entity_id: select.mustbms_i_grid_max_charge
             data:
-              option: 20 A
+              option: 30 A
             action: select.select_option
           - target:
               entity_id: number.mustbms_i_absorb_voltage
@@ -495,7 +495,7 @@
       - target:
           entity_id: select.mustbms_i_grid_max_charge
         data:
-          option: 40 A
+          option: 50 A
         action: select.select_option
     - conditions:
       - condition: trigger
@@ -507,7 +507,7 @@
       - target:
           entity_id: select.mustbms_i_grid_max_charge
         data:
-          option: 20 A
+          option: 30 A
         action: select.select_option
       - target:
           entity_id: number.mustbms_i_absorb_voltage
